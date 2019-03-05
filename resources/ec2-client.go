@@ -15,9 +15,10 @@ import (
 // EC2AutoScalingGroup allows user to interface with AWS SDK and scale
 // EC2 clusters
 type EC2AutoScalingGroup struct {
+	ScalingGrpName string `json:"ScalingGrpName"`
+	Region         string `json:"Region"`
+
 	awsScalingProvider *autoscaling.AutoScaling
-	scalingGrpName     string
-	region             string
 	maxscale           int
 	minscale           int
 }
@@ -26,8 +27,8 @@ type EC2AutoScalingGroup struct {
 func NewEC2AutoScalingGroup(region string, gpName string, maxscale int, minscale int) *EC2AutoScalingGroup {
 	return &EC2AutoScalingGroup{
 		awsScalingProvider: newAwsAsgService(region),
-		scalingGrpName:     gpName,
-		region:             region,
+		ScalingGrpName:     gpName,
+		Region:             region,
 		maxscale:           maxscale,
 		minscale:           minscale,
 	}
@@ -36,15 +37,15 @@ func NewEC2AutoScalingGroup(region string, gpName string, maxscale int, minscale
 // newAwsAsgService returns a session object for the AWS autoscaling service.
 func newAwsAsgService(region string) (Session *autoscaling.AutoScaling) {
 	sess := session.Must(session.NewSession())
-	svc := autoscaling.New(sess, config())
+	svc := autoscaling.New(sess, config(region))
 	return svc
 }
 
 // Config produces a generic set of AWS configs
-func config() *aws.Config {
+func config(region string) *aws.Config {
 	return aws.NewConfig().
 		WithCredentials(credentials.NewStaticCredentials("", "", "")).
-		WithRegion("ap-southeast-1").
+		WithRegion(region).
 		WithHTTPClient(http.DefaultClient).
 		WithMaxRetries(aws.UseServiceDefaultRetries).
 		WithLogger(aws.NewDefaultLogger()).
@@ -77,15 +78,15 @@ func describeScalingGroup(asgName string,
 
 // Scale takes in the final count as prescribed by Resource and scales the ASG
 func (easg EC2AutoScalingGroup) Scale(newCount int) error {
-	sess := newAwsAsgService("ap-southeast-1")
-	asg, _ := describeScalingGroup("spark-nomad-client", sess)
+	sess := newAwsAsgService(easg.Region)
+	asg, _ := describeScalingGroup(easg.ScalingGrpName, sess)
 
 	desiredCap := *asg.AutoScalingGroups[0].DesiredCapacity
 	fmt.Println(desiredCap)
 
 	param := &autoscaling.UpdateAutoScalingGroupInput{
-		AutoScalingGroupName: aws.String("spark-nomad-client"),
-		DesiredCapacity:      aws.Int64(25),
+		AutoScalingGroupName: aws.String(easg.ScalingGrpName),
+		DesiredCapacity:      aws.Int64(int64(newCount)),
 	}
 	_, err := sess.UpdateAutoScalingGroup(param)
 
@@ -93,7 +94,7 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 		fmt.Println(err)
 	}
 
-	asg2, _ := describeScalingGroup("spark-nomad-client", sess)
+	asg2, _ := describeScalingGroup(easg.ScalingGrpName, sess)
 	fmt.Println(*asg2.AutoScalingGroups[0].DesiredCapacity)
 	return nil
 }

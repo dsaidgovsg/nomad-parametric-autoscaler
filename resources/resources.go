@@ -7,23 +7,23 @@ import (
 
 // Resource each resource has a compute component and a nomad component
 type Resource struct {
-	EC2AutoScalingGroup
-	NomadClient
+	EC2AutoScalingGroup `json:"EC2"`
+	NomadClient         `json:"Nomad"`
 
-	cooldown            float64   // seconds
+	Cooldown            string    `json:"Cooldown"`
+	NomadToComputeRatio int       `json:"N2CRatio"`
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
-	nomadToComputeRatio int
 }
 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
-func (res *Resource) Scale(desiredNomadCount int) error {
+func (res *Resource) Scale(desiredNomadCount int, vc *VaultClient) error {
 
 	// check if its a scale up or scale down
 	if count, err := res.NomadClient.GetTaskGroupCount(); err == nil {
 		if count < desiredNomadCount { // scale up
-			return res.scaleUp(desiredNomadCount)
+			return res.scaleUp(desiredNomadCount, vc)
 		} else if count < desiredNomadCount {
-			return res.scaleDown(desiredNomadCount)
+			return res.scaleDown(desiredNomadCount, vc)
 		} else {
 			fmt.Println("Existing count is already at desired count. No scaling.")
 			return nil
@@ -34,35 +34,35 @@ func (res *Resource) Scale(desiredNomadCount int) error {
 }
 
 // scaleUp - scale up - ec2 then nomad
-func (res *Resource) scaleUp(desiredNomadCount int) error {
-	err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.nomadToComputeRatio)
+func (res *Resource) scaleUp(desiredNomadCount int, vc *VaultClient) error {
+	err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio)
 	if err != nil {
 		return err
-	} else {
-		err := res.NomadClient.Scale(desiredNomadCount)
-		if err != nil {
-			return err
-		} else {
-			res.lastScaledTime = time.Now()
-			return nil
-		}
 	}
+
+	err = res.NomadClient.Scale(desiredNomadCount, vc)
+	if err != nil {
+		return err
+	}
+
+	res.lastScaledTime = time.Now()
+	return nil
 }
 
 // scaleDown - scale down - nomad then ec2
-func (res *Resource) scaleDown(desiredNomadCount int) error {
-	err := res.NomadClient.Scale(desiredNomadCount)
+func (res *Resource) scaleDown(desiredNomadCount int, vc *VaultClient) error {
+	err := res.NomadClient.Scale(desiredNomadCount, vc)
 	if err != nil {
 		return err
-	} else {
-		err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.nomadToComputeRatio)
-		if err != nil {
-			return err
-		} else {
-			res.lastScaledTime = time.Now()
-			return nil
-		}
 	}
+
+	err = res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio)
+	if err != nil {
+		return err
+	}
+
+	res.lastScaledTime = time.Now()
+	return nil
 }
 
 // GetNomadClientCount gets nomad client count via Resource type

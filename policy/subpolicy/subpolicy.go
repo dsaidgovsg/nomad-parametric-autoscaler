@@ -1,6 +1,10 @@
 package subpolicy
 
-import "github.com/datagovsg/nomad-parametric-autoscaler/resources"
+import (
+	"fmt"
+
+	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+)
 
 // ScalingMagnitude needs a way better name
 type ScalingMagnitude struct {
@@ -15,14 +19,32 @@ type SubPolicy interface {
 	GetManagedResources() []*resources.Resource
 }
 
+// GenericSubPolicy is used for decoding of json
+// according to name, create actual sp
 type GenericSubPolicy struct {
-	MetricSource  string           `json:"MetricSource"`
-	UpThreshold   float64          `json:"UpThreshold"`
-	DownThreshold float64          `json:"DownThreshold"`
-	ScaleUp       ScalingMagnitude `json:"ScaleUp"`
-	ScaleDown     ScalingMagnitude `json:"ScaleDown"`
+	Name             string           `json:"Name"`
+	MetricSource     string           `json:"MetricSource"`
+	UpThreshold      float64          `json:"UpThreshold"`
+	DownThreshold    float64          `json:"DownThreshold"`
+	ScaleUp          ScalingMagnitude `json:"ScaleUp"`
+	ScaleDown        ScalingMagnitude `json:"ScaleDown"`
+	ManagedResources []string         `json:"ManagedResources"`
+}
 
-	managedResources []*resources.Resource
+// CreateSpecificSubpolicy checks name of GSP and creates the actual policy
+func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []*resources.Resource) (SubPolicy, error) {
+	switch gsp.Name {
+	case "CoreRatio":
+		return NewCoreRatioSubpolicy(gsp.Name,
+			gsp.MetricSource,
+			gsp.UpThreshold,
+			gsp.DownThreshold,
+			gsp.ScaleUp,
+			gsp.ScaleDown,
+			mr), nil
+	default:
+		return nil, fmt.Errorf("%v is not a valid subpolicy", gsp.Name)
+	}
 }
 
 // determineNewDesiredLevel is a utiliy function that resolves the various types
