@@ -1,145 +1,87 @@
 package resources
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-)
 
-// UpdateBody is used to marshal the job into a json for updating
-type UpdateBody struct {
-	Job            map[string]interface{} `json:"Job"`
-	EnforceIndex   bool                   `json:"EnforceIndex"`
-	JobModifyIndex int                    `json:"JobModifyIndex"`
-}
+	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
+	nomad "github.com/hashicorp/nomad/api"
+)
 
 // NomadClient contains details to access our nomad client
 type NomadClient struct {
 	jobName       string
-	clientAddress string
+	client        nomadClient
 	maxCount      int
 	minCount      int
+	clientAddress string
+}
+
+// wrapper? maybe we dont need this
+type nomadClient struct {
+	nomad *nomad.Client
 }
 
 // NewNomadClient is a factory that produces a new NewNomadClient
-func NewNomadClient(addr string, name string, minCount int, maxCount int) *NomadClient {
+func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxCount int, nomadPath string) *NomadClient {
+	nc := nomad.DefaultConfig()
+	nc.Address = addr
+
+	token, err := vc.GetNomadToken(nomadPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	nc.SecretID = token
+
+	client, err := nomad.NewClient(nc)
+	if err != nil {
+		fmt.Println("ERROR")
+		fmt.Println(err)
+	}
+
 	return &NomadClient{
-		clientAddress: addr,
-		jobName:       name,
-		maxCount:      maxCount,
-		minCount:      minCount,
+		jobName:  name,
+		maxCount: maxCount,
+		minCount: minCount,
+		client: nomadClient{
+			nomad: client,
+		},
 	}
 }
 
 // GetTaskGroupCount retrieves the jobspec to check task group count
 func (nc NomadClient) GetTaskGroupCount() (int, error) {
-	body, err := nc.getNomadJob()
-
+	job, err := nc.getNomadJob()
 	if err != nil {
-		return 0, err // unable to get nomad job
+		return 0, err
 	}
-
-	var result map[string]interface{}
-	json.Unmarshal([]byte(body), &result)
-
-	if tg := result["TaskGroups"]; tg != nil {
-		tgItf := tg.([]interface{})
-		if count := tgItf[0].(map[string]interface{})["Count"]; count != nil {
-			return int(count.(float64)), nil
-		} else {
-			return 0, errors.New("Invalid Key: Count in Nomad Job")
-		}
-	} else {
-		return 0, errors.New("Invalid Key: TaskGroups in Nomad Job")
-	}
+	return *job.TaskGroups[0].Count, nil
 }
 
 // Scale get json -> find number -> change number, add vault token -> convert to json
-func (nc NomadClient) Scale(newCount int) error {
-	body, err := nc.getNomadJob()
+func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
+	job, err := nc.getNomadJob()
 	if err != nil {
 		return err
 	}
 
-	var result map[string]interface{}
-	json.Unmarshal([]byte(body), &result)
+	tg := job.TaskGroups[0]
+	*tg.Count = newCount
+	*job.VaultToken = vc.GetVaultToken()
 
-	// extract jmi
-	modIdx := result["JobModifyIndex"].(float64)
-	result["JobModifyIndex"] = int(modIdx)
-
-	// set vault token
-	result["VaultToken"] = "1" // get from envvar
-
-	// set new count
-	nc.setTaskGroupCount(result, newCount)
-
-	ub := UpdateBody{
-		Job:            result,
-		EnforceIndex:   true,
-		JobModifyIndex: int(modIdx),
-	}
-
-	out, err := json.Marshal(ub)
-
+	resp, _, err := nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(out)
-	req, err := http.NewRequest("POST", "url", bytes.NewBuffer(out))
-	req.Header.Set("X-Custom-Header", "myvalue")
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	logging.Info("%v", resp)
 	return nil
 }
 
 // getNomadJob - private method that fetches the nomad jobspec for this resource
-func (nc NomadClient) getNomadJob() ([]byte, error) {
-	var b bytes.Buffer
-	b.WriteString(nc.clientAddress)
-	b.WriteString(nc.jobName)
-	resp, err := http.Get(b.String())
-
+func (nc NomadClient) getNomadJob() (*nomad.Job, error) {
+	job, _, err := nc.client.nomad.Jobs().Info(nc.jobName, &nomad.QueryOptions{})
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	return body, err
-}
-
-// setTaskGroupCount modifies existing TaskGroups.Count in the jobspec-map
-func (nc *NomadClient) setTaskGroupCount(result map[string]interface{}, newCount int) error {
-	if tg := result["TaskGroups"]; tg != nil {
-		tgItf := tg.([]interface{})
-		if count := tgItf[0].(map[string]interface{})["Count"]; count != nil {
-			tgItf[0].(map[string]interface{})["Count"] = newCount
-			return nil
-		} else {
-			return errors.New("Invalid Key: Count in Nomad Job")
-		}
-	} else {
-		return errors.New("Invalid Key: TaskGroups in Nomad Job")
-	}
-}
-
-// Testnomad - test fn
-func Testnomad() {
-	t := NewNomadClient("https://nomad.locus.rocks/v1/job/", "spark-worker", 25, 10)
-	fmt.Println(t.GetTaskGroupCount())
+	return job, nil
 }
