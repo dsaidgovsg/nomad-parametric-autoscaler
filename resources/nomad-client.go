@@ -83,13 +83,11 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 
 	logging.Info("Old nomad: %d. New nomad: %d", oldCount, newCount)
 
-	// resp, _, err := nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
-	// if err != nil {
-	// 	return err
-	// }
+	_, _, err = nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
+	if err != nil {
+		return err
+	}
 
-	// logging.Info("%v", resp)
-	// return nil
 	return nil
 }
 

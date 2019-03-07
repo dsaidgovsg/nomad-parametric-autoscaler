@@ -68,6 +68,7 @@ func (app *App) Run() {
 					freq = app.wp.policy.CheckingFrequency
 					ticker = time.NewTicker(freq)
 				}
+
 				app.wp.lock.Unlock()
 
 			case <-quit:

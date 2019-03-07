@@ -102,20 +102,25 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 
 	desiredCap := *asg.AutoScalingGroups[0].DesiredCapacity
 
-	// param := &autoscaling.UpdateAutoScalingGroupInput{
-	// 	AutoScalingGroupName: aws.String(easg.ScalingGrpName),
-	// 	DesiredCapacity:      aws.Int64(int64(newCount)),
-	// }
+	param := &autoscaling.UpdateAutoScalingGroupInput{
+		AutoScalingGroupName: aws.String(easg.ScalingGroupName),
+		DesiredCapacity:      aws.Int64(int64(newCount)),
+	}
 
 	logging.Info("Old EC2: %d. New EC2: %d", desiredCap, newCount)
-	// _, err := sess.UpdateAutoScalingGroup(param)
+	_, err = easg.awsScalingProvider.UpdateAutoScalingGroup(param)
 
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	if err != nil {
+		return err
+	}
 
-	// asg2, _ := describeScalingGroup(easg.ScalingGrpName, sess)
-	// fmt.Println(*asg2.AutoScalingGroups[0].DesiredCapacity)
+	asg2, _ := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
+	logging.Info("Old EC2: %d. New EC2: %d", desiredCap, *asg2.AutoScalingGroups[0].DesiredCapacity)
+
+	if *asg2.AutoScalingGroups[0].DesiredCapacity != int64(newCount) {
+		return fmt.Errorf("Scaling failed to happen for EC2 auto scaling group")
+	}
+
 	return nil
 }
 

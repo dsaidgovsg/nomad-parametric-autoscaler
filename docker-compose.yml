@@ -11,6 +11,7 @@ services:
     # read_only: true
     tmpfs: ['/tmp']
     environment:
+      GIN_MODE: release
       ASG_ID: ""
       ASG_SECRET: ""
       VAULT_ADDR: ""
