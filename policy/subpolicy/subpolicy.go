@@ -8,15 +8,15 @@ import (
 
 // ScalingMagnitude needs a way better name
 type ScalingMagnitude struct {
-	changeType  string // add, multiply, until
-	changeValue float64
+	ChangeType  string  `json:"Changetype"`
+	ChangeValue float64 `json:"ChangeValue"`
 }
 
 type SubPolicy interface {
-	RecommendCount() map[*resources.Resource]int
+	RecommendCount() map[resources.Resource]int
 	UpdateThreshold(newup, newdown float64)
 	UpdateScalingMagnitude(newup, newdown ScalingMagnitude)
-	GetManagedResources() []*resources.Resource
+	GetManagedResources() []resources.Resource
 }
 
 // GenericSubPolicy is used for decoding of json
@@ -32,10 +32,18 @@ type GenericSubPolicy struct {
 }
 
 // CreateSpecificSubpolicy checks name of GSP and creates the actual policy
-func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []*resources.Resource) (SubPolicy, error) {
+func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (SubPolicy, error) {
 	switch gsp.Name {
 	case "CoreRatio":
 		return NewCoreRatioSubpolicy(gsp.Name,
+			gsp.MetricSource,
+			gsp.UpThreshold,
+			gsp.DownThreshold,
+			gsp.ScaleUp,
+			gsp.ScaleDown,
+			mr), nil
+	case "OfficeHour":
+		return NewOfficeHourSubPolicy(gsp.Name,
 			gsp.MetricSource,
 			gsp.UpThreshold,
 			gsp.DownThreshold,
@@ -50,11 +58,11 @@ func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []*resources.Resource) (Su
 // determineNewDesiredLevel is a utiliy function that resolves the various types
 // of scaling methods
 func determineNewDesiredLevel(cur int, sm ScalingMagnitude) int {
-	switch sm.changeType {
+	switch sm.ChangeType {
 	case "multiply":
-		return int(float64(cur) * sm.changeValue)
+		return int(float64(cur) * sm.ChangeValue)
 	case "until":
-		return int(sm.changeValue)
+		return int(sm.ChangeValue)
 	default:
 		return cur
 	}

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
 )
 
@@ -17,7 +18,12 @@ type CoreRatioSubPolicy struct {
 	DownThreshold    float64
 	ScaleUp          ScalingMagnitude
 	ScaleDown        ScalingMagnitude
-	managedResources []*resources.Resource
+	managedResources []resources.Resource
+}
+
+type coreRatioJSON struct {
+	Cores     int `json:"cores"`
+	Coresused int `json:"coresused"`
 }
 
 func NewCoreRatioSubpolicy(name string,
@@ -26,7 +32,7 @@ func NewCoreRatioSubpolicy(name string,
 	downthreshold float64,
 	scaleup ScalingMagnitude,
 	scaledown ScalingMagnitude,
-	mr []*resources.Resource) *CoreRatioSubPolicy {
+	mr []resources.Resource) *CoreRatioSubPolicy {
 
 	return &CoreRatioSubPolicy{
 		Name:             name,
@@ -46,19 +52,19 @@ func DefaultCoreRatioSubPolicy() *CoreRatioSubPolicy {
 		UpThreshold:   0.5,
 		DownThreshold: 0.25,
 		ScaleUp: ScalingMagnitude{
-			changeType:  "multiply",
-			changeValue: 2.0,
+			ChangeType:  "multiply",
+			ChangeValue: 2.0,
 		},
 		ScaleDown: ScalingMagnitude{
-			changeType:  "multiply",
-			changeValue: 0.5,
+			ChangeType:  "multiply",
+			ChangeValue: 0.5,
 		},
-		managedResources: make([]*resources.Resource, 1),
+		managedResources: make([]resources.Resource, 0),
 	}
 	return &crsp
 }
 
-func (crsp CoreRatioSubPolicy) GetManagedResources() []*resources.Resource {
+func (crsp CoreRatioSubPolicy) GetManagedResources() []resources.Resource {
 	return crsp.managedResources
 }
 
@@ -72,27 +78,27 @@ func (crsp *CoreRatioSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude
 	crsp.ScaleDown = down
 }
 
-func (crsp *CoreRatioSubPolicy) RecommendCount() map[*resources.Resource]int {
+func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
 	resp, err := http.Get(crsp.MetricSource)
 	if err != nil {
-		//error
+		logging.Error(err.Error())
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	var result map[string]interface{}
+	var result coreRatioJSON
 	json.Unmarshal([]byte(body), &result)
 
-	output := make(map[*resources.Resource]int)
+	output := make(map[resources.Resource]int)
 	for _, resc := range crsp.managedResources {
-		cores := result["cores"]
-		coresUsed := result["cores_used"]
+		cores := result.Cores
+		coresUsed := result.Coresused
 
-		if cores == nil || coresUsed == nil {
+		if cores == 0 || coresUsed == 0 {
 			output[resc] = 0
 		} else {
-			ratio := coresUsed.(float64) / cores.(float64)
+			ratio := float64(coresUsed) / float64(cores)
 			existingCount := resc.GetNomadClientCount()
 
 			if ratio < crsp.DownThreshold {

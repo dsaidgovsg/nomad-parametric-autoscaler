@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	"sync"
 	"time"
 
@@ -25,11 +26,13 @@ type WrappedPolicy struct {
 // NewApp creates an app...
 func NewApp() *App {
 	wrappedPolicy := newWrappedPolicy()
+	vaultClient := resources.NewVaultClient(os.Getenv("VAULT_ADDR"))
 	return &App{
-		vc: resources.NewVaultClient(""), // TODO change to envvar injected via nomad/tf
+		vc: vaultClient,
 		wp: wrappedPolicy,
 		router: NewRouter(&endpoints{
 			wp: wrappedPolicy,
+			vc: vaultClient,
 		}),
 	}
 }

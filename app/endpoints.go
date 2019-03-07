@@ -3,17 +3,19 @@ package app
 import (
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy"
+	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
 	"github.com/gin-gonic/gin"
 )
 
 type endpoints struct {
 	wp *WrappedPolicy
+	vc *resources.VaultClient
 }
 
 func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 	var gsp policy.PolicyPlan
 	c.BindJSON(&gsp)
-	newpolicy, err := policy.MakePolicy(gsp)
+	newpolicy, err := policy.MakePolicy(gsp, *ep.vc)
 
 	if err != nil {
 		logging.Error(err.Error())

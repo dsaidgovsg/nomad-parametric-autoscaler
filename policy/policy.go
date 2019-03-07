@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy/subpolicy"
@@ -17,27 +18,35 @@ Resources are independent of each other as of now
 */
 type Policy struct {
 	CheckingFrequency time.Duration
-	ResourceMap       map[string]*resources.Resource
+	ResourceMap       map[string]resources.Resource
 	Subpolicies       []subpolicy.SubPolicy
 	Ensembler         Ensembler
 }
 
 type PolicyPlan struct {
-	CheckingFrequency string                         `json:"CheckingFreq"` // in seconds default to 60s
-	ResourceMap       map[string]*resources.Resource `json:"Resources"`
-	Subpolicies       []subpolicy.GenericSubPolicy   `json:"Subpolicies"`
-	Ensembler         string                         `json:"Ensembler"`
+	CheckingFrequency string                            `json:"CheckingFreq"`
+	ResourceMap       map[string]resources.ResourcePlan `json:"Resources"`
+	Subpolicies       []subpolicy.GenericSubPolicy      `json:"Subpolicies"`
+	Ensembler         string                            `json:"Ensembler"`
 }
 
 // MakePolicy is a factory function to generate a Policy struct
 // make sure all resources in sub policy are covered
-func MakePolicy(pp PolicyPlan) (*Policy, error) {
-	subpolicies := make([]subpolicy.SubPolicy, len(pp.Subpolicies))
+func MakePolicy(pp PolicyPlan, vc resources.VaultClient) (*Policy, error) {
+
+	//make resources first
+	resourceMap := make(map[string]resources.Resource)
+	for k, v := range pp.ResourceMap {
+		resourceMap[k] = v.ApplyPlan(vc)
+	}
+
+	// make sp
+	subpolicies := make([]subpolicy.SubPolicy, 0)
 	for _, sp := range pp.Subpolicies {
-		array := make([]*resources.Resource, len(sp.ManagedResources))
+		array := make([]resources.Resource, 0)
 
 		for _, res := range sp.ManagedResources {
-			array = append(array, pp.ResourceMap[res])
+			array = append(array, resourceMap[res])
 		}
 
 		ssp, err := subpolicy.CreateSpecificSubpolicy(sp, array)
@@ -59,7 +68,7 @@ func MakePolicy(pp PolicyPlan) (*Policy, error) {
 	}
 
 	return &Policy{
-		ResourceMap:       pp.ResourceMap,
+		ResourceMap:       resourceMap,
 		Subpolicies:       subpolicies,
 		CheckingFrequency: freq,
 		Ensembler:         ensembler,
@@ -70,8 +79,8 @@ func MakePolicy(pp PolicyPlan) (*Policy, error) {
 func DefaultPolicy() *Policy {
 	time, _ := time.ParseDuration("10s")
 	return &Policy{
-		ResourceMap:       make(map[string]*resources.Resource),
-		Subpolicies:       make([]subpolicy.SubPolicy, 1, 1),
+		ResourceMap:       make(map[string]resources.Resource),
+		Subpolicies:       make([]subpolicy.SubPolicy, 0),
 		CheckingFrequency: time,
 		Ensembler:         ConservativeEnsembling{},
 	}
@@ -80,8 +89,12 @@ func DefaultPolicy() *Policy {
 // Scale aggregates all sub-policy recommendations
 func (p *Policy) Scale(vc *resources.VaultClient) error {
 
+	if len(p.Subpolicies) == 0 {
+		return fmt.Errorf("No sub-policies exist in current policy")
+	}
+
 	// have all sp compute reco
-	rcs := make(map[*resources.Resource][]int)
+	rcs := make(map[resources.Resource][]int)
 	for _, sp := range p.Subpolicies {
 		for k, v := range sp.RecommendCount() {
 			rcs[k] = append(rcs[k], v)
@@ -95,14 +108,4 @@ func (p *Policy) Scale(vc *resources.VaultClient) error {
 	}
 
 	return nil
-}
-
-// UpdateSubpolicy takes in user input and updates subpolicy
-func (p *Policy) UpdateSubpolicy() {
-	// To be implemented
-}
-
-// UpdateResources takes in user input and updates subpolicy
-func (p *Policy) UpdateResources() {
-	// To be implemented
 }

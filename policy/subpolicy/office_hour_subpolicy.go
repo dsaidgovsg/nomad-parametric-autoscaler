@@ -15,7 +15,7 @@ type OfficeHourSubPolicy struct {
 	DownThreshold    float64
 	ScaleUp          ScalingMagnitude
 	ScaleDown        ScalingMagnitude
-	managedResources []*resources.Resource
+	managedResources []resources.Resource
 }
 
 func NewOfficeHourSubPolicy(name string,
@@ -24,9 +24,9 @@ func NewOfficeHourSubPolicy(name string,
 	downthreshold float64,
 	scaleup ScalingMagnitude,
 	scaledown ScalingMagnitude,
-	mr []*resources.Resource) *CoreRatioSubPolicy {
+	mr []resources.Resource) *OfficeHourSubPolicy {
 
-	return &CoreRatioSubPolicy{
+	return &OfficeHourSubPolicy{
 		Name:             name,
 		MetricSource:     metricsource,
 		UpThreshold:      upthreshold,
@@ -38,11 +38,11 @@ func NewOfficeHourSubPolicy(name string,
 }
 
 func DefaultOfficeHourSubPolicy() *OfficeHourSubPolicy {
-	crsp := OfficeHourSubPolicy{
-		Name:          "CoreRatio",
+	ohsp := OfficeHourSubPolicy{
+		Name:          "OfficeHour",
 		MetricSource:  "https://something",
 		UpThreshold:   18,
-		DownThreshold: 8.5,
+		DownThreshold: 9,
 		ScaleUp: ScalingMagnitude{
 			ChangeType:  "until",
 			ChangeValue: 10,
@@ -51,35 +51,35 @@ func DefaultOfficeHourSubPolicy() *OfficeHourSubPolicy {
 			ChangeType:  "until",
 			ChangeValue: 3,
 		},
-		managedResources: make([]*resources.Resource, 0),
+		managedResources: make([]resources.Resource, 0),
 	}
-	return &crsp
+	return &ohsp
 }
 
-func (crsp OfficeHourSubPolicy) GetManagedResources() []*resources.Resource {
-	return crsp.managedResources
+func (ohsp OfficeHourSubPolicy) GetManagedResources() []resources.Resource {
+	return ohsp.managedResources
 }
 
-func (crsp *OfficeHourSubPolicy) UpdateThreshold(up, down float64) {
-	crsp.DownThreshold = down
-	crsp.UpThreshold = up
+func (ohsp *OfficeHourSubPolicy) UpdateThreshold(up, down float64) {
+	ohsp.DownThreshold = down
+	ohsp.UpThreshold = up
 }
 
-func (crsp *OfficeHourSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude) {
-	crsp.ScaleUp = up
-	crsp.ScaleDown = down
+func (ohsp *OfficeHourSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude) {
+	ohsp.ScaleUp = up
+	ohsp.ScaleDown = down
 }
 
-func (crsp *OfficeHourSubPolicy) RecommendCount() map[*resources.Resource]int {
+func (ohsp *OfficeHourSubPolicy) RecommendCount() map[resources.Resource]int {
 	now := time.Now()
-	output := make(map[*resources.Resource]int)
+	output := make(map[resources.Resource]int)
 
 	// if within office hour, scale-up, else scale-down
-	for _, resc := range crsp.managedResources {
-		if now.Hour() < int(crsp.UpThreshold) && now.Hour() > int(crsp.DownThreshold) {
-			output[resc] = determineNewDesiredLevel(0, crsp.ScaleUp)
+	for _, resc := range ohsp.managedResources {
+		if now.Hour() < int(ohsp.UpThreshold) && now.Hour() > int(ohsp.DownThreshold) {
+			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleUp)
 		} else {
-			output[resc] = determineNewDesiredLevel(0, crsp.ScaleDown)
+			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleDown)
 		}
 	}
 	return output

@@ -1,0 +1,17 @@
+version: '2.2'
+services:
+  nopas:
+    build: .
+    ports:
+    - '8080:8080'
+    restart: on-failure:5
+    security_opt:
+    - 'no-new-privileges'
+    pids_limit: 100
+    # read_only: true
+    tmpfs: ['/tmp']
+    environment:
+      ASG_ID: ""
+      ASG_SECRET: ""
+      VAULT_ADDR: ""
+      VAULT_TOKEN: ""

@@ -7,18 +7,30 @@ import (
 	nomad "github.com/hashicorp/nomad/api"
 )
 
+type NomadClientPlan struct {
+	Address   string `json:"Address"`
+	JobName   string `json:"JobName"`
+	NomadPath string `json:"NomadPath"`
+	MaxCount  int    `json:"MaxCount"`
+	MinCount  int    `json:"MinCount"`
+}
+
 // NomadClient contains details to access our nomad client
 type NomadClient struct {
-	jobName       string
-	client        nomadClient
-	maxCount      int
-	minCount      int
-	clientAddress string
+	JobName   string
+	NomadPath string
+	client    nomadClient
+	maxCount  int
+	minCount  int
 }
 
 // wrapper? maybe we dont need this
 type nomadClient struct {
 	nomad *nomad.Client
+}
+
+func (ncp NomadClientPlan) ApplyPlan(vc VaultClient) *NomadClient {
+	return NewNomadClient(vc, ncp.Address, ncp.JobName, ncp.MinCount, ncp.MaxCount, ncp.NomadPath)
 }
 
 // NewNomadClient is a factory that produces a new NewNomadClient
@@ -39,7 +51,7 @@ func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxC
 	}
 
 	return &NomadClient{
-		jobName:  name,
+		JobName:  name,
 		maxCount: maxCount,
 		minCount: minCount,
 		client: nomadClient{
@@ -65,21 +77,25 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 	}
 
 	tg := job.TaskGroups[0]
+	oldCount := *tg.Count
 	*tg.Count = newCount
 	*job.VaultToken = vc.GetVaultToken()
 
-	resp, _, err := nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
-	if err != nil {
-		return err
-	}
+	logging.Info("Old nomad: %d. New nomad: %d", oldCount, newCount)
 
-	logging.Info("%v", resp)
+	// resp, _, err := nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
+	// if err != nil {
+	// 	return err
+	// }
+
+	// logging.Info("%v", resp)
+	// return nil
 	return nil
 }
 
 // getNomadJob - private method that fetches the nomad jobspec for this resource
 func (nc NomadClient) getNomadJob() (*nomad.Job, error) {
-	job, _, err := nc.client.nomad.Jobs().Info(nc.jobName, &nomad.QueryOptions{})
+	job, _, err := nc.client.nomad.Jobs().Info(nc.JobName, &nomad.QueryOptions{})
 	if err != nil {
 		return nil, err
 	}
