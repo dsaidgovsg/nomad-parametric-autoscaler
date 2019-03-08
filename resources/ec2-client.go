@@ -107,14 +107,19 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 		DesiredCapacity:      aws.Int64(int64(newCount)),
 	}
 
-	logging.Info("Old EC2: %d. New EC2: %d", desiredCap, newCount)
+	logging.Info("Old EC2: %d. Desired EC2: %d", desiredCap, newCount)
 	_, err = easg.awsScalingProvider.UpdateAutoScalingGroup(param)
 
 	if err != nil {
 		return err
 	}
 
-	asg2, _ := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
+	asg2, err := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
+
+	if err != nil {
+		return err
+	}
+
 	logging.Info("Old EC2: %d. New EC2: %d", desiredCap, *asg2.AutoScalingGroups[0].DesiredCapacity)
 
 	if *asg2.AutoScalingGroups[0].DesiredCapacity != int64(newCount) {
