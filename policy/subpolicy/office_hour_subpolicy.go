@@ -71,12 +71,13 @@ func (ohsp *OfficeHourSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitud
 }
 
 func (ohsp *OfficeHourSubPolicy) RecommendCount() map[resources.Resource]int {
-	now := time.Now()
+	currentHour := time.Now().UTC().Hour() + 8
+
 	output := make(map[resources.Resource]int)
 
 	// if within office hour, scale-up, else scale-down
 	for _, resc := range ohsp.managedResources {
-		if now.Hour() < int(ohsp.UpThreshold) && now.Hour() > int(ohsp.DownThreshold) {
+		if currentHour < int(ohsp.UpThreshold) && currentHour > int(ohsp.DownThreshold) {
 			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleUp)
 		} else {
 			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleDown)
