@@ -8,8 +8,14 @@ import (
 )
 
 type endpoints struct {
-	wp *WrappedPolicy
-	vc *resources.VaultClient
+	wp     *WrappedPolicy
+	vc     *resources.VaultClient
+	paused *bool
+}
+
+func (ep *endpoints) GetPolicy(c *gin.Context) {
+	// convert policy back?
+	c.JSON(200, ep.wp.policy)
 }
 
 func (ep *endpoints) UpdatePolicy(c *gin.Context) {
@@ -31,4 +37,18 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 			"message": "Successful Update",
 		})
 	}
+}
+
+func (ep *endpoints) PausePolicy(c *gin.Context) {
+	*ep.paused = true
+	c.JSON(200, gin.H{
+		"message": "Nomad AutoScaler paused",
+	})
+}
+
+func (ep *endpoints) ResumePolicy(c *gin.Context) {
+	*ep.paused = false
+	c.JSON(200, gin.H{
+		"message": "Nomad AutoScaler resumed",
+	})
 }

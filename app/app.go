@@ -15,6 +15,7 @@ type App struct {
 	wp     *WrappedPolicy
 	vc     *resources.VaultClient
 	router *gin.Engine
+	paused *bool
 }
 
 // WrappedPolicy has a lock to prevent race
@@ -27,13 +28,17 @@ type WrappedPolicy struct {
 func NewApp() *App {
 	wrappedPolicy := newWrappedPolicy()
 	vaultClient := resources.NewVaultClient(os.Getenv("VAULT_ADDR"))
+	paused := false
 	return &App{
-		vc: vaultClient,
-		wp: wrappedPolicy,
-		router: NewRouter(&endpoints{
-			wp: wrappedPolicy,
-			vc: vaultClient,
-		}),
+		vc:     vaultClient,
+		wp:     wrappedPolicy,
+		paused: &paused,
+		router: NewRouter(
+			&endpoints{
+				wp:     wrappedPolicy,
+				vc:     vaultClient,
+				paused: &paused,
+			}),
 	}
 }
 
@@ -61,7 +66,10 @@ func (app *App) Run() {
 				app.wp.lock.Lock()
 				logging.Info("Performing fake scaling ... ")
 				// scaling is done on the policy-side so app just keeps caling scale
-				app.wp.policy.Scale(app.vc)
+				if *app.paused != true {
+					logging.Info("Scale bitch scale")
+					app.wp.policy.Scale(app.vc)
+				}
 
 				// update ticker
 				if freq != app.wp.policy.CheckingFrequency {

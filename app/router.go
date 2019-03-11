@@ -13,7 +13,12 @@ func NewRouter(ep *endpoints) *gin.Engine {
 		})
 	})
 
+	router.GET("/state", ep.GetPolicy)
 	router.POST("/update", ep.UpdatePolicy)
+
+	// Helper endpoints
+	router.PUT("/pause", ep.PausePolicy)
+	router.PUT("/resume", ep.ResumePolicy)
 
 	return router
 }
