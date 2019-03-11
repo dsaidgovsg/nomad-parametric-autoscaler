@@ -34,8 +34,6 @@ type EC2AutoScalingGroupPlan struct {
 
 func (asgp EC2AutoScalingGroupPlan) ApplyPlan() *EC2AutoScalingGroup {
 	asg := NewEC2AutoScalingGroup(asgp.Region, asgp.ScalingGroupName, asgp.MaxCount, asgp.MinCount)
-
-	fmt.Println(asg)
 	return asg
 }
 
@@ -133,4 +131,13 @@ func (easg EC2AutoScalingGroup) Check() error {
 	asg, _ := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
 	fmt.Println(*asg.AutoScalingGroups[0].DesiredCapacity)
 	return nil
+}
+
+func (easg EC2AutoScalingGroup) RecreatePlan() EC2AutoScalingGroupPlan {
+	return EC2AutoScalingGroupPlan{
+		ScalingGroupName: easg.ScalingGroupName,
+		Region:           easg.Region,
+		MaxCount:         easg.maxscale,
+		MinCount:         easg.minscale,
+	}
 }

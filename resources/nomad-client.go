@@ -22,6 +22,7 @@ type NomadClient struct {
 	client    nomadClient
 	maxCount  int
 	minCount  int
+	address   string
 }
 
 // wrapper? maybe we dont need this
@@ -57,6 +58,7 @@ func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxC
 		client: nomadClient{
 			nomad: client,
 		},
+		address: addr,
 	}
 }
 
@@ -101,4 +103,14 @@ func (nc NomadClient) getNomadJob() (*nomad.Job, error) {
 		return nil, err
 	}
 	return job, nil
+}
+
+func (nc NomadClient) RecreatePlan() NomadClientPlan {
+	return NomadClientPlan{
+		Address:   nc.address,
+		JobName:   nc.JobName,
+		NomadPath: nc.NomadPath,
+		MaxCount:  nc.maxCount,
+		MinCount:  nc.minCount,
+	}
 }

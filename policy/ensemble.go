@@ -12,22 +12,33 @@ create custom ensembling methods by extending interface
 */
 type Ensembler interface {
 	Ensemble(array []int) int
+	Name() string
 }
 
 // GetEnsembler matches name and returns an ensembler
 func GetEnsembler(name string) (Ensembler, error) {
 	switch name {
 	case "Conservative":
-		return ConservativeEnsembling{}, nil
+		return ConservativeEnsembling{
+			name: name,
+		}, nil
 	case "Average":
-		return AverageEnsembling{}, nil
+		return AverageEnsembling{
+			name: name,
+		}, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid ensembling method", name)
 	}
 }
 
 // ConservativeEnsembling takes maximum of scaling
-type ConservativeEnsembling struct{}
+type ConservativeEnsembling struct {
+	name string
+}
+
+func (ce ConservativeEnsembling) Name() string {
+	return ce.name
+}
 
 // Ensemble finds the largest value in the slice
 func (ce ConservativeEnsembling) Ensemble(array []int) int {
@@ -41,7 +52,13 @@ func (ce ConservativeEnsembling) Ensemble(array []int) int {
 }
 
 // AverageEnsembling takes average of scaling
-type AverageEnsembling struct{}
+type AverageEnsembling struct {
+	name string
+}
+
+func (ce AverageEnsembling) Name() string {
+	return ce.name
+}
 
 // Ensemble finds the mean
 func (ce AverageEnsembling) Ensemble(array []int) int {

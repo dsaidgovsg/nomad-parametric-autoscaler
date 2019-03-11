@@ -14,8 +14,8 @@ type endpoints struct {
 }
 
 func (ep *endpoints) GetPolicy(c *gin.Context) {
-	// convert policy back?
-	c.JSON(200, ep.wp.policy)
+
+	c.JSON(200, policy.RecreatePlan(ep.wp.policy))
 }
 
 func (ep *endpoints) UpdatePolicy(c *gin.Context) {

@@ -37,7 +37,7 @@ func MakePolicy(pp PolicyPlan, vc resources.VaultClient) (*Policy, error) {
 	//make resources first
 	resourceMap := make(map[string]resources.Resource)
 	for k, v := range pp.ResourceMap {
-		resourceMap[k] = v.ApplyPlan(vc)
+		resourceMap[k] = v.ApplyPlan(k, vc)
 	}
 
 	// make sp
@@ -75,13 +75,32 @@ func MakePolicy(pp PolicyPlan, vc resources.VaultClient) (*Policy, error) {
 	}, nil
 }
 
+func RecreatePlan(p *Policy) PolicyPlan {
+	gsp := make([]subpolicy.GenericSubPolicy, 0)
+	for _, sp := range p.Subpolicies {
+		gsp = append(gsp, sp.DeriveGenericSubpolicy())
+	}
+
+	rm := make(map[string]resources.ResourcePlan)
+	for k, v := range p.ResourceMap {
+		rm[k] = v.RecreateResourcePlan()
+	}
+
+	return PolicyPlan{
+		CheckingFrequency: p.CheckingFrequency.String(),
+		ResourceMap:       rm,
+		Subpolicies:       gsp,
+		Ensembler:         p.Ensembler.Name(),
+	}
+}
+
 // DefaultPolicy is a factory function to generate an empty default
 func DefaultPolicy() *Policy {
-	time, _ := time.ParseDuration("10s")
+	t, _ := time.ParseDuration("10s")
 	return &Policy{
 		ResourceMap:       make(map[string]resources.Resource),
 		Subpolicies:       make([]subpolicy.SubPolicy, 0),
-		CheckingFrequency: time,
+		CheckingFrequency: t,
 		Ensembler:         ConservativeEnsembling{},
 	}
 }

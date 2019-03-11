@@ -17,6 +17,7 @@ type SubPolicy interface {
 	UpdateThreshold(newup, newdown float64)
 	UpdateScalingMagnitude(newup, newdown ScalingMagnitude)
 	GetManagedResources() []resources.Resource
+	DeriveGenericSubpolicy() GenericSubPolicy
 }
 
 // GenericSubPolicy is used for decoding of json

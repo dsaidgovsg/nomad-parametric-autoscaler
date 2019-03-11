@@ -11,15 +11,18 @@ import (
 type Resource interface {
 	Scale(count int, vc *VaultClient) error
 	GetNomadClientCount() int
+	ResourceName() string
+	RecreateResourcePlan() ResourcePlan
 }
 
 // Resource each resource has a compute component and a nomad component
 type EC2NomadResource struct {
-	EC2AutoScalingGroup `json:"EC2"`
-	NomadClient         `json:"Nomad"`
+	EC2AutoScalingGroup
+	NomadClient
 
-	Cooldown            string    `json:"Cooldown"`
-	NomadToComputeRatio int       `json:"N2CRatio"`
+	Cooldown            string
+	NomadToComputeRatio int
+	Name                string
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
 }
 
@@ -30,7 +33,7 @@ type ResourcePlan struct {
 	NomadToComputeRatio     int    `json:"N2CRatio"`
 }
 
-func (rp ResourcePlan) ApplyPlan(vc VaultClient) Resource {
+func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) Resource {
 	nc := rp.NomadClientPlan.ApplyPlan(vc)
 	easg := rp.EC2AutoScalingGroupPlan.ApplyPlan()
 	return &EC2NomadResource{
@@ -38,6 +41,7 @@ func (rp ResourcePlan) ApplyPlan(vc VaultClient) Resource {
 		EC2AutoScalingGroup: *easg,
 		Cooldown:            rp.Cooldown,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
+		Name:                name,
 	}
 }
 
@@ -98,4 +102,17 @@ func (res EC2NomadResource) GetNomadClientCount() int {
 		return -1
 	}
 	return count
+}
+
+func (res EC2NomadResource) ResourceName() string {
+	return res.Name
+}
+
+func (res EC2NomadResource) RecreateResourcePlan() ResourcePlan {
+	return ResourcePlan{
+		NomadClientPlan:         res.NomadClient.RecreatePlan(),
+		EC2AutoScalingGroupPlan: res.EC2AutoScalingGroup.RecreatePlan(),
+		Cooldown:                res.Cooldown,
+		NomadToComputeRatio:     res.NomadToComputeRatio,
+	}
 }

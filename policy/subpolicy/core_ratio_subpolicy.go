@@ -112,3 +112,20 @@ func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
 	}
 	return output
 }
+
+func (crsp *CoreRatioSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
+	resourceNameList := make([]string, 0)
+	for _, r := range crsp.managedResources {
+		resourceNameList = append(resourceNameList, r.ResourceName())
+	}
+
+	return GenericSubPolicy{
+		Name:             crsp.Name,
+		MetricSource:     crsp.MetricSource,
+		UpThreshold:      crsp.UpThreshold,
+		DownThreshold:    crsp.DownThreshold,
+		ScaleUp:          crsp.ScaleUp,
+		ScaleDown:        crsp.ScaleDown,
+		ManagedResources: resourceNameList,
+	}
+}
