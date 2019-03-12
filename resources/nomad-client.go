@@ -1,8 +1,6 @@
 package resources
 
 import (
-	"fmt"
-
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	nomad "github.com/hashicorp/nomad/api"
 )
@@ -30,25 +28,26 @@ type nomadClient struct {
 	nomad *nomad.Client
 }
 
-func (ncp NomadClientPlan) ApplyPlan(vc VaultClient) *NomadClient {
+func (ncp NomadClientPlan) ApplyPlan(vc VaultClient) (*NomadClient, error) {
 	return NewNomadClient(vc, ncp.Address, ncp.JobName, ncp.MinCount, ncp.MaxCount, ncp.NomadPath)
 }
 
 // NewNomadClient is a factory that produces a new NewNomadClient
-func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxCount int, nomadPath string) *NomadClient {
+func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxCount int, nomadPath string) (*NomadClient, error) {
 	nc := nomad.DefaultConfig()
 	nc.Address = addr
 
 	token, err := vc.GetNomadToken(nomadPath)
 	if err != nil {
-		fmt.Println(err)
+		logging.Error(err.Error())
+		return nil, err
 	}
 	nc.SecretID = token
 
 	client, err := nomad.NewClient(nc)
 	if err != nil {
-		fmt.Println("ERROR")
-		fmt.Println(err)
+		logging.Error(err.Error())
+		return nil, err
 	}
 
 	return &NomadClient{
@@ -59,7 +58,7 @@ func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxC
 			nomad: client,
 		},
 		address: addr,
-	}
+	}, nil
 }
 
 // GetTaskGroupCount retrieves the jobspec to check task group count
@@ -73,6 +72,7 @@ func (nc NomadClient) GetTaskGroupCount() (int, error) {
 
 // Scale get json -> find number -> change number, add vault token -> convert to json
 func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
+	newCount = nc.getValidScaleCount(newCount)
 	job, err := nc.getNomadJob()
 	if err != nil {
 		return err
@@ -103,6 +103,15 @@ func (nc NomadClient) getNomadJob() (*nomad.Job, error) {
 		return nil, err
 	}
 	return job, nil
+}
+
+func (nc NomadClient) getValidScaleCount(newCount int) int {
+	if newCount > nc.maxCount {
+		newCount = nc.maxCount
+	} else if newCount < nc.minCount {
+		newCount = nc.minCount
+	}
+	return newCount
 }
 
 func (nc NomadClient) RecreatePlan() NomadClientPlan {

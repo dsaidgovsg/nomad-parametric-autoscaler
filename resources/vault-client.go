@@ -1,8 +1,6 @@
 package resources
 
 import (
-	"fmt"
-
 	vault "github.com/hashicorp/vault/api"
 )
 
@@ -13,19 +11,19 @@ type VaultClient struct {
 }
 
 // NewVaultClient constructor that produces a valid
-func NewVaultClient(addr string) *VaultClient {
+func NewVaultClient(addr string) (*VaultClient, error) {
 	v := vault.DefaultConfig()
 	v.Address = addr
 	v.MaxRetries = 3
 
 	client, err := vault.NewClient(v)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	return &VaultClient{
 		client: client,
-	}
+	}, nil
 }
 
 // GetNomadToken fetches nomad token from vault

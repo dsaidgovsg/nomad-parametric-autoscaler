@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy/subpolicy"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
 )
@@ -23,6 +24,7 @@ type Policy struct {
 	Ensembler         Ensembler
 }
 
+// PolicyPlan is the json-unmarshallable/marshallable representation of the policy
 type PolicyPlan struct {
 	CheckingFrequency string                            `json:"CheckingFreq"`
 	ResourceMap       map[string]resources.ResourcePlan `json:"Resources"`
@@ -34,10 +36,14 @@ type PolicyPlan struct {
 // make sure all resources in sub policy are covered
 func MakePolicy(pp PolicyPlan, vc resources.VaultClient) (*Policy, error) {
 
-	//make resources first
+	//make resources first, fail if any resource does not get created correctly
 	resourceMap := make(map[string]resources.Resource)
 	for k, v := range pp.ResourceMap {
-		resourceMap[k] = v.ApplyPlan(k, vc)
+		res, err := v.ApplyPlan(k, vc)
+		if err != nil {
+			return nil, err
+		}
+		resourceMap[k] = res
 	}
 
 	// make sp
@@ -122,8 +128,10 @@ func (p *Policy) Scale(vc *resources.VaultClient) error {
 
 	// aggregate reco by resources
 	for k, v := range rcs {
-		// TODO should cooldown check be done at resource side or policy side???
-		k.Scale(p.Ensembler.Ensemble(v), vc)
+		err := k.Scale(p.Ensembler.Ensemble(v), vc)
+		if err != nil {
+			logging.Warning(err.Error())
+		}
 	}
 
 	return nil

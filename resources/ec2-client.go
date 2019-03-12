@@ -92,6 +92,7 @@ func describeScalingGroup(asgName string,
 
 // Scale takes in the final count as prescribed by Resource and scales the ASG
 func (easg EC2AutoScalingGroup) Scale(newCount int) error {
+	newCount = easg.getValidScaleCount(newCount)
 	asg, err := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
 
 	if err != nil {
@@ -127,11 +128,11 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 	return nil
 }
 
-func (easg EC2AutoScalingGroup) Check() error {
-	asg, _ := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
-	fmt.Println(*asg.AutoScalingGroups[0].DesiredCapacity)
-	return nil
-}
+// func (easg EC2AutoScalingGroup) Check() error {
+// 	asg, _ := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
+// 	fmt.Println(*asg.AutoScalingGroups[0].DesiredCapacity)
+// 	return nil
+// }
 
 func (easg EC2AutoScalingGroup) RecreatePlan() EC2AutoScalingGroupPlan {
 	return EC2AutoScalingGroupPlan{
@@ -140,4 +141,13 @@ func (easg EC2AutoScalingGroup) RecreatePlan() EC2AutoScalingGroupPlan {
 		MaxCount:         easg.maxscale,
 		MinCount:         easg.minscale,
 	}
+}
+
+func (easg EC2AutoScalingGroup) getValidScaleCount(newCount int) int {
+	if newCount > easg.maxscale {
+		newCount = easg.maxscale
+	} else if newCount < easg.minscale {
+		newCount = easg.minscale
+	}
+	return newCount
 }

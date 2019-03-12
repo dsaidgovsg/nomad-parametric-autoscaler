@@ -36,6 +36,7 @@ type ConservativeEnsembling struct {
 	name string
 }
 
+// Name is a helper fn for recreating of PolicyPlan
 func (ce ConservativeEnsembling) Name() string {
 	return ce.name
 }
@@ -56,6 +57,7 @@ type AverageEnsembling struct {
 	name string
 }
 
+// Name is a helper fn for recreating of PolicyPlan
 func (ce AverageEnsembling) Name() string {
 	return ce.name
 }

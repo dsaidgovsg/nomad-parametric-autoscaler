@@ -25,10 +25,14 @@ type WrappedPolicy struct {
 }
 
 // NewApp creates an app...
-func NewApp() *App {
+func NewApp() (*App, error) {
 	wrappedPolicy := newWrappedPolicy()
-	vaultClient := resources.NewVaultClient(os.Getenv("VAULT_ADDR"))
-	paused := false
+	vaultClient, err := resources.NewVaultClient(os.Getenv("VAULT_ADDR"))
+	if err != nil {
+		return nil, err
+	}
+
+	paused := false // always starts off running
 	return &App{
 		vc:     vaultClient,
 		wp:     wrappedPolicy,
@@ -39,7 +43,7 @@ func NewApp() *App {
 				vc:     vaultClient,
 				paused: &paused,
 			}),
-	}
+	}, nil
 }
 
 func newWrappedPolicy() *WrappedPolicy {
