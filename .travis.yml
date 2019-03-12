@@ -12,7 +12,6 @@ env:
 
 
 script: 
-  - go mod download
   - go test -v ./...
 
 deploy:
