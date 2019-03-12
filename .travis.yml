@@ -9,7 +9,9 @@ env:
   - GITHUB_REPONAME=nomad-parametric-autoscaler
 
 
-script: go test -v ./...
+script: 
+  - go mod download
+  - go test -v ./...
 
 deploy:
   provider: releases
