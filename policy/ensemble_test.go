@@ -11,7 +11,7 @@ func TestEnsemblerFetching(t *testing.T) {
 		t.Errorf("Expected keyword `Conservative` to be valid")
 	}
 
-	if es != (ConservativeEnsembling{}) {
+	if es != (ConservativeEnsembling{name: "Conservative"}) {
 		t.Errorf("ConservativeEnsembling struct to be fetched")
 	}
 
@@ -21,7 +21,7 @@ func TestEnsemblerFetching(t *testing.T) {
 		t.Errorf("Expected keyword `Average` to be valid")
 	}
 
-	if es != (AverageEnsembling{}) {
+	if es != (AverageEnsembling{name: "Average"}) {
 		t.Errorf("AverageEnsembling struct to be fetched")
 	}
 
