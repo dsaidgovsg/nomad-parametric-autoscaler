@@ -1,3 +1,5 @@
+language: go
+
 go:
   - 1.11.x
 
@@ -9,7 +11,8 @@ env:
   - GITHUB_REPONAME=nomad-parametric-autoscaler
 
 
-script: go test -v ./...
+script: 
+  - go test -v ./...
 
 deploy:
   provider: releases
