@@ -11,7 +11,14 @@ RUN go mod download
 # Then build the binary
 COPY ./ ./
 
-RUN go build
+RUN set -euo pipefail && \
+    go build -v -ldflags "-linkmode external -extldflags -static -s -w"; \
+    wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz; \
+    tar xvf upx-${UPX_VERSION}-amd64_linux.tar.xz; \
+    mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin/; \
+    rm -r upx-${UPX_VERSION}-amd64_linux upx-${UPX_VERSION}-amd64_linux.tar.xz; \
+    upx --best nomad-parametric-autoscaler; \
+    :
 
 FROM alpine:3.9 as release
 WORKDIR /app
