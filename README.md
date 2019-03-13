@@ -62,6 +62,7 @@ Resource Definition
 
 
 *EC2 Definition*
+
 | Name | Description | Type  | Required |
 |------|-------------|:----:|:-----:|
 | ScalingGroupName | AWS EC2 auto-scaling group name | string | Yes |
@@ -70,6 +71,7 @@ Resource Definition
 | MinCount | Minimum allowable desired count | number | Yes |
 
 *Nomad Definition*
+
 | Name | Description | Type  | Required |
 |------|-------------|:----:|:-----:|
 | Address | Address of nomad service | string | Yes |
@@ -112,6 +114,7 @@ Users can implement their own custom subpolicy by implementing the `Subpolicy` i
 Core ratio subpolicy tracks a Spark master endpoint to find out the core usage and scales accordingly while the office hour subpolicy keeps a minimum count of resources between predefined hours.
 
 **Subpolicy API**
+
 | Name | Description | Type  | Required |
 |------|-------------|:----:|:-----:|
 | Name | Name of subpolicy. *Important* This name needs to match the string in the `CreateSpecificSubpolicy` function. | string | Yes |
