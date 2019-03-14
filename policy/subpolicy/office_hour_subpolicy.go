@@ -16,6 +16,7 @@ type OfficeHourSubPolicy struct {
 	metadata         OfficeHourSubPolicyMetadata
 }
 
+// OfficeHourSubPolicyMetadata represents metadata unique to OfficeHourSubPolicy
 type OfficeHourSubPolicyMetadata struct {
 	UpThreshold   *float64          `json:"UpThreshold"`
 	DownThreshold *float64          `json:"DownThreshold"`

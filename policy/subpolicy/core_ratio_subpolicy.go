@@ -19,6 +19,7 @@ type CoreRatioSubPolicy struct {
 	metadata         CoreRatioSubPolicyMetadata
 }
 
+// CoreRatioSubPolicyMetadata represents metadata unique to CoreRatioSubPolicy
 type CoreRatioSubPolicyMetadata struct {
 	MetricSource  *string           `json:"MetricSource"`
 	UpThreshold   *float64          `json:"UpThreshold"`

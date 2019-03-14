@@ -115,31 +115,28 @@ Core ratio subpolicy tracks a Spark master endpoint to find out the core usage a
 | Name | Description | Type  | Required |
 |------|-------------|:----:|:-----:|
 | Name | Name of subpolicy. *Important* This name needs to match the string in the `CreateSpecificSubpolicy` function. | string | Yes |
-| MetricSource | Source of metric. Tentatively an address where information can be retrieved from. | string | Yes |
-| UpThreshold | Upper threshold to trigger a scale-up  | number | Yes |
-| DownThreshold | Lower threshold to trigger a scale-down | number | Yes |
-| ScaleOut | Scale out method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
-| ScaleIn | Scale in method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
 | ManagedResources | List of resource to be managed by subpolicy. Resource name needs to match corresponding resource key in `Resources` part of the policy definition | array[string] | Yes |
-
+| Metadata | Metadata specific to sub-policy. | Object | Yes |
 For example:
 ```json
 {
     "Name": "CoreRatio",
-    "MetricSource": "https://some-endpoint",
-    "UpThreshold": 0.5,
-    "DownThreshold": 0.25,
-    "ScaleOut": {
-        "Changetype": "multiply",
-        "ChangeValue": 2
-    },
-    "ScaleIn": {
-        "Changetype": "multiply",
-        "ChangeValue": 0.5
-    },
     "ManagedResources": [
         "SparkWorker"
-    ]
+    ],
+    "Metadata": {
+        "MetricSource": "https://some-endpoint",
+        "UpThreshold": 0.5,
+        "DownThreshold": 0.25,
+        "ScaleUp": {
+            "Changetype": "multiply",
+            "ChangeValue": 2
+        },
+        "ScaleDown": {
+            "Changetype": "multiply",
+            "ChangeValue": 0.5
+        }
+    }
 }
 ```
 
@@ -180,8 +177,12 @@ Various ensembling methods can be considered for each resource
     },
     "Subpolicies": [
         {
-            "Name": "CoreRatio",
-            "MetricSource": "https://some.source/json",
+        "Name": "CoreRatio",
+        "ManagedResources": [
+            "SparkWorker"
+        ],
+        "Metadata": {
+            "MetricSource": "https://some-endpoint",
             "UpThreshold": 0.5,
             "DownThreshold": 0.25,
             "ScaleOut": {
@@ -191,11 +192,9 @@ Various ensembling methods can be considered for each resource
             "ScaleIn": {
                 "Changetype": "multiply",
                 "ChangeValue": 0.5
-            },
-            "ManagedResources": [
-                "SparkWorker"
-            ]
+            }
         }
+    }
     ],
     "Ensembler": "Conservative"
 }
