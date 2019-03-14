@@ -13,14 +13,21 @@ type endpoints struct {
 	paused *bool
 }
 
+// GetPolicy returns JSON version of current policy
+// its output is compatible with UpdatePolicy.
 func (ep *endpoints) GetPolicy(c *gin.Context) {
 	c.JSON(200, policy.RecreatePlan(ep.wp.policy))
 }
 
+// GetResourceStatus returns map of resource to count
 func (ep *endpoints) GetResourceStatus(c *gin.Context) {
 	c.JSON(200, ep.wp.policy.GetResourceStatus())
 }
 
+// UpdatePolicy parses body and builds a new policy to replace
+// existing policy
+// returns 200 if policy is well-formed and replaces existing successfully
+// returns 400 if policy is malformed, along with the error message
 func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 	var gsp policy.PolicyPlan
 	c.BindJSON(&gsp)
@@ -42,6 +49,8 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 	}
 }
 
+// PausePolicy is a utility endpoint that pauses the app and skips
+// the checking-scaling step.
 func (ep *endpoints) PausePolicy(c *gin.Context) {
 	*ep.paused = true
 	c.JSON(200, gin.H{
@@ -49,6 +58,7 @@ func (ep *endpoints) PausePolicy(c *gin.Context) {
 	})
 }
 
+// ResumePolicy is a utility endpoint that resumes the app's checking-scaling cycle
 func (ep *endpoints) ResumePolicy(c *gin.Context) {
 	*ep.paused = false
 	c.JSON(200, gin.H{
