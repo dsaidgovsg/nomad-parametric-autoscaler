@@ -27,8 +27,8 @@ type GenericSubPolicy struct {
 	MetricSource     string           `json:"MetricSource"`
 	UpThreshold      float64          `json:"UpThreshold"`
 	DownThreshold    float64          `json:"DownThreshold"`
-	ScaleUp          ScalingMagnitude `json:"ScaleUp"`
-	ScaleDown        ScalingMagnitude `json:"ScaleDown"`
+	ScaleOut         ScalingMagnitude `json:"ScaleOut"`
+	ScaleIn          ScalingMagnitude `json:"ScaleIn"`
 	ManagedResources []string         `json:"ManagedResources"`
 }
 
@@ -40,16 +40,16 @@ func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (Sub
 			gsp.MetricSource,
 			gsp.UpThreshold,
 			gsp.DownThreshold,
-			gsp.ScaleUp,
-			gsp.ScaleDown,
+			gsp.ScaleOut,
+			gsp.ScaleIn,
 			mr), nil
 	case "OfficeHour":
 		return NewOfficeHourSubPolicy(gsp.Name,
 			gsp.MetricSource,
 			gsp.UpThreshold,
 			gsp.DownThreshold,
-			gsp.ScaleUp,
-			gsp.ScaleDown,
+			gsp.ScaleOut,
+			gsp.ScaleIn,
 			mr), nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid subpolicy", gsp.Name)
