@@ -1,6 +1,4 @@
 # NOmad-Parametric-AutoScaler
-
-## Overview
 NOPAS is a template for a Go service that scales nomad tasks
 * Parametric: policy is parameter-dependent -> can be changed dynamically via HTTP calls
 * Auto: given a policy, its self-correcting
@@ -10,7 +8,7 @@ NOPAS is a template for a Go service that scales nomad tasks
 
 Existing nomad metrics based autoscalers use CPU and Memory which is not sufficient for all use cases. At GovTech, our data scientists use Spark to crunch data on a daily basis. On one hand, it is costly to keep a large amount of compute resources ready at all times while on the other hand, using off-the-shelf cpu/memory-based autoscaling services may be too unresponsive.
 
-NOPAS is built to enable users to easily add in subpolicies based on more business-related needs such as pre-emptively scaling up resources in anticipation of user needs and scaling down outside of specific time periods to save cost.
+NOPAS was built to enable users to easily add subpolicies based on more business-related needs such as pre-emptively scaling up resources in anticipation of user needs and scaling down outside of specific time periods to save cost.
 
 ## Running
 TODO: add in `docker-compose.test.yml` and `docker-compose.deploy.yml`
@@ -25,7 +23,6 @@ docker-compose up
 **Core**
 * GET `/state` gets current policy `struct` in JSON format
 * POST `/update` updates current policy with a new policy
-
 
 **Utility**
 * PUT `/resume` is a utility end point that resumes the scaling service
