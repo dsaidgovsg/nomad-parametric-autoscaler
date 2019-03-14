@@ -121,8 +121,8 @@ Core ratio subpolicy tracks a Spark master endpoint to find out the core usage a
 | MetricSource | Source of metric. Tentatively an address where information can be retrieved from. | string | Yes |
 | UpThreshold | Upper threshold to trigger a scale-up  | number | Yes |
 | DownThreshold | Lower threshold to trigger a scale-down | number | Yes |
-| ScaleUp | Scale up method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
-| ScaleDown | Scale down method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
+| ScaleOut | Scale out method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
+| ScaleIn | Scale in method. Comprises of a `Changetpe` and a `ChangeValue` which outlines relation between existing count and recommendation | Object | Yes |
 | ManagedResources | List of resource to be managed by subpolicy. Resource name needs to match corresponding resource key in `Resources` part of the policy definition | array[string] | Yes |
 
 For example:
@@ -132,11 +132,11 @@ For example:
     "MetricSource": "https://some-endpoint",
     "UpThreshold": 0.5,
     "DownThreshold": 0.25,
-    "ScaleUp": {
+    "ScaleOut": {
         "Changetype": "multiply",
         "ChangeValue": 2
     },
-    "ScaleDown": {
+    "ScaleIn": {
         "Changetype": "multiply",
         "ChangeValue": 0.5
     },
@@ -187,11 +187,11 @@ Various ensembling methods can be considered for each resource
             "MetricSource": "https://some.source/json",
             "UpThreshold": 0.5,
             "DownThreshold": 0.25,
-            "ScaleUp": {
+            "ScaleOut": {
                 "Changetype": "multiply",
                 "ChangeValue": 2
             },
-            "ScaleDown": {
+            "ScaleIn": {
                 "Changetype": "multiply",
                 "ChangeValue": 0.5
             },
