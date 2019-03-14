@@ -14,6 +14,7 @@ func NewRouter(ep *endpoints) *gin.Engine {
 	})
 
 	router.GET("/state", ep.GetPolicy)
+	router.GET("/status", ep.GetResourceStatus)
 	router.POST("/update", ep.UpdatePolicy)
 
 	// Helper endpoints

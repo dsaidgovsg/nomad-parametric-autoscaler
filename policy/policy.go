@@ -136,3 +136,11 @@ func (p *Policy) Scale(vc *resources.VaultClient) error {
 
 	return nil
 }
+
+func (p *Policy) GetResourceStatus() map[string]int {
+	status := make(map[string]int)
+	for k, v := range p.ResourceMap {
+		status[k] = v.GetNomadClientCount()
+	}
+	return status
+}

@@ -17,6 +17,10 @@ func (ep *endpoints) GetPolicy(c *gin.Context) {
 	c.JSON(200, policy.RecreatePlan(ep.wp.policy))
 }
 
+func (ep *endpoints) GetResourceStatus(c *gin.Context) {
+	c.JSON(200, ep.wp.policy.GetResourceStatus())
+}
+
 func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 	var gsp policy.PolicyPlan
 	c.BindJSON(&gsp)
