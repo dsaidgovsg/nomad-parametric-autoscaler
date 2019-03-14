@@ -16,8 +16,8 @@ type CoreRatioSubPolicy struct {
 	MetricSource     string
 	UpThreshold      float64
 	DownThreshold    float64
-	ScaleUp          ScalingMagnitude
-	ScaleDown        ScalingMagnitude
+	ScaleOut         ScalingMagnitude
+	ScaleIn          ScalingMagnitude
 	managedResources []resources.Resource
 }
 
@@ -30,8 +30,8 @@ func NewCoreRatioSubpolicy(name string,
 	metricsource string,
 	upthreshold float64,
 	downthreshold float64,
-	scaleup ScalingMagnitude,
-	scaledown ScalingMagnitude,
+	scaleOut ScalingMagnitude,
+	scaleIn ScalingMagnitude,
 	mr []resources.Resource) *CoreRatioSubPolicy {
 
 	return &CoreRatioSubPolicy{
@@ -39,8 +39,8 @@ func NewCoreRatioSubpolicy(name string,
 		MetricSource:     metricsource,
 		UpThreshold:      upthreshold,
 		DownThreshold:    downthreshold,
-		ScaleUp:          scaleup,
-		ScaleDown:        scaledown,
+		ScaleOut:         scaleOut,
+		ScaleIn:          scaleIn,
 		managedResources: mr,
 	}
 }
@@ -51,11 +51,11 @@ func DefaultCoreRatioSubPolicy() *CoreRatioSubPolicy {
 		MetricSource:  "https://something",
 		UpThreshold:   0.5,
 		DownThreshold: 0.25,
-		ScaleUp: ScalingMagnitude{
+		ScaleOut: ScalingMagnitude{
 			ChangeType:  "multiply",
 			ChangeValue: 2.0,
 		},
-		ScaleDown: ScalingMagnitude{
+		ScaleIn: ScalingMagnitude{
 			ChangeType:  "multiply",
 			ChangeValue: 0.5,
 		},
@@ -74,8 +74,8 @@ func (crsp *CoreRatioSubPolicy) UpdateThreshold(up, down float64) {
 }
 
 func (crsp *CoreRatioSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude) {
-	crsp.ScaleUp = up
-	crsp.ScaleDown = down
+	crsp.ScaleOut = up
+	crsp.ScaleIn = down
 }
 
 func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
@@ -102,9 +102,9 @@ func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
 			existingCount := resc.GetNomadClientCount()
 
 			if ratio < crsp.DownThreshold {
-				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleDown)
+				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleIn)
 			} else if ratio > crsp.UpThreshold {
-				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleUp)
+				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleOut)
 			} else {
 				output[resc] = existingCount
 			}
@@ -124,8 +124,8 @@ func (crsp *CoreRatioSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
 		MetricSource:     crsp.MetricSource,
 		UpThreshold:      crsp.UpThreshold,
 		DownThreshold:    crsp.DownThreshold,
-		ScaleUp:          crsp.ScaleUp,
-		ScaleDown:        crsp.ScaleDown,
+		ScaleOut:         crsp.ScaleOut,
+		ScaleIn:          crsp.ScaleIn,
 		ManagedResources: resourceNameList,
 	}
 }

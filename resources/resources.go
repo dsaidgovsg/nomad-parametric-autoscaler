@@ -21,8 +21,8 @@ type EC2NomadResource struct {
 	EC2AutoScalingGroup
 	NomadClient
 
-	ScaleUpCooldown     time.Duration
-	ScaleDownCooldown   time.Duration
+	ScaleOutCooldown    time.Duration
+	ScaleInCooldown     time.Duration
 	NomadToComputeRatio int
 	Name                string
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
@@ -31,8 +31,8 @@ type EC2NomadResource struct {
 type ResourcePlan struct {
 	EC2AutoScalingGroupPlan `json:"EC2"`
 	NomadClientPlan         `json:"Nomad"`
-	ScaleDownCooldown       string `json:"ScaleDownCooldown"`
-	ScaleUpCooldown         string `json:"ScaleUpCooldown"`
+	ScaleInCooldown         string `json:"ScaleInCooldown"`
+	ScaleOutCooldown        string `json:"ScaleOutCooldown"`
 	NomadToComputeRatio     int    `json:"N2CRatio"`
 }
 
@@ -44,12 +44,12 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 
 	easg := rp.EC2AutoScalingGroupPlan.ApplyPlan()
 
-	dcd, err := time.ParseDuration(rp.ScaleDownCooldown)
+	dcd, err := time.ParseDuration(rp.ScaleInCooldown)
 	if err != nil {
 		dcd = 300 * time.Second //  default 5 minute cooldown for scaling down
 	}
 
-	ucd, err := time.ParseDuration(rp.ScaleUpCooldown)
+	ucd, err := time.ParseDuration(rp.ScaleOutCooldown)
 	if err != nil {
 		ucd = 5 * time.Second //  default 5 seconds cooldown for scaling up
 	}
@@ -57,8 +57,8 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 	return &EC2NomadResource{
 		NomadClient:         *nc,
 		EC2AutoScalingGroup: *easg,
-		ScaleDownCooldown:   dcd,
-		ScaleUpCooldown:     ucd,
+		ScaleInCooldown:     dcd,
+		ScaleOutCooldown:    ucd,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
 		Name:                name,
 	}, nil
@@ -66,12 +66,12 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
-	// check if its a scale up or scale down
+	// check if its a scale out or scale in
 	if count, err := res.NomadClient.GetTaskGroupCount(); err == nil {
-		if count < desiredNomadCount { // scale up
-			return res.scaleUp(desiredNomadCount, vc)
+		if count < desiredNomadCount { // scale out
+			return res.scaleOut(desiredNomadCount, vc)
 		} else if count > desiredNomadCount {
-			return res.scaleDown(desiredNomadCount, vc)
+			return res.scaleIn(desiredNomadCount, vc)
 		} else {
 			logging.Info("Existing count is already at desired count. No scaling.")
 			return nil
@@ -81,10 +81,10 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 	}
 }
 
-// scaleUp - scale up - ec2 then nomad
-func (res *EC2NomadResource) scaleUp(desiredNomadCount int, vc *VaultClient) error {
+// scaleOut - scale out - ec2 then nomad
+func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleUpCooldown {
+	if time.Since(res.lastScaledTime) < res.ScaleOutCooldown {
 		return fmt.Errorf("Too soon to scale again")
 	}
 
@@ -104,10 +104,10 @@ func (res *EC2NomadResource) scaleUp(desiredNomadCount int, vc *VaultClient) err
 	return nil
 }
 
-// scaleDown - scale down - nomad then ec2
-func (res *EC2NomadResource) scaleDown(desiredNomadCount int, vc *VaultClient) error {
+// scaleIn - scale in - nomad then ec2
+func (res *EC2NomadResource) scaleIn(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleDownCooldown {
+	if time.Since(res.lastScaledTime) < res.ScaleInCooldown {
 		return fmt.Errorf("Too soon to scale again")
 	}
 
@@ -143,8 +143,8 @@ func (res EC2NomadResource) RecreateResourcePlan() ResourcePlan {
 	return ResourcePlan{
 		NomadClientPlan:         res.NomadClient.RecreatePlan(),
 		EC2AutoScalingGroupPlan: res.EC2AutoScalingGroup.RecreatePlan(),
-		ScaleUpCooldown:         res.ScaleUpCooldown.String(),
-		ScaleDownCooldown:       res.ScaleDownCooldown.String(),
+		ScaleOutCooldown:        res.ScaleOutCooldown.String(),
+		ScaleInCooldown:         res.ScaleInCooldown.String(),
 		NomadToComputeRatio:     res.NomadToComputeRatio,
 	}
 }
