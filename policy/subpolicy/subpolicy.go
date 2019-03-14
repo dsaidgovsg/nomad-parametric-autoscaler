@@ -8,14 +8,12 @@ import (
 
 // ScalingMagnitude needs a way better name
 type ScalingMagnitude struct {
-	ChangeType  string  `json:"Changetype"`
+	ChangeType  string  `json:"ChangeType"`
 	ChangeValue float64 `json:"ChangeValue"`
 }
 
 type SubPolicy interface {
 	RecommendCount() map[resources.Resource]int
-	UpdateThreshold(newup, newdown float64)
-	UpdateScalingMagnitude(newup, newdown ScalingMagnitude)
 	GetManagedResources() []resources.Resource
 	DeriveGenericSubpolicy() GenericSubPolicy
 }
@@ -23,34 +21,26 @@ type SubPolicy interface {
 // GenericSubPolicy is used for decoding of json
 // according to name, create actual sp
 type GenericSubPolicy struct {
-	Name             string           `json:"Name"`
-	MetricSource     string           `json:"MetricSource"`
-	UpThreshold      float64          `json:"UpThreshold"`
-	DownThreshold    float64          `json:"DownThreshold"`
-	ScaleOut         ScalingMagnitude `json:"ScaleOut"`
-	ScaleIn          ScalingMagnitude `json:"ScaleIn"`
-	ManagedResources []string         `json:"ManagedResources"`
+	Name             string      `json:"Name"`
+	ManagedResources []string    `json:"ManagedResources"`
+	Metadata         interface{} `json:"Metadata"`
 }
 
 // CreateSpecificSubpolicy checks name of GSP and creates the actual policy
 func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (SubPolicy, error) {
 	switch gsp.Name {
 	case "CoreRatio":
-		return NewCoreRatioSubpolicy(gsp.Name,
-			gsp.MetricSource,
-			gsp.UpThreshold,
-			gsp.DownThreshold,
-			gsp.ScaleOut,
-			gsp.ScaleIn,
-			mr), nil
+		sp, err := NewCoreRatioSubpolicy(gsp.Name, mr, gsp.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		return sp, nil
 	case "OfficeHour":
-		return NewOfficeHourSubPolicy(gsp.Name,
-			gsp.MetricSource,
-			gsp.UpThreshold,
-			gsp.DownThreshold,
-			gsp.ScaleOut,
-			gsp.ScaleIn,
-			mr), nil
+		sp, err := NewOfficeHourSubPolicy(gsp.Name, mr, gsp.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		return sp, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid subpolicy", gsp.Name)
 	}
