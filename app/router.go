@@ -53,10 +53,7 @@ func corsMiddleware(conf *Config) gin.HandlerFunc {
 
 	if err != nil {
 		// Default to false if cannot parse Allow-Credentials
-		logging.Warning("Invalid Allow-Credentials value",
-			"cause", err,
-		)
-
+		logging.Warning(err.Error())
 		allowCreds = false
 	}
 
