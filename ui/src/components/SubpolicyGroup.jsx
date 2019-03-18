@@ -7,10 +7,8 @@ import { Paper, Card, CardContent } from '../../node_modules/@material-ui/core';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
-import Subpolicy from './Subpolicy'
+import Subpolicy from '../containers/Subpolicy'
 
-// RG represents a group of resources, uniquely identified by their names 
-// 
 const SubpolicyGroup = props => {
     const { subpolicies } = props;
 
@@ -28,21 +26,4 @@ const SubpolicyGroup = props => {
     )
 };
 
-const mapStateToProps = state => {
-    return {
-        subpolicies : state.policyChange.Subpolicies.map((sp) => sp.Name),
-     };
-  };
-
-const mapDispatchToProps = dispatch => {
-  return {
-    // dispatching plain actions
-    createSubpolicy: () => dispatch({ type: 'CREATE_SUBPOLICY' }),
-  }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SubpolicyGroup)
-
+export default SubpolicyGroup;

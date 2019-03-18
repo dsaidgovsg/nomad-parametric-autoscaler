@@ -7,8 +7,8 @@ import { Paper, Card, CardContent, CardHeader } from '../../node_modules/@materi
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import NomadParameters from './NomadParameters';
-import EC2Parameters from './EC2Parameters';
+import NomadParameters from '../containers/NomadParameters';
+import EC2Parameters from '../containers/EC2Parameters';
 
 const Resource = props => {
     const { name } = props;
@@ -74,24 +74,4 @@ const Resource = props => {
     )
 };
 
-const mapStateToProps = (state, ownProps) => {
-    return {
-        scaleInCooldown: state.policyChange.Resources[ownProps.name].ScaleInCooldown,
-        scaleOutCooldown: state.policyChange.Resources[ownProps.name].ScaleOutCooldown,
-        ratio: state.policyChange.Resources[ownProps.name].N2CRatio,
-     };
-  };
-
-const mapDispatchToProps = dispatch => {
-  return {
-    // dispatching plain actions
-    updateResourceName: (event) => dispatch({ type: 'UPDATE_RESOURCE_NAME', change: event }),
-    updateResourceField: (event) => dispatch({ type: 'UPDATE_RESOURCE_FIELD', change: event }),
-    deleteResource: (event) => dispatch({ type: 'DELETE_RESOURCE', change: event })
-  }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Resource)
+export default Resource;

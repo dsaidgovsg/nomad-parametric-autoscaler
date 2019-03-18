@@ -15,4 +15,4 @@ Topbar.propTypes = {
   children: PropTypes.node,
 }
 
-export default Topbar
+export default Topbar;

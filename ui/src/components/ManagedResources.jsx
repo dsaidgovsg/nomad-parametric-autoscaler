@@ -41,37 +41,26 @@ const ManagedResources = (props) => {
     }
 
     return (
-        <Card>
-            <CardContent>
-                { resources.map(mr => 
-                <div>
-                    <TextField
-                    required
-                    label="Managed Resource Name"
-                    value={ mr }
-                    onChange={ updateResource(mr) }
-                    margin="normal"
-                    />
-                    <Fab size="small" color="primary" onClick={ deleteSubpolicyResource(mr) }>
-                        <DeleteIcon />
-                    </Fab>  
-                </div>
-                ) }
-            </CardContent>
+        <CardContent>
+            { resources.map(mr => 
+            <div>
+                <TextField
+                required
+                label="Resource Name"
+                value={ mr }
+                onChange={ updateResource(mr) }
+                margin="normal"
+                />
+                <Fab size="small" color="primary" onClick={ deleteSubpolicyResource(mr) }>
+                    <DeleteIcon />
+                </Fab>  
+            </div>
+            ) }
             <Fab size="small" color="primary" onClick={ addSPResource }>
                 <AddIcon />
             </Fab>
-        </Card>
+        </CardContent>
     )
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    updateSubpolicyResource: (name) => dispatch({type: 'UPDATE_SUBPOLICY_RESOURCE', change: name}),
-  }
-}
-
-export default connect(
-    null,
-    mapDispatchToProps
-  )(ManagedResources)
+export default ManagedResources;

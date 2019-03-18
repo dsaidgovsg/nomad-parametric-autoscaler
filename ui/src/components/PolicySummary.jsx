@@ -1,12 +1,11 @@
 import React from 'react';
-import { connect } from "react-redux";
 import TextField from '@material-ui/core/TextField';
 import { Paper, Card, CardContent } from '../../node_modules/@material-ui/core';
 
-import ResourceGroup from './ResourceGroup'
-import SubpolicyGroup from './SubpolicyGroup'
+import ResourceGroup from '../containers/ResourceGroup'
+import SubpolicyGroup from '../containers/SubpolicyGroup'
 
-const PolicyDisplay = props => {
+const PolicySummary = props => {
     return (
         <div>
             <Paper>
@@ -42,23 +41,4 @@ const PolicyDisplay = props => {
     )
 };
 
-const mapStateToProps = state => {
-    return { 
-        frequency: state.policyChange.CheckingFrequency,
-        ensembler: state.policyChange.Ensembler,
-     };
-  };
-
-const mapDispatchToProps = dispatch => {
-  return {
-    // dispatching plain actions
-    updateEnsembler: (event) => dispatch({ type: 'UPDATE_ENSEMBLER', change: event.target.value }),
-    updateCheckingFrequency: (event) => dispatch({ type: 'UPDATE_FREQUENCY', change: event.target.value }),
-  }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(PolicyDisplay)
-
+export default PolicySummary;

@@ -1,7 +1,29 @@
 import remove from 'lodash/remove';
+import { combineReducers } from 'redux'
+
+import {
+    UPDATE_STATE,
+    UPDATE_FREQUENCY,
+    UPDATE_ENSEMBLER,
+    CREATE_RESOURCE,
+    DELETE_RESOURCE,
+    UPDATE_RESOURCE_NAME,
+    UPDATE_RESOURCE_COOLDOWN,
+    UPDATE_RESOURCE_RATIO,
+    UPDATE_RESOURCE_FIELD,
+    UPDATE_NOMAD_PARAM,
+    UPDATE_EC2_PARAM,
+    CREATE_SUBPOLICY,
+    UPDATE_SUBPOLICY_NAME,
+    UPDATE_SP_RESOURCE,
+    UPDATE_SUBPOLICY_RESOURCE,
+    UPDATE_SP_META,
+    DELETE_SUBPOLICY
+} from '../actions';
+
 // TODO: change to fetch fn that gets from nopas backend
 export const initialState = {
-    CheckingFrequency: "1m",
+    CheckingFreq: "1m",
     Ensembler: "conservative",
     Resources: {
         "Sample": {
@@ -64,23 +86,26 @@ export const initialState = {
     ],
 };
 
-export const policyChange = (state = initialState, action) => {
+const policy = (state = initialState, action) => {
     const updatedResource = JSON.parse(JSON.stringify(state.Resources));
-    let sp = state.Subpolicies;
+    let sp = state.Subpolicies.slice();
     
     switch (action.type) {
-        case 'UPDATE_FREQUENCY':
+        case UPDATE_STATE:
+        return action.change
+        
+        case UPDATE_FREQUENCY:
         return {
             ...state,
-            CheckingFrequency: action.change,
+            CheckingFreq: action.change,
         }
-        case 'UPDATE_ENSEMBLER':
+        case UPDATE_ENSEMBLER:
         return {
             ...state, 
             Ensembler: action.change,
         }
 
-        case 'CREATE_RESOURCE':
+        case CREATE_RESOURCE:
         // TODO: get refactor
         updatedResource['New'] = {
             "Nomad": {
@@ -105,14 +130,14 @@ export const policyChange = (state = initialState, action) => {
             Resources: updatedResource,
         }
 
-        case 'DELETE_RESOURCE':
+        case DELETE_RESOURCE:
         delete updatedResource[action.change.name]
         return {
             ...state,
             Resources: updatedResource,
         }
 
-        case 'UPDATE_RESOURCE_NAME':
+        case UPDATE_RESOURCE_NAME:
         updatedResource[action.change.newName] = updatedResource[action.change.oldName]
         delete updatedResource[action.change.oldName]
         return {
@@ -120,42 +145,42 @@ export const policyChange = (state = initialState, action) => {
             Resources: updatedResource,
         }
 
-        case 'UPDATE_RESOURCE_COOLDOWN':
+        case UPDATE_RESOURCE_COOLDOWN:
         updatedResource[action.change.name].Cooldown = action.change.value
         return {
             ...state,
             Resources: updatedResource,
         }
 
-        case 'UPDATE_RESOURCE_RATIO':
+        case UPDATE_RESOURCE_RATIO:
         updatedResource[action.change.name].N2CRatio = action.change.value
         return {
             ...state,
             Resources: updatedResource,
         }
         
-        case 'UPDATE_RESOURCE_FIELD':
+        case UPDATE_RESOURCE_FIELD:
         updatedResource[action.change.name][action.change.field] = action.change.value
         return {
             ...state,
             Resources: updatedResource,
         }
 
-        case 'UPDATE_NOMAD_PARAM':
+        case UPDATE_NOMAD_PARAM:
         updatedResource[action.change.name].Nomad[action.change.field] = action.change.value
         return {
             ...state,
             Resources: updatedResource,
         }
 
-        case 'UPDATE_EC2_PARAM':
+        case UPDATE_EC2_PARAM:
         updatedResource[action.change.name].EC2[action.change.field] = action.change.value
         return {
             ...state,
             Resources: updatedResource,
         }
 
-        case 'CREATE_SUBPOLICY':
+        case CREATE_SUBPOLICY:
         sp.push({
             Name: "new",
             ManagedResources: [],
@@ -167,7 +192,7 @@ export const policyChange = (state = initialState, action) => {
             Subpolicies: sp,
         }
 
-        case 'UPDATE_SUBPOLICY_NAME':
+        case UPDATE_SUBPOLICY_NAME:
         for (let i = 0; i < sp.length; i++) {
             if (sp[i].Name === action.change.oldName) {
                 sp[i].Name = action.change.newName;
@@ -180,7 +205,7 @@ export const policyChange = (state = initialState, action) => {
             Subpolicies: sp,
         }
 
-        case 'UPDATE_SP_RESOURCE':
+        case UPDATE_SP_RESOURCE:
         for (let i = 0; i < sp.length; i++) {
             if (sp[i].Name === action.change.name) {
                 sp[i].ManagedResources = action.change.value; // TODO thsi implementation is wrong
@@ -193,7 +218,7 @@ export const policyChange = (state = initialState, action) => {
             Subpolicies: sp,
         }
 
-        case 'UPDATE_SUBPOLICY_RESOURCE':
+        case UPDATE_SUBPOLICY_RESOURCE:
         for (let i = 0; i < sp.length; i++) {
             if (sp[i].Name === action.change.name) {
                 sp[i].ManagedResources = action.change.newManagedResources;
@@ -206,7 +231,7 @@ export const policyChange = (state = initialState, action) => {
             Subpolicies: sp,
         }
 
-        case 'UPDATE_SP_META':
+        case UPDATE_SP_META:
         for (let i = 0; i < sp.length; i++) {
             if (sp[i].Name === action.change.name) {
                 sp[i].Metadata = action.change.value;
@@ -218,7 +243,7 @@ export const policyChange = (state = initialState, action) => {
             Subpolicies: sp,
         }
 
-        case 'DELETE_SUBPOLICY':
+        case DELETE_SUBPOLICY:
         const newSP = remove(sp, (elem) => {
             return elem.Name !== action.change.name;
           });
@@ -232,3 +257,5 @@ export const policyChange = (state = initialState, action) => {
         return state
     }
 }
+
+export const rootReducer = combineReducers({ policy })

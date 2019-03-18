@@ -1,31 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import logo from './logo.svg';
 import './App.css';
+
+import { Button } from '../node_modules/@material-ui/core';
+import SendIcon from '@material-ui/icons/Send';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import axios from 'axios';
+
 import Topbar from './components/Topbar';
 import StatusSwitch from './components/StatusSwitch';
-import PolicyDisplay from './components/PolicyDisplay';
-import { Button } from '../node_modules/@material-ui/core';
-import axios from 'axios';
+import PolicySummary from './containers/PolicySummary';
 
 class App extends Component {
   
   render() {
 
     const sendUpdate = () => {
-      const state = this.props.state;
+      const state = JSON.parse(JSON.stringify(this.props.state));
       for (let sp of state.Subpolicies) {
         sp.Metadata = JSON.parse(sp.Metadata);
       }
-      // make POST call
+      
       axios.post('http://localhost:8080/update', state)
     }
 
     const updateStatus = () => {
       // make get call
-      axios.get('http://localhost:8080/status')
+      axios.get('http://localhost:8080/state')
         .then((response) => {
-          console.log(response);
           try {
             const newState = response.data
             for (let sp of newState.Subpolicies) { // convert metadata object to string
@@ -44,16 +46,17 @@ class App extends Component {
     return (
       <div className="App">
       <Topbar>
-        <StatusSwitch>
-        </StatusSwitch>
+        <StatusSwitch/>
         <Button variant="contained" color="primary" onClick={ updateStatus }>
-        Refresh
-      </Button>
-        </Topbar>
-      <PolicyDisplay></PolicyDisplay>
-      <Button variant="contained" color="primary" onClick={ sendUpdate }>
-        Update
-      </Button>
+          Refresh
+          <RefreshIcon/>
+        </Button>
+        <Button variant="contained" color="primary" onClick={ sendUpdate }>
+          Update
+          <SendIcon/>
+        </Button>
+      </Topbar>
+      <PolicySummary></PolicySummary>
       </div>
     );
   }
@@ -61,13 +64,12 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-      state : state.policyChange,
+      state : state.policy,
    };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    // dispatching plain actions
     updateState: (event) => dispatch({ type: 'UPDATE_STATE', change: event }),
   }
 }

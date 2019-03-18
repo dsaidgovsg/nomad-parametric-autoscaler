@@ -7,10 +7,10 @@ import { Card, CardContent, CardHeader } from '../../node_modules/@material-ui/c
 
 const EC2Parameters = props => {
     const { name } = props;
-    const updateField = (field) => (event) => {
-        props.updateNomadParameters({ name: name, value: event.target.value, field: field})
+    const updateField = (name, field) => (event) => {
+        props.updateEC2Parameters({ name: name, value: event.target.value, field: field})
     }
-    // resource will contain details for ratio, cooldown, 
+
     return (
         <div>
             <Card>
@@ -23,7 +23,7 @@ const EC2Parameters = props => {
                     id="standard-required"
                     label="Auto-Scaling grp name"
                     value={ props.autoScalingGroupName }
-                    onChange={ updateField("ScalingGroupName") }
+                    onChange={ updateField(name, "ScalingGroupName") }
                     margin="normal"
                     />
                 <TextField
@@ -31,7 +31,7 @@ const EC2Parameters = props => {
                     id="standard-required"
                     label="AWS region"
                     value={ props.region }
-                    onChange={ updateField("Region") }
+                    onChange={ updateField(name, "Region") }
                     margin="normal"
                     />
                 <TextField
@@ -39,7 +39,7 @@ const EC2Parameters = props => {
                     id="standard-required"
                     label="MaxCount"
                     value={ props.maxCount }
-                    onChange={ updateField("MaxCount") }
+                    onChange={ updateField(name, "MaxCount") }
                     margin="normal"
                     />
                 <TextField
@@ -47,7 +47,7 @@ const EC2Parameters = props => {
                     id="standard-required"
                     label="MinCount"
                     value={ props.minCount }
-                    onChange={ updateField("MinCount") }
+                    onChange={ updateField(name, "MinCount") }
                     margin="normal"
                     />
             </CardContent>
@@ -56,22 +56,4 @@ const EC2Parameters = props => {
     )
 };
 
-const mapStateToProps = (state, ownProps) => {
-    return {
-        autoScalingGroupName: state.policyChange.Resources[ownProps.name].EC2.ScalingGroupName,
-        region: state.policyChange.Resources[ownProps.name].EC2.Region,
-        maxCount: state.policyChange.Resources[ownProps.name].EC2.MaxCount,
-        minCount: state.policyChange.Resources[ownProps.name].EC2.MinCount,
-     };
-  };
-
-const mapDispatchToProps = dispatch => {
-  return {
-    updateNomadParameters: (input) =>  dispatch({ type: 'UPDATE_EC2_PARAM', change: input})
-  }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(EC2Parameters)
+export default EC2Parameters;
