@@ -51,9 +51,10 @@ func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxC
 	}
 
 	return &NomadClient{
-		JobName:  name,
-		maxCount: maxCount,
-		minCount: minCount,
+		JobName:   name,
+		NomadPath: nomadPath,
+		maxCount:  maxCount,
+		minCount:  minCount,
 		client: nomadClient{
 			nomad: client,
 		},
