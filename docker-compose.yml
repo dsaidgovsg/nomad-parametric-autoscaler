@@ -3,12 +3,11 @@ services:
   nopas:
     build: .
     ports:
-    - '8080:8080'
+      - '8080:8080'
     restart: on-failure:5
     security_opt:
-    - 'no-new-privileges'
+      - 'no-new-privileges'
     pids_limit: 100
-    # read_only: true
     tmpfs: ['/tmp']
     environment:
       GIN_MODE: release
@@ -16,3 +15,13 @@ services:
       ASG_SECRET: ""
       VAULT_ADDR: ""
       VAULT_TOKEN: ""
+
+  ui:
+    build: ./ui
+    depends_on:
+      - nopas
+    environment:
+      PORT: 5000
+      REACT_APP_NOPAS_ENDPOINT: "http://localhost:8080"
+    ports:
+      - 5000:5000

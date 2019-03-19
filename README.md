@@ -11,10 +11,9 @@ Existing nomad metrics based autoscalers use CPU and Memory which is not suffici
 NOPAS was built to enable users to easily add subpolicies based on more business-related needs such as pre-emptively scaling up resources in anticipation of user needs and scaling down outside of specific time periods to save cost.
 
 ## Running
-TODO: add in `docker-compose.test.yml` and `docker-compose.deploy.yml`
+Declare other env vars such as ASG_ID, ASG_SECRET, VAULT_ADDR and REACT_APP_NOPAS_ENDPOINT in docker-compose.yml. 
 
 ```
-// declare other env vars such as ASG_ID, ASG_SECRET and VAULT_ADDR in docker-compose.yml
 export VAULT_TOKEN=$(cat ~/.vault-token)
 docker-compose up
 ```
@@ -22,6 +21,7 @@ docker-compose up
 ## API Endpoints
 **Core**
 * GET `/state` gets current policy `struct` in JSON format
+* GET `/status` gets current resource count in JSON format
 * POST `/update` updates current policy with a new policy
 
 **Utility**
