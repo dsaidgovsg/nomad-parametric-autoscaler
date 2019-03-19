@@ -23,6 +23,27 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>NOPAS Dashboard</title>
+    <script src="%PUBLIC_URL%/env/config.js"></script>
+    <script>
+      const DEFAULT_CONF = {
+        REACT_APP_NOPAS_ENDPOINT: 'http://localhost:8080',
+    }
+    // IE11 doesn't support spread operator nor Object.assign
+    // Clone-copy from DEFAULT_CONF, followed by the overriding values from config.env
+    window.config = window.config || {}
+    const env = {}
+    // IE11 linting is problematic when using const in loops, so use var
+    for (var key in DEFAULT_CONF) {
+      env[key] = DEFAULT_CONF[key]
+    }
+
+    if (window.config.env) {
+      for (var key in window.config.env) {
+        env[key] = window.config.env[key]
+      }
+    }
+    window.config.env = env
+    </script>
   </head>
   <body>
     <!-- <noscript>You need to enable JavaScript to run this app.</noscript> -->

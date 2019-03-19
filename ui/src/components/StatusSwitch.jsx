@@ -18,9 +18,9 @@ class StatusSwitch extends React.Component {
     
     handleChange = event => {
         if (event.target.checked) {
-            axios.put('http://localhost:8080/resume')
+            axios.put(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/resume`)
         } else {
-            axios.put('http://localhost:8080/pause')
+            axios.put(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/pause`)
         }
         
         this.setState({
