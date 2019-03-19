@@ -8,6 +8,10 @@ const NomadParameters = props => {
         props.updateNomadParameters({ name: name, value: event.target.value, field: field})
     }
 
+    const updateNumericField = (field) => (event) => {
+        props.updateNumericNomadParameters({ name: name, value: event.target.value, field: field})
+    }
+
     return (
         <div>
             <Card>
@@ -43,16 +47,18 @@ const NomadParameters = props => {
                     required
                     id="standard-required"
                     label="MaxCount"
+                    type="number"
                     value={ props.maxCount }
-                    onChange={ updateField("MaxCount") }
+                    onChange={ updateNumericField("MaxCount") }
                     margin="normal"
                     />
                 <TextField
                     required
                     id="standard-required"
                     label="MinCount"
+                    type="number"
                     value={ props.minCount }
-                    onChange={ updateField("MinCount") }
+                    onChange={ updateNumericField("MinCount") }
                     margin="normal"
                     />
             </CardContent>

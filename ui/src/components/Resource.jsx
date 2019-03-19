@@ -14,7 +14,11 @@ const Resource = props => {
         props.updateResourceField({ name: name, value: event.target.value, field: field})
     }
 
-    const deleteResource = (event) => {
+    const updateNumericField = field => event => {
+        props.updateNumericResourceField({ name: name, value: event.target.value, field: field})
+    }
+
+    const deleteResource = () => {
         props.deleteResource({ name: name })
     }
 
@@ -57,16 +61,17 @@ const Resource = props => {
                     required
                     id="standard-required"
                     label="Nomad-EC2 Ratio"
+                    type="number"
                     value={ props.ratio }
-                    onChange={ updateField("N2CRatio") }
+                    onChange={ updateNumericField("N2CRatio") }
                     margin="normal"
                     />
-                <Fab size="small" color="primary" aria-label="Delete" onClick={deleteResource}>
+                <Fab size="small" color="primary" aria-label="Delete" onClick={ deleteResource }>
                     <DeleteIcon />
                 </Fab>
             </CardContent>
             <NomadParameters name={ name }/>
-            <EC2Parameters name={name}/>
+            <EC2Parameters name={ name }/>
         </Card>
     )
 };

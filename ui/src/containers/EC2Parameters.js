@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import EC2Parameters from '../components/EC2Parameters'
 
-import { updateEC2Field } from '../actions'
+import { updateEC2Parameter, updateNumericEC2Parameter } from '../actions'
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -14,7 +14,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateEC2Parameters: (input) =>  dispatch(updateEC2Field(input))
+    updateEC2Parameter: input =>  dispatch(updateEC2Parameter(input)),
+    updateNumericEC2Parameter: input =>  dispatch(updateNumericEC2Parameter(input)),
   }
 };
 

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Resource from '../components/Resource';
-import { updateResourceName, updateResourceField, deleteResource } from '../actions';
+import { updateResourceName, updateResourceField, deleteResource, updateNumericResourceField } from '../actions';
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -13,6 +13,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
   return {
     updateResourceName: event => dispatch(updateResourceName(event)),
+    updateNumericResourceField: event => dispatch(updateNumericResourceField(event)),
     updateResourceField: event => dispatch(updateResourceField(event)),
     deleteResource: event => dispatch(deleteResource(event))
   }

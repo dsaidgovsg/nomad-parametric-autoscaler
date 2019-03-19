@@ -10,8 +10,11 @@ export const UPDATE_RESOURCE_NAME = 'UPDATE_RESOURCE_NAME';
 export const UPDATE_RESOURCE_COOLDOWN = 'UPDATE_RESOURCE_COOLDOWN';
 export const UPDATE_RESOURCE_RATIO = 'UPDATE_RESOURCE_RATIO';
 export const UPDATE_RESOURCE_FIELD = 'UPDATE_RESOURCE_FIELD';
+export const UPDATE_RESOURCE_NUMERIC_FIELD = 'UPDATE_RESOURCE_NUMERIC_FIELD';
 export const UPDATE_NOMAD_PARAM = 'UPDATE_NOMAD_PARAM';
+export const UPDATE_NOMAD_NUMERIC_PARAM = 'UPDATE_NOMAD_NUMERIC_PARAM';
 export const UPDATE_EC2_PARAM = 'UPDATE_EC2_PARAM';
+export const UPDATE_EC2_NUMERIC_PARAM = 'UPDATE_EC2_NUMERIC_PARAM';
 
 export const CREATE_SUBPOLICY = 'CREATE_SUBPOLICY';
 export const UPDATE_SUBPOLICY_NAME = 'UPDATE_SUBPOLICY_NAME';
@@ -33,13 +36,23 @@ export const updateCheckingFrequency = value => ({
     change: value,
 })
 
-export const updateEC2Field = change => ({
+export const updateEC2Parameter = change => ({
     type: UPDATE_EC2_PARAM,
+    change: change,
+});
+
+export const updateNumericEC2Parameter = change => ({
+    type: UPDATE_EC2_NUMERIC_PARAM,
     change: change,
 });
 
 export const updateNomadParameters = change => ({
     type: UPDATE_NOMAD_PARAM,
+    change: change,
+});
+
+export const updateNumericNomadParameters = change => ({
+    type: UPDATE_NOMAD_NUMERIC_PARAM,
     change: change,
 });
 
@@ -63,6 +76,11 @@ export const updateResourceName = change => ({
 
 export const updateResourceField = change => ({
     type: UPDATE_RESOURCE_FIELD,
+    change: change,
+});
+
+export const updateNumericResourceField = change => ({
+    type: UPDATE_RESOURCE_NUMERIC_FIELD,
     change: change,
 });
 

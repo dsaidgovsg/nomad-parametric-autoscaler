@@ -5,7 +5,11 @@ import { Card, CardContent, CardHeader } from '../../node_modules/@material-ui/c
 const EC2Parameters = props => {
     const { name } = props;
     const updateField = (name, field) => (event) => {
-        props.updateEC2Parameters({ name: name, value: event.target.value, field: field})
+        props.updateEC2Parameter({ name: name, value: event.target.value, field: field})
+    }
+
+    const updateNumericField = (name, field) => (event) => {
+        props.updateNumericEC2Parameter({ name: name, value: event.target.value, field: field})
     }
 
     return (
@@ -35,16 +39,18 @@ const EC2Parameters = props => {
                     required
                     id="standard-required"
                     label="MaxCount"
+                    type="number"
                     value={ props.maxCount }
-                    onChange={ updateField(name, "MaxCount") }
+                    onChange={ updateNumericField(name, "MaxCount") }
                     margin="normal"
                     />
                 <TextField
                     required
                     id="standard-required"
                     label="MinCount"
+                    type="number"
                     value={ props.minCount }
-                    onChange={ updateField(name, "MinCount") }
+                    onChange={ updateNumericField(name, "MinCount") }
                     margin="normal"
                     />
             </CardContent>

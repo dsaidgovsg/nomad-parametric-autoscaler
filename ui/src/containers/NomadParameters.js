@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import NomadParameters from '../components/NomadParameters';
-import { updateNomadParameters } from '../actions';
+import { updateNomadParameters, updateNumericNomadParameters } from '../actions';
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -14,7 +14,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateNomadParameters: (input) =>  dispatch(updateNomadParameters(input))
+    updateNomadParameters: input =>  dispatch(updateNomadParameters(input)),
+    updateNumericNomadParameters: input =>  dispatch(updateNumericNomadParameters(input))
   }
 }
 

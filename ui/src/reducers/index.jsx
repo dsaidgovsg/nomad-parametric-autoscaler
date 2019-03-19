@@ -11,8 +11,11 @@ import {
     UPDATE_RESOURCE_COOLDOWN,
     UPDATE_RESOURCE_RATIO,
     UPDATE_RESOURCE_FIELD,
+    UPDATE_RESOURCE_NUMERIC_FIELD,
     UPDATE_NOMAD_PARAM,
     UPDATE_EC2_PARAM,
+    UPDATE_NOMAD_NUMERIC_PARAM,
+    UPDATE_EC2_NUMERIC_PARAM,
     CREATE_SUBPOLICY,
     UPDATE_SUBPOLICY_NAME,
     UPDATE_SP_RESOURCE,
@@ -166,6 +169,13 @@ const policy = (state = initialState, action) => {
             Resources: updatedResource,
         }
 
+        case UPDATE_RESOURCE_NUMERIC_FIELD:
+        updatedResource[action.change.name][action.change.field] = parseInt(action.change.value, 10)
+        return {
+            ...state,
+            Resources: updatedResource,
+        }
+
         case UPDATE_NOMAD_PARAM:
         updatedResource[action.change.name].Nomad[action.change.field] = action.change.value
         return {
@@ -173,8 +183,22 @@ const policy = (state = initialState, action) => {
             Resources: updatedResource,
         }
 
+        case UPDATE_NOMAD_NUMERIC_PARAM:
+        updatedResource[action.change.name].Nomad[action.change.field] = parseInt(action.change.value, 10)
+        return {
+            ...state,
+            Resources: updatedResource,
+        }
+
         case UPDATE_EC2_PARAM:
         updatedResource[action.change.name].EC2[action.change.field] = action.change.value
+        return {
+            ...state,
+            Resources: updatedResource,
+        }
+
+        case UPDATE_EC2_NUMERIC_PARAM:
+        updatedResource[action.change.name].EC2[action.change.field] = parseInt(action.change.value, 10)
         return {
             ...state,
             Resources: updatedResource,
