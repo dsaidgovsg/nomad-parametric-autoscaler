@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from "react-redux";
-
 import { Paper } from '../../node_modules/@material-ui/core';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';

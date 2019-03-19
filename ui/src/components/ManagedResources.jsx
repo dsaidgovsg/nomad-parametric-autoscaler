@@ -1,9 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import { Paper, Card, CardContent, CardHeader } from '@material-ui/core';
+import { CardContent } from '@material-ui/core';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -22,7 +19,7 @@ const ManagedResources = (props) => {
 
     const updateResource = resourceName => event => {
         let newResource = resources.slice();
-        const idx = newResource.findIndex((val) => val == resourceName)
+        const idx = newResource.findIndex((val) => val === resourceName)
         newResource[idx] = event.target.value
         props.updateSubpolicyResource({
             name: name,

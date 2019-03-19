@@ -1,9 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import { Paper, Card, CardContent, CardHeader } from '../../node_modules/@material-ui/core';
+import { Card, CardContent, CardHeader } from '../../node_modules/@material-ui/core';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 
