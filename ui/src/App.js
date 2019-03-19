@@ -12,46 +12,52 @@ import StatusSwitch from './components/StatusSwitch';
 import PolicySummary from './containers/PolicySummary';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.sendUpdate = this.sendUpdate.bind(this);
+    this.refreshState = this.refreshState.bind(this);
+  }
   
-  render() {
-
-    const sendUpdate = () => {
-      const state = JSON.parse(JSON.stringify(this.props.state));
-      for (let sp of state.Subpolicies) {
-        sp.Metadata = JSON.parse(sp.Metadata);
-      }
-      
-      axios.post('http://localhost:8080/update', state)
+  sendUpdate() {
+    const state = JSON.parse(JSON.stringify(this.props.state));
+    for (let sp of state.Subpolicies) {
+      sp.Metadata = JSON.parse(sp.Metadata);
     }
+    axios.post(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/update`, state)
+  }
 
-    const updateStatus = () => {
-      // make get call
-      axios.get('http://localhost:8080/state')
-        .then((response) => {
-          try {
-            const newState = response.data
-            for (let sp of newState.Subpolicies) { // convert metadata object to string
-              sp.Metadata = JSON.stringify(sp.Metadata);
-            }
-            this.props.updateState(newState)
-          } catch {
-            console.log("Unable to convert json to string")
+  refreshState() {
+    axios.get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/state`)
+      .then((response) => {
+        try {
+          const newState = response.data
+          for (let sp of newState.Subpolicies) { // convert metadata object to string
+            sp.Metadata = JSON.stringify(sp.Metadata);
           }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
+          this.props.refreshState(newState)
+        } catch {
+          console.log("Unable to convert json to string")
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
+  componentDidMount() {
+    this.refreshState()
+  }
+
+  render() {
     return (
       <div className="App">
       <Topbar>
         <StatusSwitch/>
-        <Button variant="contained" color="primary" onClick={ updateStatus }>
+        <Button variant="contained" color="primary" onClick={ this.refreshState }>
           Refresh
           <RefreshIcon/>
         </Button>
-        <Button variant="contained" color="primary" onClick={ sendUpdate }>
+        <Button variant="contained" color="primary" onClick={ this.sendUpdate }>
           Update
           <SendIcon/>
         </Button>
@@ -70,11 +76,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateState: (event) => dispatch({ type: 'UPDATE_STATE', change: event }),
+    refreshState: (event) => dispatch({ type: 'UPDATE_STATE', change: event }),
   }
 }
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(App)
-
