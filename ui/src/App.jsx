@@ -32,7 +32,7 @@ class App extends Component {
           }
           this.props.refreshState(newState);
         } catch (error) {
-            alert(error);
+          alert(error);
         }
       })
       .catch(function(error) {
