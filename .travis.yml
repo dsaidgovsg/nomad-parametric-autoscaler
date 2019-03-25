@@ -7,8 +7,10 @@ matrix:
         - go test -v ./...
     - language: node_js
       node_js: "9"
-      script:
+      before_script:
         - cd ui/
+        - npm install -g
+      script:
         - npm test
 
 env:
