@@ -8,8 +8,6 @@ import {
   CREATE_RESOURCE,
   DELETE_RESOURCE,
   UPDATE_RESOURCE_NAME,
-  UPDATE_RESOURCE_COOLDOWN,
-  UPDATE_RESOURCE_RATIO,
   UPDATE_RESOURCE_FIELD,
   UPDATE_RESOURCE_NUMERIC_FIELD,
   UPDATE_NOMAD_PARAM,
@@ -142,20 +140,6 @@ const policy = (state = initialState, action) => {
       updatedResource[action.change.newName] =
         updatedResource[action.change.oldName];
       delete updatedResource[action.change.oldName];
-      return {
-        ...state,
-        Resources: updatedResource
-      };
-
-    case UPDATE_RESOURCE_COOLDOWN:
-      updatedResource[action.change.name].Cooldown = action.change.value;
-      return {
-        ...state,
-        Resources: updatedResource
-      };
-
-    case UPDATE_RESOURCE_RATIO:
-      updatedResource[action.change.name].N2CRatio = action.change.value;
       return {
         ...state,
         Resources: updatedResource
