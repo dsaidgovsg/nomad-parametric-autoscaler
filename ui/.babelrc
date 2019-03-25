@@ -1,0 +1,17 @@
+
+{
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ],
+    "presets": [
+      "airbnb",
+      [
+        "@babel/preset-env",
+        {
+          "useBuiltIns": "entry"
+        }
+      ],
+      "@babel/preset-react",
+      "@babel/preset-flow"
+    ]
+}
