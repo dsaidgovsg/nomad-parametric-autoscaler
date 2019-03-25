@@ -20,7 +20,7 @@
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack-dev-server --display-error-details --progress --colors --config webpack.dev.js",
     "eslint": "eslint --ext .js --ext .jsx src/ tests/",
-    "test": "jest"
+    "test": "node_modules/.bin/jest"
   },
   "eslintConfig": {
     "extends": "react-app"
