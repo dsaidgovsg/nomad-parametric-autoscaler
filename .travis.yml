@@ -1,18 +1,22 @@
-language: go
 
-go:
-  - 1.11.x
+matrix:
+  include:
+    - language: go
+      go: 1.11.x      
+      script: 
+        - go test -v ./...
+    - language: bash
+      script:
+        - cd ui/
+        - npm run test
 
 env:
   global:
   - DOCKER_REGISTRY=registry.gahmen.tech
   - IMAGE_NAME=${DOCKER_REGISTRY}/l/nomad-parametric-autoscaler
+  - UI_IMAGE_NAME=${DOCKER_REGISTRY}/l/nomad-parametric-autoscaler-ui
   - GITHUB_USER=datagovsg
   - GITHUB_REPONAME=nomad-parametric-autoscaler
-
-
-script: 
-  - go test -v ./...
 
 deploy:
   provider: releases
@@ -21,5 +25,8 @@ deploy:
     - docker build . -t ${IMAGE_NAME}:${TRAVIS_BRANCH}
     - docker login ${DOCKER_REGISTRY} -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
     - docker push ${IMAGE_NAME}:${TRAVIS_BRANCH}
+    - cd ui/
+    - docker build . -t ${UI_IMAGE_NAME}:${TRAVIS_BRANCH}
+    - docker push ${UI_IMAGE_NAME}:${TRAVIS_BRANCH}
   on:
     tags: true # The deployment happens only if the commit has a tag.
