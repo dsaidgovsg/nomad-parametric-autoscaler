@@ -5,10 +5,11 @@ matrix:
       go: 1.11.x      
       script: 
         - go test -v ./...
-    - language: bash
+    - language: node_js
+      node_js: "9"
       script:
         - cd ui/
-        - npm run test
+        - npm test
 
 env:
   global:
