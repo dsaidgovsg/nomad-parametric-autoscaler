@@ -2,23 +2,30 @@ package subpolicy
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+	"github.com/mitchellh/mapstructure"
 )
 
 // CoreRatioSubPolicy is a subpolicy that extends the `SubPolicy` interface
 // and takes in the GenericSubpolicy struct
 type CoreRatioSubPolicy struct {
 	Name             string
-	MetricSource     string
-	UpThreshold      float64
-	DownThreshold    float64
-	ScaleOut         ScalingMagnitude
-	ScaleIn          ScalingMagnitude
 	managedResources []resources.Resource
+	metadata         CoreRatioSubPolicyMetadata
+}
+
+// CoreRatioSubPolicyMetadata represents metadata unique to CoreRatioSubPolicy
+type CoreRatioSubPolicyMetadata struct {
+	MetricSource  *string           `json:"MetricSource"`
+	UpThreshold   *float64          `json:"UpThreshold"`
+	DownThreshold *float64          `json:"DownThreshold"`
+	ScaleUp       *ScalingMagnitude `json:"ScaleUp"`
+	ScaleDown     *ScalingMagnitude `json:"ScaleDown"`
 }
 
 type coreRatioJSON struct {
@@ -26,60 +33,48 @@ type coreRatioJSON struct {
 	Coresused int `json:"coresused"`
 }
 
-func NewCoreRatioSubpolicy(name string,
-	metricsource string,
-	upthreshold float64,
-	downthreshold float64,
-	scaleOut ScalingMagnitude,
-	scaleIn ScalingMagnitude,
-	mr []resources.Resource) *CoreRatioSubPolicy {
+func NewCoreRatioSubpolicy(name string, mr []resources.Resource, meta interface{}) (*CoreRatioSubPolicy, error) {
+	var decoded CoreRatioSubPolicyMetadata
+	mapstructure.Decode(meta, &decoded)
 
+	if err := verifyCoreRatioMetadata(decoded); err != nil {
+		return nil, err
+	}
 	return &CoreRatioSubPolicy{
 		Name:             name,
-		MetricSource:     metricsource,
-		UpThreshold:      upthreshold,
-		DownThreshold:    downthreshold,
-		ScaleOut:         scaleOut,
-		ScaleIn:          scaleIn,
 		managedResources: mr,
-	}
+		metadata:         decoded,
+	}, nil
 }
 
-func DefaultCoreRatioSubPolicy() *CoreRatioSubPolicy {
-	crsp := CoreRatioSubPolicy{
-		Name:          "CoreRatio",
-		MetricSource:  "https://something",
-		UpThreshold:   0.5,
-		DownThreshold: 0.25,
-		ScaleOut: ScalingMagnitude{
-			ChangeType:  "multiply",
-			ChangeValue: 2.0,
-		},
-		ScaleIn: ScalingMagnitude{
-			ChangeType:  "multiply",
-			ChangeValue: 0.5,
-		},
-		managedResources: make([]resources.Resource, 0),
+func verifyCoreRatioMetadata(meta CoreRatioSubPolicyMetadata) error {
+	if meta.MetricSource == nil {
+		return fmt.Errorf("MetricSource missing from CoreRatioSubPolicyMetadata")
 	}
-	return &crsp
+	if meta.UpThreshold == nil {
+		return fmt.Errorf("UpThreshold missing from CoreRatioSubPolicyMetadata")
+	}
+
+	if meta.DownThreshold == nil {
+		return fmt.Errorf("DownThreshold missing from CoreRatioSubPolicyMetadata")
+	}
+
+	if meta.ScaleDown == nil {
+		return fmt.Errorf("ScaleDown missing from CoreRatioSubPolicyMetadata")
+	}
+
+	if meta.ScaleUp == nil {
+		return fmt.Errorf("ScaleUp missing from CoreRatioSubPolicyMetadata")
+	}
+	return nil
 }
 
 func (crsp CoreRatioSubPolicy) GetManagedResources() []resources.Resource {
 	return crsp.managedResources
 }
 
-func (crsp *CoreRatioSubPolicy) UpdateThreshold(up, down float64) {
-	crsp.DownThreshold = down
-	crsp.UpThreshold = up
-}
-
-func (crsp *CoreRatioSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude) {
-	crsp.ScaleOut = up
-	crsp.ScaleIn = down
-}
-
 func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
-	resp, err := http.Get(crsp.MetricSource)
+	resp, err := http.Get(*crsp.metadata.MetricSource)
 	if err != nil {
 		logging.Error(err.Error())
 	}
@@ -101,10 +96,10 @@ func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
 			ratio := float64(coresUsed) / float64(cores)
 			existingCount := resc.GetNomadClientCount()
 
-			if ratio < crsp.DownThreshold {
-				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleIn)
-			} else if ratio > crsp.UpThreshold {
-				output[resc] = determineNewDesiredLevel(existingCount, crsp.ScaleOut)
+			if ratio < *crsp.metadata.DownThreshold {
+				output[resc] = determineNewDesiredLevel(existingCount, *crsp.metadata.ScaleDown)
+			} else if ratio > *crsp.metadata.UpThreshold {
+				output[resc] = determineNewDesiredLevel(existingCount, *crsp.metadata.ScaleUp)
 			} else {
 				output[resc] = existingCount
 			}
@@ -121,11 +116,7 @@ func (crsp *CoreRatioSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
 
 	return GenericSubPolicy{
 		Name:             crsp.Name,
-		MetricSource:     crsp.MetricSource,
-		UpThreshold:      crsp.UpThreshold,
-		DownThreshold:    crsp.DownThreshold,
-		ScaleOut:         crsp.ScaleOut,
-		ScaleIn:          crsp.ScaleIn,
 		ManagedResources: resourceNameList,
+		Metadata:         crsp.metadata,
 	}
 }

@@ -1,73 +1,65 @@
 package subpolicy
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+	"github.com/mitchellh/mapstructure"
 )
 
 // OfficeHourSubPolicy is a subpolicy that extends the `SubPolicy` interface
 // and takes in the GenericSubpolicy struct
 type OfficeHourSubPolicy struct {
 	Name             string
-	MetricSource     string
-	UpThreshold      float64
-	DownThreshold    float64
-	ScaleOut         ScalingMagnitude
-	ScaleIn          ScalingMagnitude
 	managedResources []resources.Resource
+	metadata         OfficeHourSubPolicyMetadata
 }
 
-func NewOfficeHourSubPolicy(name string,
-	metricsource string,
-	upthreshold float64,
-	downthreshold float64,
-	scaleOut ScalingMagnitude,
-	scaleIn ScalingMagnitude,
-	mr []resources.Resource) *OfficeHourSubPolicy {
+// OfficeHourSubPolicyMetadata represents metadata unique to OfficeHourSubPolicy
+type OfficeHourSubPolicyMetadata struct {
+	UpThreshold   *float64          `json:"UpThreshold"`
+	DownThreshold *float64          `json:"DownThreshold"`
+	ScaleUp       *ScalingMagnitude `json:"ScaleUp"`
+	ScaleDown     *ScalingMagnitude `json:"ScaleDown"`
+}
+
+func NewOfficeHourSubPolicy(name string, mr []resources.Resource, meta interface{}) (*OfficeHourSubPolicy, error) {
+	var decoded OfficeHourSubPolicyMetadata
+	mapstructure.Decode(meta, &decoded)
+
+	if err := verifyOfficeHourMetadata(decoded); err != nil {
+		return nil, err
+	}
 
 	return &OfficeHourSubPolicy{
 		Name:             name,
-		MetricSource:     metricsource,
-		UpThreshold:      upthreshold,
-		DownThreshold:    downthreshold,
-		ScaleOut:         scaleOut,
-		ScaleIn:          scaleIn,
 		managedResources: mr,
-	}
+		metadata:         decoded,
+	}, nil
 }
 
-func DefaultOfficeHourSubPolicy() *OfficeHourSubPolicy {
-	ohsp := OfficeHourSubPolicy{
-		Name:          "OfficeHour",
-		MetricSource:  "https://something",
-		UpThreshold:   18,
-		DownThreshold: 9,
-		ScaleOut: ScalingMagnitude{
-			ChangeType:  "until",
-			ChangeValue: 10,
-		},
-		ScaleIn: ScalingMagnitude{
-			ChangeType:  "until",
-			ChangeValue: 3,
-		},
-		managedResources: make([]resources.Resource, 0),
+func verifyOfficeHourMetadata(meta OfficeHourSubPolicyMetadata) error {
+	if meta.UpThreshold == nil {
+		return fmt.Errorf("UpThreshold missing from OfficeHourSubPolicyMetadata")
 	}
-	return &ohsp
+
+	if meta.DownThreshold == nil {
+		return fmt.Errorf("DownThreshold missing from OfficeHourSubPolicyMetadata")
+	}
+
+	if meta.ScaleUp == nil {
+		return fmt.Errorf("ScaleUp missing from OfficeHourSubPolicyMetadata")
+	}
+
+	if meta.ScaleDown == nil {
+		return fmt.Errorf("ScaleDown missing from OfficeHourSubPolicyMetadata")
+	}
+	return nil
 }
 
 func (ohsp OfficeHourSubPolicy) GetManagedResources() []resources.Resource {
 	return ohsp.managedResources
-}
-
-func (ohsp *OfficeHourSubPolicy) UpdateThreshold(up, down float64) {
-	ohsp.DownThreshold = down
-	ohsp.UpThreshold = up
-}
-
-func (ohsp *OfficeHourSubPolicy) UpdateScalingMagnitude(up, down ScalingMagnitude) {
-	ohsp.ScaleOut = up
-	ohsp.ScaleIn = down
 }
 
 func (ohsp *OfficeHourSubPolicy) RecommendCount() map[resources.Resource]int {
@@ -77,10 +69,10 @@ func (ohsp *OfficeHourSubPolicy) RecommendCount() map[resources.Resource]int {
 
 	// if within office hour, scale-up, else scale-down
 	for _, resc := range ohsp.managedResources {
-		if currentHour < int(ohsp.UpThreshold) && currentHour > int(ohsp.DownThreshold) {
-			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleOut)
+		if currentHour < int(*ohsp.metadata.UpThreshold) && currentHour > int(*ohsp.metadata.DownThreshold) {
+			output[resc] = determineNewDesiredLevel(0, *ohsp.metadata.ScaleUp)
 		} else {
-			output[resc] = determineNewDesiredLevel(0, ohsp.ScaleIn)
+			output[resc] = determineNewDesiredLevel(0, *ohsp.metadata.ScaleDown)
 		}
 	}
 	return output
@@ -94,11 +86,7 @@ func (crsp *OfficeHourSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
 
 	return GenericSubPolicy{
 		Name:             crsp.Name,
-		MetricSource:     crsp.MetricSource,
-		UpThreshold:      crsp.UpThreshold,
-		DownThreshold:    crsp.DownThreshold,
-		ScaleOut:         crsp.ScaleOut,
-		ScaleIn:          crsp.ScaleIn,
 		ManagedResources: resourceNameList,
+		Metadata:         crsp.metadata,
 	}
 }
