@@ -25,12 +25,10 @@ import {
   updateEC2Parameter,
   updateNumericEC2Parameter,
   createSubpolicy,
-  createResource,
   updateSubpolicyName,
   deleteSubpolicy,
   updateMeta,
   updateSubpolicyResource,
-  updateResourceName,
   deleteResource,
   updateNumericResourceField,
   updateResourceField,
@@ -78,10 +76,6 @@ describe("Actions", () => {
   it("Subpolicy updates should show produce right action", () => {
     expect(createSubpolicy()).toEqual({
       type: CREATE_SUBPOLICY
-    });
-
-    expect(createResource()).toEqual({
-      type: CREATE_RESOURCE
     });
 
     expect(updateSubpolicyName({ val: "name" })).toEqual({

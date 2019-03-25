@@ -28,6 +28,7 @@ export const initialState = {
   Ensembler: "conservative",
   Resources: {
     Sample: {
+      Name: "Sample",
       Nomad: {
         Address: "",
         JobName: "",
@@ -46,6 +47,7 @@ export const initialState = {
       N2CRatio: 0
     },
     Sample2: {
+      Name: "Sample2",
       Nomad: {
         Address: "",
         JobName: "",
@@ -66,6 +68,7 @@ export const initialState = {
   },
   Subpolicies: [
     {
+      Id: "coreratio",
       Name: "CoreRatio",
       ManagedResources: ["Sample2", "Sample"],
       Metadata: `{
@@ -85,7 +88,7 @@ export const initialState = {
   ]
 };
 
-const policy = (state = initialState, action) => {
+export const policy = (state = initialState, action) => {
   const updatedResource = JSON.parse(JSON.stringify(state.Resources));
   let sp = state.Subpolicies.slice();
 
@@ -98,6 +101,7 @@ const policy = (state = initialState, action) => {
         ...state,
         CheckingFreq: action.change
       };
+
     case UPDATE_ENSEMBLER:
       return {
         ...state,
@@ -154,14 +158,16 @@ const policy = (state = initialState, action) => {
       };
 
     case UPDATE_RESOURCE_NUMERIC_FIELD:
-      updatedResource[action.change.name][action.change.field] = parseInt(
-        action.change.value,
-        10
-      );
-      return {
-        ...state,
-        Resources: updatedResource
-      };
+      let resourceNumericField = parseInt(action.change.value, 10);
+      if (resourceNumericField) {
+        updatedResource[action.change.name][action.change.field] = resourceNumericField;
+        return {
+          ...state,
+          Resources: updatedResource
+        };
+      } else {
+        return state;
+      }
 
     case UPDATE_NOMAD_PARAM:
       updatedResource[action.change.name].Nomad[action.change.field] =
@@ -172,14 +178,18 @@ const policy = (state = initialState, action) => {
       };
 
     case UPDATE_NOMAD_NUMERIC_PARAM:
-      updatedResource[action.change.name].Nomad[action.change.field] = parseInt(
-        action.change.value,
-        10
-      );
-      return {
-        ...state,
-        Resources: updatedResource
-      };
+      let nomadNumericParam = parseInt(action.change.value, 10);
+      if (nomadNumericParam) {
+        updatedResource[action.change.name].Nomad[
+          action.change.field
+        ] = nomadNumericParam;
+        return {
+          ...state,
+          Resources: updatedResource
+        };
+      } else {
+        return state;
+      }
 
     case UPDATE_EC2_PARAM:
       updatedResource[action.change.name].EC2[action.change.field] =
@@ -190,14 +200,19 @@ const policy = (state = initialState, action) => {
       };
 
     case UPDATE_EC2_NUMERIC_PARAM:
-      updatedResource[action.change.name].EC2[action.change.field] = parseInt(
-        action.change.value,
-        10
-      );
+    let ec2NumericParam = parseInt(action.change.value, 10);
+    if (ec2NumericParam) {
+      updatedResource[action.change.name].EC2[
+        action.change.field
+      ] = ec2NumericParam;
       return {
         ...state,
         Resources: updatedResource
       };
+    } else {
+      return state;
+    }
+
 
     case CREATE_SUBPOLICY:
       sp.push({
@@ -212,6 +227,8 @@ const policy = (state = initialState, action) => {
       };
 
     case UPDATE_SUBPOLICY_NAME:
+
+    // make sure no current SP have that name
       for (let i = 0; i < sp.length; i++) {
         if (sp[i].Name === action.change.oldName) {
           sp[i].Name = action.change.newName;
