@@ -2,16 +2,16 @@ import React from "react";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import Button from "@material-ui/core/Button";
-import ResourceGroup from "../src/components/ResourceGroup";
-import Resource from "../src/containers/Resource";
+import SubpolicyGroup from "../../src/components/SubpolicyGroup";
+import Subpolicy from "../../src/containers/Subpolicy";
 
 function shallowSetup() {
   const props = {
-    resources: ["a", "b"],
-    createResource: jest.fn()
+    subpolicies: ["a", "b", "c"],
+    createSubpolicy: jest.fn()
   };
 
-  const enzymeWrapper = shallow(<ResourceGroup {...props} />);
+  const enzymeWrapper = shallow(<SubpolicyGroup {...props} />);
   return {
     props,
     enzymeWrapper
@@ -19,20 +19,22 @@ function shallowSetup() {
 }
 
 configure({ adapter: new Adapter() });
-describe("ResourceGroup", () => {
+describe("SubpolicyGroup", () => {
   describe("renders", () => {
     it("it should render correct number of resources", () => {
       const { enzymeWrapper } = shallowSetup();
-      expect(enzymeWrapper.find(Resource).length).toEqual(2);
+      expect(enzymeWrapper.find(Subpolicy).length).toEqual(3);
     });
   });
 
   describe("clicks", () => {
     it("clicking delete should trigger createResource", () => {
       const { enzymeWrapper, props } = shallowSetup();
+      expect(enzymeWrapper.find(Button).length).toEqual(1);
+
       const button = enzymeWrapper.find(Button).first();
       button.simulate("click");
-      expect(props.createResource.mock.calls.length).toBe(1);
+      expect(props.createSubpolicy.mock.calls.length).toBe(1);
     });
   });
 });

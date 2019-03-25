@@ -4,7 +4,7 @@ import { shallow, configure } from "enzyme";
 import configureStore from "redux-mock-store"; //ES6 modules
 import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
-import ManagedResources from "../src/components/ManagedResources";
+import ManagedResources from "../../src/components/ManagedResources";
 
 const middlewares = [];
 const mockStore = configureStore(middlewares);

@@ -2,7 +2,7 @@ import React from "react";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import TextField from "@material-ui/core/TextField";
-import EC2Parameters from "../src/components/EC2Parameters";
+import EC2Parameters from "../../src/components/EC2Parameters";
 
 function shallowSetup() {
   const props = {

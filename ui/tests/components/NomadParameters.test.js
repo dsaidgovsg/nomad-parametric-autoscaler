@@ -1,7 +1,7 @@
 import React from "react";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
-import NomadParameters from "../src/components/NomadParameters";
+import NomadParameters from "../../src/components/NomadParameters";
 import TextField from "@material-ui/core/TextField";
 
 function shallowSetup() {

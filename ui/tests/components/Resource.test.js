@@ -3,9 +3,9 @@ import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
-import Resource from "../src/components/Resource";
-import EC2Parameters from "../src/containers/EC2Parameters";
-import NomadParameters from "../src/containers/NomadParameters";
+import Resource from "../../src/components/Resource";
+import EC2Parameters from "../../src/containers/EC2Parameters";
+import NomadParameters from "../../src/containers/NomadParameters";
 
 function shallowSetup() {
   const props = {

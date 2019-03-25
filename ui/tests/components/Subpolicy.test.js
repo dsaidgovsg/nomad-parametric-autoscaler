@@ -6,8 +6,8 @@ import configureStore from "redux-mock-store"; //ES6 modules
 import { Provider } from "react-redux";
 import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
-import Subpolicy from "../src/components/Subpolicy";
-import ManagedResources from "../src/containers/ManagedResources";
+import Subpolicy from "../../src/components/Subpolicy";
+import ManagedResources from "../../src/containers/ManagedResources";
 
 const middlewares = [];
 const mockStore = configureStore(middlewares);
