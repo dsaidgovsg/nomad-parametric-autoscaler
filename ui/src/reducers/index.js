@@ -160,7 +160,9 @@ export const policy = (state = initialState, action) => {
     case UPDATE_RESOURCE_NUMERIC_FIELD:
       let resourceNumericField = parseInt(action.change.value, 10);
       if (resourceNumericField) {
-        updatedResource[action.change.id][action.change.field] = resourceNumericField;
+        updatedResource[action.change.id][
+          action.change.field
+        ] = resourceNumericField;
         return {
           ...state,
           Resources: updatedResource
@@ -200,19 +202,18 @@ export const policy = (state = initialState, action) => {
       };
 
     case UPDATE_EC2_NUMERIC_PARAM:
-    let ec2NumericParam = parseInt(action.change.value, 10);
-    if (ec2NumericParam) {
-      updatedResource[action.change.name].EC2[
-        action.change.field
-      ] = ec2NumericParam;
-      return {
-        ...state,
-        Resources: updatedResource
-      };
-    } else {
-      return state;
-    }
-
+      let ec2NumericParam = parseInt(action.change.value, 10);
+      if (ec2NumericParam) {
+        updatedResource[action.change.name].EC2[
+          action.change.field
+        ] = ec2NumericParam;
+        return {
+          ...state,
+          Resources: updatedResource
+        };
+      } else {
+        return state;
+      }
 
     case CREATE_SUBPOLICY:
       sp.push({
@@ -228,8 +229,7 @@ export const policy = (state = initialState, action) => {
       };
 
     case UPDATE_SUBPOLICY_NAME:
-
-    // make sure no current SP have that name
+      // make sure no current SP have that name
       for (let i = 0; i < sp.length; i++) {
         if (sp[i].Id === action.change.id) {
           sp[i].Name = action.change.newName;

@@ -10,7 +10,7 @@ import ManagedResources from "../containers/ManagedResources";
 const Subpolicy = props => {
   const { id, name, resources, metadata } = props;
   const updateField = event => {
-    props.updateMeta({ id: name, value: event.target.value });
+    props.updateMeta({ id: id, value: event.target.value });
   };
 
   const deleteSubpolicy = () => {
@@ -34,7 +34,7 @@ const Subpolicy = props => {
           onChange={renameSubpolicy}
           margin="normal"
         />
-        <ManagedResources name={name} resources={resources} />
+        <ManagedResources id={id} resources={resources} />
         <TextField
           required
           multiline
