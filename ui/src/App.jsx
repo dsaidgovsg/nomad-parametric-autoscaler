@@ -8,6 +8,7 @@ import Topbar from "./components/Topbar";
 import StatusSwitch from "./components/StatusSwitch";
 import PolicySummary from "./containers/PolicySummary";
 import { Button } from "../node_modules/@material-ui/core";
+import { uiToServerConversion, serverToUIConversion } from "./utils/stateConversion";
 
 class App extends Component {
   constructor(props) {
@@ -24,16 +25,8 @@ class App extends Component {
     axios
       .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/state`)
       .then(response => {
-        try {
-          const newState = response.data;
-          for (let sp of newState.Subpolicies) {
-            // convert metadata object to string
-            sp.Metadata = JSON.stringify(sp.Metadata);
-          }
-          this.props.refreshState(newState);
-        } catch (error) {
-          alert(error);
-        }
+        const newState = serverToUIConversion(response.data);
+        newState && this.props.refreshState(newState);
       })
       .catch(function(error) {
         alert(error);
@@ -42,10 +35,8 @@ class App extends Component {
 
   sendUpdate() {
     const state = JSON.parse(JSON.stringify(this.props.state));
-    for (let sp of state.Subpolicies) {
-      sp.Metadata = JSON.parse(sp.Metadata);
-    }
-    axios.post(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/update`, state);
+    const out = uiToServerConversion(state);
+    out && axios.post(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/update`, out);
   }
 
   render() {

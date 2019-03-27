@@ -12,11 +12,11 @@ import NomadParameters from "../containers/NomadParameters";
 import EC2Parameters from "../containers/EC2Parameters";
 
 const Resource = props => {
-  const { name } = props;
+  const { id } = props;
 
   const updateField = field => event => {
     props.updateResourceField({
-      name: name,
+      id: id,
       value: event.target.value,
       field: field
     });
@@ -24,18 +24,18 @@ const Resource = props => {
 
   const updateNumericField = field => event => {
     props.updateNumericResourceField({
-      name: name,
+      id: id,
       value: event.target.value,
       field: field
     });
   };
 
   const deleteResource = () => {
-    props.deleteResource({ name: name });
+    props.deleteResource({ id: id });
   };
 
   const renameResource = event => {
-    props.updateResourceName({ oldName: name, newName: event.target.value });
+    props.updateResourceName({ id: id, newName: event.target.value });
   };
 
   // resource will contain details for ratio, cooldown,
@@ -47,7 +47,7 @@ const Resource = props => {
           required
           id="standard-required"
           label="Resource Name"
-          value={name}
+          value={props.resourceName}
           onChange={renameResource}
           margin="normal"
         />
@@ -85,14 +85,15 @@ const Resource = props => {
           <DeleteIcon />
         </Fab>
       </CardContent>
-      <NomadParameters name={name} />
-      <EC2Parameters name={name} />
+      <NomadParameters name={id} />
+      <EC2Parameters name={id} />
     </Card>
   );
 };
 
 Resource.propTypes = {
-  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  resourceName: PropTypes.string.isRequired,
   scaleInCooldown: PropTypes.string.isRequired,
   scaleOutCooldown: PropTypes.string.isRequired,
   ratio: PropTypes.number.isRequired,

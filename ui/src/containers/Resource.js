@@ -9,9 +9,10 @@ import {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    scaleInCooldown: state.policy.Resources[ownProps.name].ScaleInCooldown,
-    scaleOutCooldown: state.policy.Resources[ownProps.name].ScaleOutCooldown,
-    ratio: state.policy.Resources[ownProps.name].N2CRatio
+    resourceName: state.policy.Resources[ownProps.id].Name,
+    scaleInCooldown: state.policy.Resources[ownProps.id].ScaleInCooldown,
+    scaleOutCooldown: state.policy.Resources[ownProps.id].ScaleOutCooldown,
+    ratio: state.policy.Resources[ownProps.id].N2CRatio
   };
 };
 

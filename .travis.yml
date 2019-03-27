@@ -20,9 +20,8 @@ matrix:
 
 env:
   global:
-  - DOCKER_REGISTRY=registry.gahmen.tech
-  - IMAGE_NAME=${DOCKER_REGISTRY}/l/nomad-parametric-autoscaler
-  - UI_IMAGE_NAME=${DOCKER_REGISTRY}/l/nomad-parametric-autoscaler-ui
+  - IMAGE_NAME=${DOCKER_REGISTRY}/nomad-parametric-autoscaler
+  - UI_IMAGE_NAME=${DOCKER_REGISTRY}/nomad-parametric-autoscaler-ui
   - GITHUB_USER=datagovsg
   - GITHUB_REPONAME=nomad-parametric-autoscaler
 

@@ -12,7 +12,7 @@ const ResourceGroup = props => {
     <div>
       <Paper elevation={1}>
         {resources.map(r => (
-          <Resource key={r} name={r} />
+          <Resource key={r} id={r} />
         ))}
       </Paper>
       <Button size="small" color="primary" onClick={props.createResource}>

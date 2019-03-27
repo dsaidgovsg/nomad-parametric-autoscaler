@@ -8,17 +8,17 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ManagedResources from "../containers/ManagedResources";
 
 const Subpolicy = props => {
-  const { name, resources, metadata } = props;
+  const { id, name, resources, metadata } = props;
   const updateField = event => {
-    props.updateMeta({ name: name, value: event.target.value });
+    props.updateMeta({ id: name, value: event.target.value });
   };
 
   const deleteSubpolicy = () => {
-    props.deleteSubpolicy({ name: name });
+    props.deleteSubpolicy({ id: id });
   };
 
   const renameSubpolicy = event => {
-    props.updateSubpolicyName({ oldName: name, newName: event.target.value });
+    props.updateSubpolicyName({ id: id, newName: event.target.value });
   };
 
   // resource will contain details for ratio, cooldown,
@@ -59,6 +59,7 @@ const Subpolicy = props => {
 };
 
 Subpolicy.propTypes = {
+  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   resources: PropTypes.arrayOf(PropTypes.string).isRequired,
   metadata: PropTypes.string.isRequired,
