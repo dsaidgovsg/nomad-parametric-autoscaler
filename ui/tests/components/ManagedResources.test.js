@@ -14,7 +14,7 @@ const store = mockStore(initialState);
 
 function shallowSetup() {
   const props = {
-    name: "test",
+    id: "test",
     resources: ["a", "b", "c"],
     updateSubpolicyResource: jest.fn()
   };

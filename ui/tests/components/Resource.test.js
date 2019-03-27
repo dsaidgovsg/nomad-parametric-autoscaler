@@ -9,7 +9,8 @@ import NomadParameters from "../../src/containers/NomadParameters";
 
 function shallowSetup() {
   const props = {
-    name: "test",
+    id: "id",
+    resourceName: "test",
     scaleInCooldown: "1m",
     scaleOutCooldown: "1m30s",
     ratio: 3,
