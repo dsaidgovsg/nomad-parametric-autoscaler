@@ -5,10 +5,10 @@ import { CardContent } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
-import _ from 'lodash';
+import MenuItem from "@material-ui/core/MenuItem";
 
 const ManagedResources = props => {
-  const { id, resources } = props;
+  const { name, resources, possibleResources } = props;
 
   const deleteSubpolicyResource = resourceName => () => {
     let newResource = resources.slice().filter(r => r !== resourceName);
@@ -22,11 +22,16 @@ const ManagedResources = props => {
   const updateResource = resourceName => event => {
     let newResource = resources.slice();
     const idx = newResource.findIndex(val => val === resourceName);
-    newResource[idx] = event.target.value;
-    props.updateSubpolicyResource({
-      id: id,
-      newManagedResources: newResource
-    });
+
+    if (!newResource.includes(event.target.value)) {
+      newResource[idx] = event.target.value;
+      props.updateSubpolicyResource({
+        name: name,
+        newManagedResources: newResource
+      });
+    } else {
+      alert("Resource already selected");
+    }
   };
 
   const addSPResource = () => {
@@ -44,11 +49,18 @@ const ManagedResources = props => {
         <div key={mr}>
           <TextField
             required
+            select
             label="Resource Name"
             value={mr}
             onChange={updateResource(mr)}
             margin="normal"
-          />
+          >
+            {possibleResources.map(pr => (
+              <MenuItem key={pr} value={pr}>
+                {pr}
+              </MenuItem>
+            ))}
+          </TextField>
           <Fab
             size="small"
             color="primary"
@@ -68,6 +80,7 @@ const ManagedResources = props => {
 ManagedResources.propTypes = {
   id: PropTypes.string.isRequired,
   resources: PropTypes.arrayOf(PropTypes.string).isRequired,
+  possibleResources: PropTypes.arrayOf(PropTypes.string).isRequired,
   updateSubpolicyResource: PropTypes.func.isRequired
 };
 
