@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+updateNumericResourceFieldimport React, { Component } from "react";
 import PropTypes from "prop-types";
 import "./App.css";
 import SendIcon from "@material-ui/icons/Send";
@@ -75,8 +75,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-  refreshState: PropTypes.func,
-  state: PropTypes.object
+  refreshState: PropTypes.func.isRequired,
+  state: PropTypes.object.isRequired
 };
 
 export default App;

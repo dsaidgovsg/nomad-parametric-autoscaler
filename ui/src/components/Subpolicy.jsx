@@ -4,11 +4,11 @@ import TextField from "@material-ui/core/TextField";
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
-
+import MenuItem from "@material-ui/core/MenuItem";
 import ManagedResources from "../containers/ManagedResources";
 
 const Subpolicy = props => {
-  const { id, name, resources, metadata } = props;
+  const { name, resources, metadata, possibleSubpolicyList } = props;
   const updateField = event => {
     props.updateMeta({ id: id, value: event.target.value });
   };
@@ -28,13 +28,19 @@ const Subpolicy = props => {
       <CardContent>
         <TextField
           required
+          select
           id="standard-required"
           label="Subpolicy Name"
           value={name}
           onChange={renameSubpolicy}
           margin="normal"
-        />
-        <ManagedResources id={id} resources={resources} />
+        >
+          {possibleSubpolicyList &&
+            possibleSubpolicyList.map(ps => (
+              <MenuItem value={ps}>{ps}</MenuItem>
+            ))}
+        </TextField>
+        <ManagedResources name={name} resources={resources} />
         <TextField
           required
           multiline
@@ -63,6 +69,7 @@ Subpolicy.propTypes = {
   name: PropTypes.string.isRequired,
   resources: PropTypes.arrayOf(PropTypes.string).isRequired,
   metadata: PropTypes.string.isRequired,
+  possibleSubpolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
   updateMeta: PropTypes.func.isRequired,
   deleteSubpolicy: PropTypes.func.isRequired,
   updateSubpolicyName: PropTypes.func.isRequired
