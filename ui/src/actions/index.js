@@ -21,7 +21,7 @@ export const UPDATE_SUBPOLICY_RESOURCE = "UPDATE_SUBPOLICY_RESOURCE";
 export const UPDATE_SP_META = "UPDATE_SP_META";
 export const DELETE_SUBPOLICY = "DELETE_SUBPOLICY";
 
-export const UPDATE_POSSIBLE_SUBPOLICY_LIST = "UPDATE_POSSIBLE_SUBPOLICY_LIST";
+export const UPDATE_POSSIBLE_DEFAULTS_LIST = "UPDATE_POSSIBLE_DEFAULTS_LIST";
 
 /*
  * action creators
@@ -104,7 +104,7 @@ export const updateMeta = change => ({
   change: change
 });
 
-export const updatePossibleSubpolicyList = change => ({
-  type: UPDATE_POSSIBLE_SUBPOLICY_LIST,
+export const updatePossibleDefaultsList = change => ({
+  type: UPDATE_POSSIBLE_DEFAULTS_LIST,
   change: change
 });

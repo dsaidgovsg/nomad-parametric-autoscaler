@@ -12,7 +12,7 @@ const mapStateToProps = (state, ownProps) => {
     name: sp.Name,
     metadata: sp.Metadata,
     resources: sp.ManagedResources,
-    possibleSubpolicyList: state.subpolicyList
+    possibleSubpolicyList: state.defaultsList.subpolicies
   };
 };
 

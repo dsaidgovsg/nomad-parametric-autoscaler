@@ -31,10 +31,26 @@ class App extends Component {
     );
 
     axios
-      .get(reqUrl)
+      .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/predefined`)
       .then(response => {
-        const newState = serverToUIConversion(response.data);
-        newState && this.props.refreshState(newState);
+        this.props.updatePossibleDefaultsList(response.data);
+        axios
+          .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/state`)
+          .then(response => {
+            try {
+              const newState = response.data;
+              for (let sp of newState.Subpolicies) {
+                // convert metadata object to string
+                sp.Metadata = JSON.stringify(sp.Metadata);
+              }
+              this.props.refreshState(newState);
+            } catch (error) {
+              alert(error);
+            }
+          })
+          .catch(function(error) {
+            alert(error);
+          });
       })
       .catch(function(error) {
         alert(error);

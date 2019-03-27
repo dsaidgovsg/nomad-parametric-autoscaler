@@ -21,14 +21,17 @@ import {
   UPDATE_SUBPOLICY_RESOURCE,
   UPDATE_SP_META,
   DELETE_SUBPOLICY,
-  UPDATE_POSSIBLE_SUBPOLICY_LIST
+  UPDATE_POSSIBLE_DEFAULTS_LIST
 } from "../actions";
 
-export const possibleSubpolicies = ["CoreRatio"];
+export const possibleDefaults = {
+  subpolicies: ["CoreRatio"],
+  ensemblers: ["Conservative"]
+}
 
 export const initialState = {
   CheckingFreq: "1m",
-  Ensembler: "conservative",
+  Ensembler: "Conservative",
   Resources: {
     uuid1: {
       Name: "Sample",
@@ -298,13 +301,14 @@ export const policy = (state = initialState, action) => {
   }
 };
 
-export const subpolicyList = (state = possibleSubpolicies, action) => {
+export const defaultsList = (state = possibleDefaults, action) => {
   switch (action.type) {
-    case UPDATE_POSSIBLE_SUBPOLICY_LIST:
+    case UPDATE_POSSIBLE_DEFAULTS_LIST:
       return action.change;
     default:
       return state;
   }
 };
 
-export const rootReducer = combineReducers({ policy, subpolicyList });
+
+export const rootReducer = combineReducers({ policy, defaultsList });

@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import App from "../App";
-import { updatePossibleSubpolicyList } from "../actions";
+import { updatePossibleDefaultsList } from "../actions";
 
 const mapStateToProps = state => {
   return {
@@ -13,8 +13,8 @@ const mapDispatchToProps = dispatch => {
     refreshState: event => {
       dispatch({ type: "UPDATE_STATE", change: event });
     },
-    updatePossibleSubpolicyList: event => {
-      dispatch(updatePossibleSubpolicyList(event));
+    updatePossibleDefaultsList: event => {
+      dispatch(updatePossibleDefaultsList(event));
     }
   };
 };
