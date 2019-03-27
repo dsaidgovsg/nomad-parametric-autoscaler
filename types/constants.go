@@ -10,3 +10,4 @@ const EnsembleConservative = "Conservative"
 const EnsembleAverage = "Average"
 
 var SubpolicyList = []string{CoreRatio, OfficeHour}
+var EnsemblerList = []string{EnsembleConservative, EnsembleAverage}
