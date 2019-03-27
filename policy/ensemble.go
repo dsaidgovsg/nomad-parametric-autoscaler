@@ -2,6 +2,8 @@ package policy
 
 import (
 	"fmt"
+
+	"github.com/datagovsg/nomad-parametric-autoscaler/types"
 )
 
 /*
@@ -18,11 +20,11 @@ type Ensembler interface {
 // GetEnsembler matches name and returns an ensembler
 func GetEnsembler(name string) (Ensembler, error) {
 	switch name {
-	case "Conservative":
+	case types.EnsembleConservative:
 		return ConservativeEnsembling{
 			name: name,
 		}, nil
-	case "Average":
+	case types.EnsembleAverage:
 		return AverageEnsembling{
 			name: name,
 		}, nil
