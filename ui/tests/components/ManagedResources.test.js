@@ -38,10 +38,11 @@ describe("ManagedResources", () => {
 
     it("it should render with correct number of resources", () => {
       const { enzymeWrapper } = shallowSetup();
+      const extraAppearances = enzymeWrapper.find(TextField).length;
       // + 3 due to each textfield having menu item w resource name
-      expect(enzymeWrapper.find({ value: "a" }).length).toEqual(1 + 3);
-      expect(enzymeWrapper.find({ value: "b" }).length).toEqual(1 + 3);
-      expect(enzymeWrapper.find({ value: "c" }).length).toEqual(1 + 3);
+      expect(enzymeWrapper.find({ value: "a" }).length).toEqual(1 + extraAppearances);
+      expect(enzymeWrapper.find({ value: "b" }).length).toEqual(1 + extraAppearances);
+      expect(enzymeWrapper.find({ value: "c" }).length).toEqual(1 + extraAppearances);
     });
   });
 
