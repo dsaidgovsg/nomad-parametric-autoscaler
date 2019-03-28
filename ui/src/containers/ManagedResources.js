@@ -6,7 +6,8 @@ const mapStateToProps = state => {
   let possibleResources = [];
   for (let key in state.policy.Resources) {
     if (state.policy.Resources.hasOwnProperty(key)) {
-      possibleResources.push(state.policy.Resources[key].Name);
+      // possibleResources.push(state.policy.Resources[key].Name);
+      possibleResources.push(key);
     }
   }
 
