@@ -17,9 +17,17 @@ class StatusSwitch extends React.Component {
 
   handleChange(event) {
     if (event.target.checked) {
-      axios.put(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/resume`);
+      const resumeUrl = new URL(
+        "/resume",
+        window.config.env.REACT_APP_NOPAS_ENDPOINT
+      );
+      axios.put(resumeUrl);
     } else {
-      axios.put(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/pause`);
+      const pauseUrl = new URL(
+        "/pause",
+        window.config.env.REACT_APP_NOPAS_ENDPOINT
+      );
+      axios.put(pauseUrl);
     }
 
     this.setState({

@@ -20,13 +20,18 @@ import {
   UPDATE_SP_RESOURCE,
   UPDATE_SUBPOLICY_RESOURCE,
   UPDATE_SP_META,
-  DELETE_SUBPOLICY
+  DELETE_SUBPOLICY,
+  UPDATE_POSSIBLE_DEFAULTS_LIST
 } from "../actions";
 
-// TODO: change to fetch fn that gets from nopas backend
+export const possibleDefaults = {
+  subpolicies: ["CoreRatio"],
+  ensemblers: ["Conservative"]
+}
+
 export const initialState = {
   CheckingFreq: "1m",
-  Ensembler: "conservative",
+  Ensembler: "Conservative",
   Resources: {
     uuid1: {
       Name: "Sample",
@@ -296,4 +301,14 @@ export const policy = (state = initialState, action) => {
   }
 };
 
-export const rootReducer = combineReducers({ policy });
+export const defaultsList = (state = possibleDefaults, action) => {
+  switch (action.type) {
+    case UPDATE_POSSIBLE_DEFAULTS_LIST:
+      return action.change;
+    default:
+      return state;
+  }
+};
+
+
+export const rootReducer = combineReducers({ policy, defaultsList });

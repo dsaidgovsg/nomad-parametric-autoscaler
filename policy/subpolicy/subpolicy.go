@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+	"github.com/datagovsg/nomad-parametric-autoscaler/types"
 )
 
 // ScalingMagnitude needs a way better name
@@ -29,13 +30,13 @@ type GenericSubPolicy struct {
 // CreateSpecificSubpolicy checks name of GSP and creates the actual policy
 func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (SubPolicy, error) {
 	switch gsp.Name {
-	case "CoreRatio":
+	case types.CoreRatio:
 		sp, err := NewCoreRatioSubpolicy(gsp.Name, mr, gsp.Metadata)
 		if err != nil {
 			return nil, err
 		}
 		return sp, nil
-	case "OfficeHour":
+	case types.OfficeHour:
 		sp, err := NewOfficeHourSubPolicy(gsp.Name, mr, gsp.Metadata)
 		if err != nil {
 			return nil, err
@@ -50,9 +51,9 @@ func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (Sub
 // of scaling methods
 func determineNewDesiredLevel(cur int, sm ScalingMagnitude) int {
 	switch sm.ChangeType {
-	case "multiply":
+	case types.ChangeTypeMultiply:
 		return int(float64(cur) * sm.ChangeValue)
-	case "until":
+	case types.ChangeTypeUntil:
 		return int(sm.ChangeValue)
 	default:
 		return cur

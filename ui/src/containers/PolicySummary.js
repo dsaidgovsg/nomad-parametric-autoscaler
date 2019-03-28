@@ -5,7 +5,8 @@ import { updateCheckingFrequency, updateEnsembler } from "../actions";
 const mapStateToProps = state => {
   return {
     frequency: state.policy.CheckingFreq,
-    ensembler: state.policy.Ensembler
+    ensembler: state.policy.Ensembler,
+    possibleEnsemblerList: state.defaultsList.ensemblers
   };
 };
 

@@ -32,6 +32,7 @@ func NewRouter(ep *endpoints) *gin.Engine {
 	// Core endpoints
 	router.GET("/state", ep.GetPolicy)
 	router.GET("/status", ep.GetResourceStatus)
+	router.GET("/predefined", ep.GetPredefinedFeatures)
 	router.POST("/update", ep.UpdatePolicy)
 
 	// Helper endpoints

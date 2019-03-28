@@ -24,21 +24,30 @@ class App extends Component {
     this.refreshState();
   }
 
-  refreshState() {
-    const reqUrl = new URL(
+  async refreshState() {
+    const predefinedUrl = new URL(
+      "/predefined",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+    const stateUrl = new URL(
       "/state",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
 
-    axios
-      .get(reqUrl)
-      .then(response => {
-        const newState = serverToUIConversion(response.data);
-        newState && this.props.refreshState(newState);
-      })
-      .catch(function(error) {
-        alert(error);
-      });
+    let firstResponse = await axios.get(predefinedUrl);
+    if (firstResponse.err) {
+      alert(firstResponse.err);
+      return;
+    }
+
+    this.props.updatePossibleDefaultsList(firstResponse.data);
+    let secondResponse = await axios.get(stateUrl);
+    if (secondResponse.err) {
+      alert(secondResponse.err);
+    } else {
+      const newState = serverToUIConversion(secondResponse.data);
+      this.props.refreshState(newState);
+    }
   }
 
   sendUpdate() {
@@ -75,8 +84,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-  refreshState: PropTypes.func,
-  state: PropTypes.object
+  refreshState: PropTypes.func.isRequired,
+  state: PropTypes.object.isRequired
 };
 
 export default App;

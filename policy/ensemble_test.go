@@ -2,26 +2,28 @@ package policy
 
 import (
 	"testing"
+
+	"github.com/datagovsg/nomad-parametric-autoscaler/types"
 )
 
 func TestEnsemblerFetching(t *testing.T) {
-	es, err := GetEnsembler("Conservative")
+	es, err := GetEnsembler(types.EnsembleConservative)
 
 	if err != nil {
 		t.Errorf("Expected keyword `Conservative` to be valid")
 	}
 
-	if es != (ConservativeEnsembling{name: "Conservative"}) {
+	if es != (ConservativeEnsembling{name: types.EnsembleConservative}) {
 		t.Errorf("ConservativeEnsembling struct to be fetched")
 	}
 
-	es, err = GetEnsembler("Average")
+	es, err = GetEnsembler(types.EnsembleAverage)
 
 	if err != nil {
 		t.Errorf("Expected keyword `Average` to be valid")
 	}
 
-	if es != (AverageEnsembling{name: "Average"}) {
+	if es != (AverageEnsembling{name: types.EnsembleAverage}) {
 		t.Errorf("AverageEnsembling struct to be fetched")
 	}
 

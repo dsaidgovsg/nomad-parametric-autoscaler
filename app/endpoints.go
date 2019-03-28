@@ -4,6 +4,7 @@ import (
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+	"github.com/datagovsg/nomad-parametric-autoscaler/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,14 @@ func (ep *endpoints) GetPolicy(c *gin.Context) {
 // GetResourceStatus returns map of resource to count
 func (ep *endpoints) GetResourceStatus(c *gin.Context) {
 	c.JSON(200, ep.wp.policy.GetResourceStatus())
+}
+
+// GetSubpolicyList returns list of possible subpolicies
+func (ep *endpoints) GetPredefinedFeatures(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"subpolicies": types.SubpolicyList,
+		"ensemblers":  types.EnsemblerList,
+	})
 }
 
 // UpdatePolicy parses body and builds a new policy to replace

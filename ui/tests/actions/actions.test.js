@@ -14,10 +14,7 @@ import {
   UPDATE_SUBPOLICY_NAME,
   UPDATE_SUBPOLICY_RESOURCE,
   UPDATE_SP_META,
-  DELETE_SUBPOLICY
-} from "../../src/actions";
-
-import {
+  DELETE_SUBPOLICY,
   updateNomadParameters,
   updateNumericNomadParameters,
   updateEnsembler,
