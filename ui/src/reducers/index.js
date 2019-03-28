@@ -1,5 +1,6 @@
 import remove from "lodash/remove";
 import { combineReducers } from "redux";
+import { uniqueIdGen } from "../utils/uniqueIdGenerator";
 
 import {
   UPDATE_STATE,
@@ -27,7 +28,7 @@ export const initialState = {
   CheckingFreq: "1m",
   Ensembler: "conservative",
   Resources: {
-    Sample: {
+    uuid1: {
       Name: "Sample",
       Nomad: {
         Address: "",
@@ -46,7 +47,7 @@ export const initialState = {
       ScaleInCooldown: "2m",
       N2CRatio: 0
     },
-    Sample2: {
+    uuid2: {
       Name: "Sample2",
       Nomad: {
         Address: "",
@@ -110,7 +111,8 @@ export const policy = (state = initialState, action) => {
 
     case CREATE_RESOURCE:
       // TODO: get refactor
-      updatedResource["New"] = {
+      updatedResource[uniqueIdGen()] = {
+        Name: "",
         Nomad: {
           Address: "",
           JobName: "",
@@ -134,23 +136,21 @@ export const policy = (state = initialState, action) => {
       };
 
     case DELETE_RESOURCE:
-      delete updatedResource[action.change.name];
+      delete updatedResource[action.change.id];
       return {
         ...state,
         Resources: updatedResource
       };
 
     case UPDATE_RESOURCE_NAME:
-      updatedResource[action.change.newName] =
-        updatedResource[action.change.oldName];
-      delete updatedResource[action.change.oldName];
+      updatedResource[action.change.id].Name = action.change.newName;
       return {
         ...state,
         Resources: updatedResource
       };
 
     case UPDATE_RESOURCE_FIELD:
-      updatedResource[action.change.name][action.change.field] =
+      updatedResource[action.change.id][action.change.field] =
         action.change.value;
       return {
         ...state,
@@ -160,7 +160,9 @@ export const policy = (state = initialState, action) => {
     case UPDATE_RESOURCE_NUMERIC_FIELD:
       let resourceNumericField = parseInt(action.change.value, 10);
       if (resourceNumericField) {
-        updatedResource[action.change.name][action.change.field] = resourceNumericField;
+        updatedResource[action.change.id][
+          action.change.field
+        ] = resourceNumericField;
         return {
           ...state,
           Resources: updatedResource
@@ -200,23 +202,23 @@ export const policy = (state = initialState, action) => {
       };
 
     case UPDATE_EC2_NUMERIC_PARAM:
-    let ec2NumericParam = parseInt(action.change.value, 10);
-    if (ec2NumericParam) {
-      updatedResource[action.change.name].EC2[
-        action.change.field
-      ] = ec2NumericParam;
-      return {
-        ...state,
-        Resources: updatedResource
-      };
-    } else {
-      return state;
-    }
-
+      let ec2NumericParam = parseInt(action.change.value, 10);
+      if (ec2NumericParam) {
+        updatedResource[action.change.name].EC2[
+          action.change.field
+        ] = ec2NumericParam;
+        return {
+          ...state,
+          Resources: updatedResource
+        };
+      } else {
+        return state;
+      }
 
     case CREATE_SUBPOLICY:
       sp.push({
-        Name: "new",
+        Id: uniqueIdGen(),
+        Name: "",
         ManagedResources: [],
         Metadata: ""
       });
@@ -227,10 +229,9 @@ export const policy = (state = initialState, action) => {
       };
 
     case UPDATE_SUBPOLICY_NAME:
-
-    // make sure no current SP have that name
+      // make sure no current SP have that name
       for (let i = 0; i < sp.length; i++) {
-        if (sp[i].Name === action.change.oldName) {
+        if (sp[i].Id === action.change.id) {
           sp[i].Name = action.change.newName;
           break;
         }
@@ -243,7 +244,7 @@ export const policy = (state = initialState, action) => {
 
     case UPDATE_SP_RESOURCE:
       for (let i = 0; i < sp.length; i++) {
-        if (sp[i].Name === action.change.name) {
+        if (sp[i].Id === action.change.id) {
           sp[i].ManagedResources = action.change.value; // TODO thsi implementation is wrong
           break;
         }
@@ -256,7 +257,7 @@ export const policy = (state = initialState, action) => {
 
     case UPDATE_SUBPOLICY_RESOURCE:
       for (let i = 0; i < sp.length; i++) {
-        if (sp[i].Name === action.change.name) {
+        if (sp[i].Id === action.change.id) {
           sp[i].ManagedResources = action.change.newManagedResources;
           break;
         }
@@ -269,7 +270,7 @@ export const policy = (state = initialState, action) => {
 
     case UPDATE_SP_META:
       for (let i = 0; i < sp.length; i++) {
-        if (sp[i].Name === action.change.name) {
+        if (sp[i].Id === action.change.id) {
           sp[i].Metadata = action.change.value;
           break;
         }
@@ -281,7 +282,7 @@ export const policy = (state = initialState, action) => {
 
     case DELETE_SUBPOLICY: {
       const newSP = remove(sp, elem => {
-        return elem.Name !== action.change.name;
+        return elem.Id !== action.change.id;
       });
 
       return {

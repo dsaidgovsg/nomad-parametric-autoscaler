@@ -18,6 +18,7 @@ const store = mockStore(initialState);
 function shallowSetup() {
   // Sample props to pass to our shallow render
   const props = {
+    id: "id",
     name: "test",
     resources: ["1", "2"],
     metadata: "meta",

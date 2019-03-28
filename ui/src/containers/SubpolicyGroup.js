@@ -5,7 +5,7 @@ import { createSubpolicy } from "../actions";
 
 const mapStateToProps = state => {
   return {
-    subpolicies: state.policy.Subpolicies.map(sp => sp.Name)
+    subpolicies: state.policy.Subpolicies.map(sp => sp.Id)
   };
 };
 

@@ -12,7 +12,7 @@ const SubpolicyGroup = props => {
     <div>
       <Paper elevation={1}>
         {subpolicies.map(sp => (
-          <Subpolicy key={sp} name={sp} />
+          <Subpolicy key={sp} id={sp} />
         ))}
       </Paper>
       <Button size="small" color="primary" onClick={props.createSubpolicy}>

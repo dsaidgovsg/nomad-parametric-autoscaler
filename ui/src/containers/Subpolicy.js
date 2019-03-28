@@ -4,11 +4,12 @@ import { updateSubpolicyName, deleteSubpolicy, updateMeta } from "../actions";
 
 const mapStateToProps = (state, ownProps) => {
   const thisSP = state.policy.Subpolicies.filter(
-    sp => sp.Name === ownProps.name
+    sp => sp.Id === ownProps.id
   );
   const sp = thisSP && thisSP[0];
 
   return {
+    name: sp.Name,
     metadata: sp.Metadata,
     resources: sp.ManagedResources
   };

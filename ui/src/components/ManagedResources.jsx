@@ -5,15 +5,16 @@ import { CardContent } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
+import _ from 'lodash';
 
 const ManagedResources = props => {
-  const { name, resources } = props;
+  const { id, resources } = props;
 
   const deleteSubpolicyResource = resourceName => () => {
     let newResource = resources.slice().filter(r => r !== resourceName);
 
     props.updateSubpolicyResource({
-      name: name,
+      id: id,
       newManagedResources: newResource
     });
   };
@@ -23,7 +24,7 @@ const ManagedResources = props => {
     const idx = newResource.findIndex(val => val === resourceName);
     newResource[idx] = event.target.value;
     props.updateSubpolicyResource({
-      name: name,
+      id: id,
       newManagedResources: newResource
     });
   };
@@ -32,7 +33,7 @@ const ManagedResources = props => {
     let newResource = resources.slice();
     newResource.push("");
     props.updateSubpolicyResource({
-      name: name,
+      id: id,
       newManagedResources: newResource
     });
   };
@@ -65,7 +66,7 @@ const ManagedResources = props => {
 };
 
 ManagedResources.propTypes = {
-  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   resources: PropTypes.arrayOf(PropTypes.string).isRequired,
   updateSubpolicyResource: PropTypes.func.isRequired
 };
