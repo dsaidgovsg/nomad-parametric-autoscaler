@@ -8,7 +8,10 @@ import Topbar from "./components/Topbar";
 import StatusSwitch from "./components/StatusSwitch";
 import PolicySummary from "./containers/PolicySummary";
 import { Button } from "../node_modules/@material-ui/core";
-import { uiToServerConversion, serverToUIConversion } from "./utils/stateConversion";
+import {
+  uiToServerConversion,
+  serverToUIConversion
+} from "./utils/stateConversion";
 
 class App extends Component {
   constructor(props) {
@@ -22,8 +25,13 @@ class App extends Component {
   }
 
   refreshState() {
+    const reqUrl = new URL(
+      "/state",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+
     axios
-      .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/state`)
+      .get(reqUrl)
       .then(response => {
         const newState = serverToUIConversion(response.data);
         newState && this.props.refreshState(newState);
@@ -36,7 +44,11 @@ class App extends Component {
   sendUpdate() {
     const state = JSON.parse(JSON.stringify(this.props.state));
     const out = uiToServerConversion(state);
-    out && axios.post(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/update`, out);
+    const reqUrl = new URL(
+      "/update",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+    out && axios.post(reqUrl, out);
   }
 
   render() {
