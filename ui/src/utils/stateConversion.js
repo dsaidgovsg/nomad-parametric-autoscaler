@@ -3,14 +3,14 @@ import { uniqueIdGen } from "./uniqueIdGenerator";
 export const serverToUIConversion = input => {
   try {
     // subpolicy stringify + give Id
-    for (let sp of input.Subpolicies) {
+    for (const sp of input.Subpolicies) {
       sp.Metadata = JSON.stringify(sp.Metadata);
       sp["Id"] = uniqueIdGen();
     }
 
     // resource naming
-    let resource = {};
-    for (let key in input.Resources) {
+    const resource = {};
+    for (const key in input.Resources) {
       if (input.Resources.hasOwnProperty(key)) {
         resource[uniqueIdGen()] = {
           ...input.Resources[key],
@@ -27,18 +27,18 @@ export const serverToUIConversion = input => {
   }
 };
 
-export const uiToServerConversion = state => {
-  // put resource name as key
+export const uiToServerConversion = input => {
   try {
-    let resource = {};
-    for (let key in state.Resources) {
+    const state = JSON.parse(JSON.stringify(input));
+    const resource = {};
+    for (const key in state.Resources) {
       if (state.Resources.hasOwnProperty(key)) {
         const name = state.Resources[key].Name;
         resource[name] = state.Resources[key];
       }
     }
 
-    for (let sp of state.Subpolicies) {
+    for (const sp of state.Subpolicies) {
       sp.Metadata = JSON.parse(sp.Metadata);
     }
 

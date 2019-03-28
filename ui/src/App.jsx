@@ -42,8 +42,7 @@ class App extends Component {
   }
 
   sendUpdate() {
-    const state = JSON.parse(JSON.stringify(this.props.state));
-    const out = uiToServerConversion(state);
+    const out = uiToServerConversion(this.props.state);
     const reqUrl = new URL(
       "/update",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
