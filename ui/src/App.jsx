@@ -24,34 +24,38 @@ class App extends Component {
     this.refreshState();
   }
 
-  refreshState() {
-    const predefinedUrl = new URL("/predefined", window.config.env.REACT_APP_NOPAS_ENDPOINT)
-    const stateUrl = new URL("/state", window.config.env.REACT_APP_NOPAS_ENDPOINT)
-    axios
-      .get(predefinedUrl)
-      .then(response => {
-        this.props.updatePossibleDefaultsList(response.data);
-        axios
-          .get(stateUrl)
-          .then(response => {
-            try {
-              const newState = response.data;
-              for (let sp of newState.Subpolicies) {
-                // convert metadata object to string
-                sp.Metadata = JSON.stringify(sp.Metadata);
-              }
-              this.props.refreshState(newState);
-            } catch (error) {
-              alert(error);
-            }
-          })
-          .catch(function(error) {
-            alert(error);
-          });
-      })
-      .catch(function(error) {
+  async refreshState() {
+    const predefinedUrl = new URL(
+      "/predefined",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+    const stateUrl = new URL(
+      "/state",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+
+    let firstResponse = await axios.get(predefinedUrl);
+    if (firstResponse.err) {
+      alert(firstResponse.err);
+      return;
+    }
+
+    this.props.updatePossibleDefaultsList(firstResponse.data);
+    let secondResponse = await axios.get(stateUrl);
+    if (secondResponse.err) {
+      alert(secondResponse.err);
+    } else {
+      try {
+        const newState = secondResponse.data;
+        for (let sp of newState.Subpolicies) {
+          // convert metadata object to string
+          sp.Metadata = JSON.stringify(sp.Metadata);
+        }
+        this.props.refreshState(newState);
+      } catch (error) {
         alert(error);
-      });
+      }
+    }
   }
 
   sendUpdate() {
