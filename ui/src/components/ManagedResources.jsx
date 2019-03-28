@@ -8,7 +8,7 @@ import AddIcon from "@material-ui/icons/Add";
 import MenuItem from "@material-ui/core/MenuItem";
 
 const ManagedResources = props => {
-  const { name, resources, possibleResources } = props;
+  const { id, resources, possibleResources } = props;
 
   const deleteSubpolicyResource = resourceName => () => {
     let newResource = resources.slice().filter(r => r !== resourceName);
@@ -26,7 +26,7 @@ const ManagedResources = props => {
     if (!newResource.includes(event.target.value)) {
       newResource[idx] = event.target.value;
       props.updateSubpolicyResource({
-        name: name,
+        id: id,
         newManagedResources: newResource
       });
     } else {
