@@ -1,4 +1,4 @@
-updateNumericResourceFieldimport React, { Component } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import "./App.css";
 import SendIcon from "@material-ui/icons/Send";
@@ -45,16 +45,8 @@ class App extends Component {
     if (secondResponse.err) {
       alert(secondResponse.err);
     } else {
-      try {
-        const newState = secondResponse.data;
-        for (let sp of newState.Subpolicies) {
-          // convert metadata object to string
-          sp.Metadata = JSON.stringify(sp.Metadata);
-        }
-        this.props.refreshState(newState);
-      } catch (error) {
-        alert(error);
-      }
+      const newState = serverToUIConversion(secondResponse.data);
+      this.props.refreshState(newState);
     }
   }
 

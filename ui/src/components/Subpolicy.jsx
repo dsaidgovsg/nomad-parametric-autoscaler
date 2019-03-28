@@ -8,7 +8,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ManagedResources from "../containers/ManagedResources";
 
 const Subpolicy = props => {
-  const { name, resources, metadata, possibleSubpolicyList } = props;
+  const { id, name, resources, metadata, possibleSubpolicyList } = props;
   const updateField = event => {
     props.updateMeta({ id: id, value: event.target.value });
   };
@@ -40,7 +40,7 @@ const Subpolicy = props => {
               <MenuItem value={ps}>{ps}</MenuItem>
             ))}
         </TextField>
-        <ManagedResources name={name} resources={resources} />
+        <ManagedResources id={id} resources={resources} />
         <TextField
           required
           multiline
