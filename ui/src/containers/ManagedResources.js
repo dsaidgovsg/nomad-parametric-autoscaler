@@ -2,6 +2,19 @@ import { connect } from "react-redux";
 import ManagedResources from "../components/ManagedResources";
 import { updateSubpolicyResource } from "../actions";
 
+const mapStateToProps = state => {
+  let possibleResources = [];
+  for (let key in state.policy.Resources) {
+    if (state.policy.Resources.hasOwnProperty(key)) {
+      possibleResources.push(state.policy.Resources[key].Name);
+    }
+  }
+
+  return {
+    possibleResources: possibleResources
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     updateSubpolicyResource: input => dispatch(updateSubpolicyResource(input))
@@ -9,7 +22,7 @@ const mapDispatchToProps = dispatch => {
 };
 
 const container = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ManagedResources);
 

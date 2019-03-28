@@ -6,14 +6,9 @@ matrix:
       script: 
         - go test -v ./...
     - language: node_js
-      node_js: "9"
-      cache:
-        directories:
-        - node_modules
-      before_install:
-        - cd ui/
-        - npm update
+      node_js: "10"
       install:
+        - cd ui/
         - npm install
       script:
         - npm test

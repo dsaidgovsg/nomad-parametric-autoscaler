@@ -37,17 +37,6 @@ function shallowSetup() {
 
 configure({ adapter: new Adapter() });
 describe("Subpolicy", () => {
-  it("renders without crashing", () => {
-    const div = document.createElement("div");
-    const { props } = shallowSetup();
-    ReactDOM.render(
-      <Provider store={store}>
-        <Subpolicy {...props} />
-      </Provider>,
-      div
-    );
-  });
-
   describe("renders", () => {
     it("it should render with managed resource", () => {
       const { enzymeWrapper } = shallowSetup();
