@@ -25,17 +25,14 @@ class App extends Component {
   }
 
   refreshState() {
-    const reqUrl = new URL(
-      "/state",
-      window.config.env.REACT_APP_NOPAS_ENDPOINT
-    );
-
+    const predefinedUrl = new URL("/predefined", window.config.env.REACT_APP_NOPAS_ENDPOINT)
+    const stateUrl = new URL("/state", window.config.env.REACT_APP_NOPAS_ENDPOINT)
     axios
-      .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/predefined`)
+      .get(predefinedUrl)
       .then(response => {
         this.props.updatePossibleDefaultsList(response.data);
         axios
-          .get(`${window.config.env.REACT_APP_NOPAS_ENDPOINT}/state`)
+          .get(stateUrl)
           .then(response => {
             try {
               const newState = response.data;
