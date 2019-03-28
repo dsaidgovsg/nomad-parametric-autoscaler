@@ -6,7 +6,7 @@ RUN npm install
 RUN npm rebuild node-sass
 RUN npm run build
 
-FROM node:9-alpine as deploy
+FROM node:10-alpine as deploy
 WORKDIR /app
 COPY --from=builder /usr/src/app/build ./build
 COPY --from=builder /usr/src/app/write-config.js ./
