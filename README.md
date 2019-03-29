@@ -1,3 +1,4 @@
+![GitHub Logo](/images/nopas.png)
 # NOmad-Parametric-AutoScaler
 NOPAS is a template for a Go service that scales nomad tasks
 * Parametric: policy is parameter-dependent -> can be changed dynamically via HTTP calls
