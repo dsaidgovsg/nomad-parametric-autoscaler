@@ -1,20 +1,13 @@
 package app
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-)
-
-// or this? postgres://username:password@localhost/db_name?sslmode=disable
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "docker"
-	dbname   = "autoscaler"
 )
 
 // Store records new state updates to a persistent store
@@ -30,11 +23,55 @@ CREATE TABLE autoscaler (
 );
 `
 
+// or this? postgres://username:password@localhost/db_name?sslmode=disable
+const (
+	dbhost = "POSTGRES_HOST"
+	dbport = "POSTGRES_PORT"
+	dbuser = "POSTGRES_USER"
+	dbpass = "POSTGRES_PASSWORD"
+	dbname = "POSTGRES_DB"
+)
+
+func dbConfig() map[string]string {
+	conf := make(map[string]string)
+	host, ok := os.LookupEnv(dbhost)
+	if !ok {
+		panic("DBHOST environment variable required but not set")
+	}
+	port, ok := os.LookupEnv(dbport)
+	if !ok {
+		panic("DBPORT environment variable required but not set")
+	}
+	user, ok := os.LookupEnv(dbuser)
+	if !ok {
+		panic("DBUSER environment variable required but not set")
+	}
+	password, ok := os.LookupEnv(dbpass)
+	if !ok {
+		panic("DBPASS environment variable required but not set")
+	}
+	name, ok := os.LookupEnv(dbname)
+	if !ok {
+		panic("DBNAME environment variable required but not set")
+	}
+	conf[dbhost] = host
+	conf[dbport] = port
+	conf[dbuser] = user
+	conf[dbpass] = password
+	conf[dbname] = name
+	return conf
+}
+
 // Initialise creates the connection to sqlx.DB
 func (st *Store) Initialise() error {
+	config := dbConfig()
 	var err error
-	connStr := "user=postgres password=docker dbname=postgres sslmode=disable"
-	if st.db, err = sqlx.Open("postgres", connStr); err != nil {
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		config[dbhost], config[dbport],
+		config[dbuser], config[dbpass], config[dbname])
+
+	if st.db, err = sqlx.Open("postgres", psqlInfo); err != nil {
 		return err
 	}
 
