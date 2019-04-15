@@ -110,6 +110,11 @@ func (st Store) read(statement string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	if len(state) < 1 {
+		return "", fmt.Errorf("state table is empty, using default state")
+	}
+
 	return state[0], nil
 }
 
