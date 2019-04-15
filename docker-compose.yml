@@ -9,16 +9,17 @@ services:
       - 'no-new-privileges'
     pids_limit: 100
     tmpfs: ['/tmp']
-    depends_on: db
+    depends_on: 
+      - db
     environment:
-      GIN_MODE: release
+      GIN_MODE: debug
       ASG_ID: ""
       ASG_SECRET: ""
       VAULT_ADDR: ""
       VAULT_TOKEN: ""
-      POSTGRES_USER: nopas
-      POSTGRES_DB: nopas
-      POSTGRES_PASSWORD: nopas
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: docker
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
 
@@ -35,6 +36,6 @@ services:
   db:
     image: postgres:9.6.11
     environment:
-      POSTGRES_USER: nopas
-      POSTGRES_DB: nopas
-      POSTGRES_PASSWORD: nopas
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: docker

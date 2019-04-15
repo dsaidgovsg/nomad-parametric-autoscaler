@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -71,8 +72,24 @@ func (st *Store) Initialise() error {
 		config[dbhost], config[dbport],
 		config[dbuser], config[dbpass], config[dbname])
 
+	logging.Info("opening connection to sql database")
 	if st.db, err = sqlx.Open("postgres", psqlInfo); err != nil {
 		return err
+	}
+
+	// Since this happens at initialization we
+	// could encounter racy conditions waiting for pg
+	// to become available. Wait for it a bit
+	if err = st.db.Ping(); err != nil {
+		// Try 3 more times
+		// 5, 10, 20
+		for i := 0; i < 3 && err != nil; i++ {
+			time.Sleep(time.Duration(5*math.Pow(2, float64(i))) * time.Second)
+			err = st.db.Ping()
+		}
+		if err != nil {
+			return err
+		}
 	}
 
 	// check if table exist else create it
@@ -119,6 +136,7 @@ func (st Store) read(statement string) (string, error) {
 }
 
 func (st *Store) createTables() error {
+	logging.Info("create table if does not exist")
 	_, err := st.db.Exec(CreateTablesSQL)
 	return err
 }
