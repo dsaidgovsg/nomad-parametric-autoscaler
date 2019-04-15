@@ -12,7 +12,7 @@ services:
     depends_on: 
       - db
     environment:
-      GIN_MODE: debug
+      GIN_MODE: release
       ASG_ID: ""
       ASG_SECRET: ""
       VAULT_ADDR: ""
