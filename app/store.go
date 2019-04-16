@@ -12,19 +12,18 @@ import (
 )
 
 // Store records new state updates to a persistent store
-// table schema : time | state (string)
+// table schema : timestamp (TIMESTAMP) | state (text)
 type Store struct {
 	db *sqlx.DB
 }
 
-var CreateTablesSQL = `
+// CreateTablesSQL contains statement for table if doesnt exist
+const CreateTablesSQL = `
 CREATE TABLE autoscaler (
     timestamp TIMESTAMP,
     state text
 );
 `
-
-// or this? postgres://username:password@localhost/db_name?sslmode=disable
 const (
 	dbhost = "POSTGRES_HOST"
 	dbport = "POSTGRES_PORT"
@@ -63,7 +62,7 @@ func dbConfig() map[string]string {
 	return conf
 }
 
-// Initialise creates the connection to sqlx.DB
+// Initialise creates the connection to sqlx.DB and creates an empty table if none exists
 func (st *Store) Initialise() error {
 	config := dbConfig()
 	var err error
