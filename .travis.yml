@@ -15,20 +15,20 @@ matrix:
 
 env:
   global:
-  - IMAGE_NAME=${DOCKER_REGISTRY}/nomad-parametric-autoscaler
-  - UI_IMAGE_NAME=${DOCKER_REGISTRY}/nomad-parametric-autoscaler-ui
-  - GITHUB_USER=datagovsg
-  - GITHUB_REPONAME=nomad-parametric-autoscaler
+  - IMAGE_NAME=${DOCKER_REGISTRY}/dsaid/datagovsg/nopas
+  - UI_IMAGE_NAME=${DOCKER_REGISTRY}/dsaid/datagovsg/nopas-ui
+
+before_deploy:
+  - docker login ${DOCKER_REGISTRY} -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 
 deploy:
-  provider: releases
+  provider: script
   skip_cleanup: true # Important, otherwise the build output would be purged.
   script:
-    - docker build . -t ${IMAGE_NAME}:${TRAVIS_BRANCH}
-    - docker login ${DOCKER_REGISTRY} -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-    - docker push ${IMAGE_NAME}:${TRAVIS_BRANCH}
+    - docker build . -t ${IMAGE_NAME}:${TRAVIS_TAG}
+    - docker push ${IMAGE_NAME}:${TRAVIS_TAG}
     - cd ui/
-    - docker build . -t ${UI_IMAGE_NAME}:${TRAVIS_BRANCH}
-    - docker push ${UI_IMAGE_NAME}:${TRAVIS_BRANCH}
+    - docker build . -t ${UI_IMAGE_NAME}:${TRAVIS_TAG}
+    - docker push ${UI_IMAGE_NAME}:${TRAVIS_TAG}
   on:
     tags: true # The deployment happens only if the commit has a tag.
