@@ -3,6 +3,7 @@ module github.com/datagovsg/nomad-parametric-autoscaler
 require (
 	github.com/Azure/azure-sdk-for-go v16.0.0+incompatible // indirect
 	github.com/Azure/go-autorest v10.7.0+incompatible // indirect
+	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/SAP/go-hdb v0.13.2 // indirect
 	github.com/Sirupsen/logrus v1.0.6

@@ -32,40 +32,45 @@ const (
 	dbname = "POSTGRES_DB"
 )
 
-func dbConfig() map[string]string {
+func dbConfig() (map[string]string, error) {
 	conf := make(map[string]string)
 	host, ok := os.LookupEnv(dbhost)
 	if !ok {
-		panic("POSTGRES_HOST environment variable required but not set")
+		return nil, fmt.Errorf("POSTGRES_HOST environment variable required but not set")
 	}
 	port, ok := os.LookupEnv(dbport)
 	if !ok {
-		panic("POSTGRES_PORT environment variable required but not set")
+		return nil, fmt.Errorf("POSTGRES_PORT environment variable required but not set")
 	}
 	user, ok := os.LookupEnv(dbuser)
 	if !ok {
-		panic("POSTGRES_USER environment variable required but not set")
+		return nil, fmt.Errorf("POSTGRES_USER environment variable required but not set")
 	}
 	password, ok := os.LookupEnv(dbpass)
 	if !ok {
-		panic("POSTGRES_PASSWORD environment variable required but not set")
+		return nil, fmt.Errorf("POSTGRES_PASSWORD environment variable required but not set")
 	}
 	name, ok := os.LookupEnv(dbname)
 	if !ok {
-		panic("POSTGRES_DB environment variable required but not set")
+		return nil, fmt.Errorf("POSTGRES_DB environment variable required but not set")
 	}
 	conf[dbhost] = host
 	conf[dbport] = port
 	conf[dbuser] = user
 	conf[dbpass] = password
 	conf[dbname] = name
-	return conf
+	return conf, nil
 }
 
 // Initialise creates the connection to sqlx.DB and creates an empty table if none exists
 func (st *Store) Initialise() error {
-	config := dbConfig()
 	var err error
+	config, err := dbConfig()
+
+	if err != nil {
+		return err
+	}
+
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		config[dbhost], config[dbport],
