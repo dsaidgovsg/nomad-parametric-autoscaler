@@ -4,7 +4,7 @@ export const serverToUIConversion = input => {
   try {
     // subpolicy stringify + give Id
     for (const sp of input.Subpolicies) {
-      sp.Metadata = JSON.stringify(sp.Metadata);
+      sp.Metadata = JSON.stringify(sp.Metadata, null, 2);
       sp["Id"] = uniqueIdGen();
     }
 
