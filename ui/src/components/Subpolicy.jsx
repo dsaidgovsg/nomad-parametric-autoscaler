@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MenuItem from "@material-ui/core/MenuItem";
+import Button from '@material-ui/core/Button';
 import ManagedResources from "../containers/ManagedResources";
 
 const Subpolicy = props => {
@@ -19,6 +20,15 @@ const Subpolicy = props => {
 
   const renameSubpolicy = event => {
     props.updateSubpolicyName({ id: id, newName: event.target.value });
+  };
+
+  const jsonify = () => {
+    try {
+      const jsonified = JSON.stringify(JSON.parse(metadata), null, 2);
+      props.updateMeta({ id: id, value: jsonified });
+    } catch (error) {
+      alert(error);
+    }
   };
 
   // resource will contain details for ratio, cooldown,
@@ -51,6 +61,9 @@ const Subpolicy = props => {
           onChange={updateField}
           margin="normal"
         />
+        <Button variant="contained" onClick={jsonify}>
+        JSON-it!
+        </Button>
         <Fab
           size="small"
           color="primary"
