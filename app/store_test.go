@@ -19,8 +19,10 @@ func (a AnyTime) Match(v driver.Value) bool {
 
 // a successful case
 func TestShouldUpdateStats(t *testing.T) {
-	testrows := sqlmock.NewRows([]string{"state"}).AddRow("TEST")
-	test2rows := sqlmock.NewRows([]string{"state"}).AddRow("TEST2")
+	test := "Test statement 1"
+	test2 := "Test statement 2"
+	testrows := sqlmock.NewRows([]string{"state"}).AddRow(test)
+	test2rows := sqlmock.NewRows([]string{"state"}).AddRow(test2)
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -29,10 +31,10 @@ func TestShouldUpdateStats(t *testing.T) {
 	defer db.Close()
 	mock.ExpectBegin()
 	mock.ExpectExec("CREATE TABLE").WillReturnResult(sqlmock.NewResult(1, 0))
-	mock.ExpectExec("INSERT INTO autoscaler").WithArgs(AnyTime{}, "TEST").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectQuery("SELECT state FROM autoscaler").WillReturnRows(testrows)
-	mock.ExpectExec("INSERT INTO autoscaler").WithArgs(AnyTime{}, "TEST2").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectQuery("SELECT state FROM autoscaler").WillReturnRows(test2rows)
+	mock.ExpectExec("INSERT INTO autoscaler").WithArgs(AnyTime{}, test).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery("SELECT state FROM autoscaler WHERE timestamp = \\(SELECT MAX\\(timestamp\\) FROM autoscaler\\)").WillReturnRows(testrows)
+	mock.ExpectExec("INSERT INTO autoscaler").WithArgs(AnyTime{}, test2).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery("SELECT state FROM autoscaler WHERE timestamp = \\(SELECT MAX\\(timestamp\\) FROM autoscaler\\)").WillReturnRows(test2rows)
 
 	st := Store{
 		db: sqlx.NewDb(db, "postgres"),
@@ -40,25 +42,25 @@ func TestShouldUpdateStats(t *testing.T) {
 
 	st.db.Begin()
 	st.db.Exec(CreateTablesSQL)
-	st.SaveState("TEST")
+	st.SaveState(test)
 	out, err := st.GetLatestState()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if out != "TEST" {
-		t.Error("did not read most recently inserted state")
+	if out != test {
+		t.Error("store did not read most recently inserted state")
 	}
 
 	// insert another and read
-	st.SaveState("TEST2")
+	st.SaveState(test2)
 	out2, err := st.GetLatestState()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if out2 != "TEST2" {
-		t.Error("did not read most recently inserted state")
+	if out2 != test2 {
+		t.Error("store did not read most recently inserted state")
 	}
 
 	// we make sure that all expectations were met
