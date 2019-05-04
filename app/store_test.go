@@ -41,7 +41,7 @@ func TestShouldUpdateStats(t *testing.T) {
 	}
 
 	st.db.Begin()
-	st.db.Exec(CreateTablesSQL)
+	st.db.Exec(createTablesSQL)
 	st.SaveState(test)
 	out, err := st.GetLatestState()
 	if err != nil {

@@ -17,8 +17,8 @@ type Store struct {
 	db *sqlx.DB
 }
 
-// CreateTablesSQL contains statement for table if doesnt exist
-const CreateTablesSQL = `
+// createTablesSQL contains statement for table if doesnt exist
+const createTablesSQL = `
 CREATE TABLE autoscaler (
     timestamp TIMESTAMP,
     state text
@@ -62,8 +62,8 @@ func dbConfig() (map[string]string, error) {
 	return conf, nil
 }
 
-// Initialise creates the connection to sqlx.DB and creates an empty table if none exists
-func (st *Store) Initialise() error {
+// Init creates the connection to sqlx.DB and creates an empty table if none exists
+func (st *Store) Init() error {
 	var err error
 	config, err := dbConfig()
 
@@ -141,6 +141,6 @@ func (st Store) read(statement string) (string, error) {
 
 func (st *Store) createTables() error {
 	logging.Info("create table if does not exist")
-	_, err := st.db.Exec(CreateTablesSQL)
+	_, err := st.db.Exec(createTablesSQL)
 	return err
 }

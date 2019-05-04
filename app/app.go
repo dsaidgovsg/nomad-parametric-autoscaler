@@ -35,7 +35,7 @@ func NewApp() (*App, error) {
 
 	// get store initialised
 	store := &Store{}
-	if err := store.Initialise(); err != nil {
+	if err := store.Init(); err != nil {
 		return nil, err
 	}
 
@@ -43,7 +43,6 @@ func NewApp() (*App, error) {
 	var existingPolicy *policy.Policy
 	state, err := store.GetLatestState()
 	if err != nil {
-
 		logging.Error(err.Error())
 		existingPolicy = nil
 	} else {
