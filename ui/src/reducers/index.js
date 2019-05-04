@@ -77,19 +77,19 @@ export const initialState = {
       Id: "coreratio",
       Name: "CoreRatio",
       ManagedResources: ["Sample2", "Sample"],
-      Metadata: `{
-                "MetricSource": "https://some.source/json",
-                "UpThreshold": 0.5,
-                "DownThreshold": 0.25,
-                "ScaleOut": {
-                    "Changetype": "multiply",
-                    "ChangeValue": 2
-                },
-                "ScaleIn": {
-                    "Changetype": "multiply",
-                    "ChangeValue": 0.5
-                }
-            }`
+      Metadata: JSON.stringify({
+        MetricSource: "https://some.source/json",
+        UpThreshold: 0.5,
+        DownThreshold: 0.25,
+        ScaleOut: {
+          Changetype: "multiply",
+          ChangeValue: 2
+        },
+        ScaleIn: {
+          Changetype: "multiply",
+          ChangeValue: 0.5
+        }
+      })
     }
   ]
 };
