@@ -3,6 +3,7 @@ module github.com/datagovsg/nomad-parametric-autoscaler
 require (
 	github.com/Azure/azure-sdk-for-go v16.0.0+incompatible // indirect
 	github.com/Azure/go-autorest v10.7.0+incompatible // indirect
+	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/SAP/go-hdb v0.13.2 // indirect
 	github.com/Sirupsen/logrus v1.0.6
@@ -72,8 +73,10 @@ require (
 	github.com/influxdata/platform v0.0.0-20190117200541-d500d3cf5589 // indirect
 	github.com/jeffchao/backoff v0.0.0-20140404060208-9d7fd7aa17f2 // indirect
 	github.com/jefferai/jsonx v1.0.0 // indirect
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/keybase/go-crypto v0.0.0-20181127160227-255a5089e85a // indirect
+	github.com/lib/pq v1.0.0
 	github.com/mattbaird/elastigo v0.0.0-20170123220020-2fe47fd29e4b // indirect
 	github.com/michaelklishin/rabbit-hole v1.5.0 // indirect
 	github.com/mitchellh/hashstructure v1.0.0 // indirect

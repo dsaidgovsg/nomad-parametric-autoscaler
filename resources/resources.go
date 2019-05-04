@@ -3,8 +3,6 @@ package resources
 import (
 	"fmt"
 	"time"
-
-	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 )
 
 // Resource. each resource needs to control its scaling
@@ -73,7 +71,6 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		} else if count > desiredNomadCount {
 			return res.scaleIn(desiredNomadCount, vc)
 		} else {
-			logging.Info("Existing count is already at desired count. No scaling.")
 			return nil
 		}
 	} else {

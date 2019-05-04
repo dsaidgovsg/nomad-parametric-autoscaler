@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"sync"
 	"time"
@@ -24,13 +25,37 @@ type WrappedPolicy struct {
 	lock   *sync.Mutex
 }
 
-// NewApp creates an app...
+// NewApp creates an app ...
 func NewApp() (*App, error) {
-	wrappedPolicy := newWrappedPolicy()
+	// get vault client
 	vaultClient, err := resources.NewVaultClient(os.Getenv("VAULT_ADDR"))
 	if err != nil {
 		return nil, err
 	}
+
+	// get store initialised
+	store := &Store{}
+	if err := store.Init(); err != nil {
+		return nil, err
+	}
+
+	// initialise existing / default policy
+	var existingPolicy *policy.Policy
+	state, err := store.GetLatestState()
+	if err != nil {
+		logging.Error(err.Error())
+		existingPolicy = nil
+	} else {
+		parsed := policy.PolicyPlan{}
+		json.Unmarshal([]byte(state), &parsed)
+		existingPolicy, err = policy.MakePolicy(parsed, *vaultClient)
+
+		if err != nil {
+			logging.Error(err.Error())
+		}
+	}
+
+	wrappedPolicy := newWrappedPolicy(existingPolicy)
 
 	paused := false // always starts off running
 	return &App{
@@ -41,16 +66,22 @@ func NewApp() (*App, error) {
 			&endpoints{
 				wp:     wrappedPolicy,
 				vc:     vaultClient,
+				store:  store,
 				paused: &paused,
 			}),
 	}, nil
 }
 
-func newWrappedPolicy() *WrappedPolicy {
+func newWrappedPolicy(defaultPolicy *policy.Policy) *WrappedPolicy {
 	var mutex = &sync.Mutex{}
+
+	if defaultPolicy == nil {
+		defaultPolicy = policy.DefaultPolicy()
+	}
+
 	return &WrappedPolicy{
 		lock:   mutex,
-		policy: policy.DefaultPolicy(),
+		policy: defaultPolicy,
 	}
 }
 
@@ -66,12 +97,9 @@ func (app *App) Run() {
 		for {
 			select {
 			case <-ticker.C:
-				logging.Info("Check Metrics ... ")
 				app.wp.lock.Lock()
-				logging.Info("Performing fake scaling ... ")
-				// scaling is done on the policy-side so app just keeps caling scale
+
 				if *app.paused != true {
-					logging.Info("Scale bitch scale")
 					app.wp.policy.Scale(app.vc)
 				}
 

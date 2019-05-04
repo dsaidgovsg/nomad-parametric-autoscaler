@@ -74,9 +74,12 @@ func (crsp CoreRatioSubPolicy) GetManagedResources() []resources.Resource {
 }
 
 func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
+	output := make(map[resources.Resource]int)
+
 	resp, err := http.Get(*crsp.metadata.MetricSource)
 	if err != nil {
 		logging.Error(err.Error())
+		return output // empty output if nil call
 	}
 
 	defer resp.Body.Close()
@@ -85,7 +88,6 @@ func (crsp *CoreRatioSubPolicy) RecommendCount() map[resources.Resource]int {
 	var result coreRatioJSON
 	json.Unmarshal([]byte(body), &result)
 
-	output := make(map[resources.Resource]int)
 	for _, resc := range crsp.managedResources {
 		cores := result.Cores
 		coresUsed := result.Coresused

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"encoding/json"
+
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
@@ -11,6 +13,7 @@ import (
 type endpoints struct {
 	wp     *WrappedPolicy
 	vc     *resources.VaultClient
+	store  *Store
 	paused *bool
 }
 
@@ -51,6 +54,16 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 		ep.wp.lock.Lock()
 		ep.wp.policy = newpolicy
 		ep.wp.lock.Unlock()
+
+		// writing to postgres
+		bt, err := json.Marshal(gsp)
+		if err != nil {
+			logging.Error(err.Error())
+		}
+
+		if err := ep.store.SaveState(string(bt)); err != nil {
+			logging.Error(err.Error())
+		}
 
 		c.JSON(200, gin.H{
 			"message": "Successful Update",
