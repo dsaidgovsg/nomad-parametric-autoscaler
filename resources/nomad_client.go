@@ -18,8 +18,8 @@ type NomadClient struct {
 	JobName   string
 	NomadPath string
 	client    nomadClient
-	maxCount  int
-	minCount  int
+	MaxCount  int
+	MinCount  int
 	address   string
 }
 
@@ -53,8 +53,8 @@ func NewNomadClient(vc VaultClient, addr string, name string, minCount int, maxC
 	return &NomadClient{
 		JobName:   name,
 		NomadPath: nomadPath,
-		maxCount:  maxCount,
-		minCount:  minCount,
+		MaxCount:  maxCount,
+		MinCount:  minCount,
 		client: nomadClient{
 			nomad: client,
 		},
@@ -107,10 +107,10 @@ func (nc NomadClient) getNomadJob() (*nomad.Job, error) {
 }
 
 func (nc NomadClient) getValidScaleCount(newCount int) int {
-	if newCount > nc.maxCount {
-		newCount = nc.maxCount
-	} else if newCount < nc.minCount {
-		newCount = nc.minCount
+	if newCount > nc.MaxCount {
+		newCount = nc.MaxCount
+	} else if newCount < nc.MinCount {
+		newCount = nc.MinCount
 	}
 	return newCount
 }
@@ -120,7 +120,7 @@ func (nc NomadClient) RecreatePlan() NomadClientPlan {
 		Address:   nc.address,
 		JobName:   nc.JobName,
 		NomadPath: nc.NomadPath,
-		MaxCount:  nc.maxCount,
-		MinCount:  nc.minCount,
+		MaxCount:  nc.MaxCount,
+		MinCount:  nc.MinCount,
 	}
 }
