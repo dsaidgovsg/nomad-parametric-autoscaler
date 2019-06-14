@@ -65,20 +65,26 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
 	// check if its a scale out or scale in
-	if count, err := res.NomadClient.GetTaskGroupCount(); err == nil {
-		if count < desiredNomadCount { // scale out
-			return res.scaleOut(desiredNomadCount, vc)
-		} else if count < res.NomadClient.MinCount {
-			return res.scaleOut(res.NomadClient.MinCount, vc)
-		} else if count > desiredNomadCount {
-			return res.scaleIn(desiredNomadCount, vc)
-		} else if count > res.NomadClient.MaxCount {
-			return res.scaleIn(res.NomadClient.MaxCount, vc)
-		} else {
-			return nil
-		}
-	} else {
+
+	count, err := res.NomadClient.GetTaskGroupCount()
+
+	if err != nil {
 		return err
+	}
+
+	if count < desiredNomadCount {
+		return res.scaleOut(desiredNomadCount, vc)
+	} else if count > desiredNomadCount {
+		return res.scaleIn(desiredNomadCount, vc)
+	}
+
+	// limit violation requires correction
+	if count < res.NomadClient.MinCount {
+		return res.scaleOut(res.NomadClient.MinCount, vc)
+	} else if count > res.NomadClient.MaxCount {
+		return res.scaleIn(res.NomadClient.MaxCount, vc)
+	} else {
+		return nil
 	}
 }
 
