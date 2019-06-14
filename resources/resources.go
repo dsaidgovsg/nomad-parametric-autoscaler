@@ -66,10 +66,14 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
 	// check if its a scale out or scale in
 	if count, err := res.NomadClient.GetTaskGroupCount(); err == nil {
-		if count < desiredNomadCount || count < res.NomadClient.MinCount || count < res.EC2AutoScalingGroup.MinCount { // scale out
+		if count < desiredNomadCount { // scale out
 			return res.scaleOut(desiredNomadCount, vc)
-		} else if count > desiredNomadCount || count > res.NomadClient.MaxCount || count > res.EC2AutoScalingGroup.MaxCount {
+		} else if count < res.NomadClient.MinCount {
+			return res.scaleOut(res.NomadClient.MinCount, vc)
+		} else if count > desiredNomadCount {
 			return res.scaleIn(desiredNomadCount, vc)
+		} else if count > res.NomadClient.MaxCount {
+			return res.scaleIn(res.NomadClient.MaxCount, vc)
 		} else {
 			return nil
 		}
@@ -87,13 +91,13 @@ func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) er
 
 	res.lastScaledTime = now
 
-	err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio)
-	if err != nil {
-		return err
+	if res.NomadToComputeRatio > 0 { // ignore ec2
+		if err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio); err != nil {
+			return err
+		}
 	}
 
-	err = res.NomadClient.Scale(desiredNomadCount, vc)
-	if err != nil {
+	if err := res.NomadClient.Scale(desiredNomadCount, vc); err != nil {
 		return err
 	}
 
@@ -109,14 +113,15 @@ func (res *EC2NomadResource) scaleIn(desiredNomadCount int, vc *VaultClient) err
 	}
 
 	res.lastScaledTime = now
-	err := res.NomadClient.Scale(desiredNomadCount, vc)
-	if err != nil {
+
+	if err := res.NomadClient.Scale(desiredNomadCount, vc); err != nil {
 		return err
 	}
 
-	err = res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio)
-	if err != nil {
-		return err
+	if res.NomadToComputeRatio > 0 { // ignore ec2
+		if err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio); err != nil {
+			return err
+		}
 	}
 
 	res.lastScaledTime = time.Now()
