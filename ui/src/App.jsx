@@ -18,28 +18,10 @@ class App extends Component {
     super(props);
     this.sendUpdate = this.sendUpdate.bind(this);
     this.refreshPolicy = this.refreshPolicy.bind(this);
-
-    this.state = {
-      status: true,
-      refreshState: this.refreshState
-    }
   }
 
   componentDidMount() {
     this.refreshPolicy();
-  }
-
-  async refreshState() {
-    const stateUrl = new URL(
-      "/state",
-      window.config.env.REACT_APP_NOPAS_ENDPOINT
-    );
-
-    axios.get(stateUrl).then((rsp) => {
-      this.setState({ status: rsp})
-    }).catch(function (error) {
-      console.log(error);
-    })
   }
 
   async refreshPolicy() {
@@ -65,7 +47,7 @@ class App extends Component {
       alert(secondResponse.err);
     } else {
       const newState = serverToUIConversion(secondResponse.data);
-      this.Stateprops.refreshState(newState);
+      this.props.refreshState(newState);
     }
   }
 
@@ -82,7 +64,7 @@ class App extends Component {
     return (
       <div className="App">
         <Topbar>
-          <StatusSwitch isRunning={this.state.status} refreshState={this.state.refreshState}/>
+          <StatusSwitch />
           <Button
             variant="contained"
             color="primary"

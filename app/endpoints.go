@@ -90,5 +90,5 @@ func (ep *endpoints) ResumePolicy(c *gin.Context) {
 
 // GetState returns running state of server
 func (ep *endpoints) GetState(c *gin.Context) {
-	c.JSON(200, *ep.paused)
+	c.JSON(200, !*ep.paused)
 }
