@@ -17,20 +17,39 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.sendUpdate = this.sendUpdate.bind(this);
-    this.refreshState = this.refreshState.bind(this);
+    this.refreshPolicy = this.refreshPolicy.bind(this);
+
+    this.state = {
+      status: true,
+      refreshState: this.refreshState
+    }
   }
 
   componentDidMount() {
-    this.refreshState();
+    this.refreshPolicy();
   }
 
   async refreshState() {
+    const stateUrl = new URL(
+      "/state",
+      window.config.env.REACT_APP_NOPAS_ENDPOINT
+    );
+
+    axios.get(stateUrl).then((rsp) => {
+      this.setState({ status: rsp})
+    }).catch(function (error) {
+      console.log(error);
+    })
+  }
+
+  async refreshPolicy() {
     const predefinedUrl = new URL(
       "/predefined",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
-    const stateUrl = new URL(
-      "/state",
+
+    const policyUrl = new URL(
+      "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
 
@@ -41,19 +60,19 @@ class App extends Component {
     }
 
     this.props.updatePossibleDefaultsList(firstResponse.data);
-    let secondResponse = await axios.get(stateUrl);
+    let secondResponse = await axios.get(policyUrl);
     if (secondResponse.err) {
       alert(secondResponse.err);
     } else {
       const newState = serverToUIConversion(secondResponse.data);
-      this.props.refreshState(newState);
+      this.Stateprops.refreshState(newState);
     }
   }
 
   sendUpdate() {
     const out = uiToServerConversion(this.props.state);
     const reqUrl = new URL(
-      "/update",
+      "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
     out && axios.post(reqUrl, out);
@@ -63,7 +82,7 @@ class App extends Component {
     return (
       <div className="App">
         <Topbar>
-          <StatusSwitch />
+          <StatusSwitch isRunning={this.state.status} refreshState={this.state.refreshState}/>
           <Button
             variant="contained"
             color="primary"
