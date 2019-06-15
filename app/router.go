@@ -30,14 +30,16 @@ func NewRouter(ep *endpoints) *gin.Engine {
 	router.Use(corsMiddleware(&conf))
 
 	// Core endpoints
-	router.GET("/state", ep.GetPolicy)
-	router.GET("/status", ep.GetResourceStatus)
+	router.GET("/policy", ep.GetPolicy)
+	router.POST("/policy", ep.UpdatePolicy)
+
+	router.GET("/resource", ep.GetResourceStatus)
 	router.GET("/predefined", ep.GetPredefinedFeatures)
-	router.POST("/update", ep.UpdatePolicy)
 
 	// Helper endpoints
-	router.PUT("/pause", ep.PausePolicy)
-	router.PUT("/resume", ep.ResumePolicy)
+	router.GET("/state", ep.GetState)
+	router.PUT("/state/pause", ep.PausePolicy)
+	router.PUT("/state/resume", ep.ResumePolicy)
 
 	// Healthcheck
 	router.GET("/ping", func(c *gin.Context) {
