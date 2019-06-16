@@ -24,6 +24,14 @@ CREATE TABLE autoscaler (
     state text
 );
 `
+// createTablesSQL contains statement for table if doesnt exist
+const createRunningStateTablesSQL = `
+CREATE TABLE autoscaler_running_state (
+    timestamp TIMESTAMP,
+    state BOOLEAN
+);
+`
+
 const (
 	dbhost = "POSTGRES_HOST"
 	dbport = "POSTGRES_PORT"
@@ -125,6 +133,30 @@ func (st Store) GetLatestState() (string, error) {
 	return state, nil
 }
 
+// SaveState stores the state in compacted string form to the psql db
+func (st Store) SaveRunningState(state bool) error {
+	submitTime := time.Now()
+	if _, err := st.db.Exec("INSERT INTO autoscaler_running_state(timestamp, state) VALUES ($1, $2)", submitTime, state); err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetLatestState reads the state column of the row with latest timestamp
+func (st Store) GetLatestRunningState() (bool, error) {
+	readStatement := "SELECT state FROM autoscaler_running_state WHERE timestamp = (SELECT MAX(timestamp) FROM autoscaler_running_state);"
+	state := []bool{}
+	if err := st.db.Select(&state, readStatement); err != nil {
+		return false, err
+	}
+
+	if len(state) < 1 {
+		return false, fmt.Errorf("state table is empty, using default state")
+	}
+
+	return state[0], nil
+}
+
 func (st Store) read(statement string) (string, error) {
 	state := []string{}
 	err := st.db.Select(&state, statement)
@@ -141,6 +173,7 @@ func (st Store) read(statement string) (string, error) {
 
 func (st *Store) createTables() error {
 	logging.Info("create table if does not exist")
+	st.db.Exec(createRunningStateTablesSQL) // TODO how ah?
 	_, err := st.db.Exec(createTablesSQL)
 	return err
 }

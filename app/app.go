@@ -57,7 +57,14 @@ func NewApp() (*App, error) {
 
 	wrappedPolicy := newWrappedPolicy(existingPolicy)
 
-	paused := false // always starts off running
+	var paused bool
+	if b, err := store.GetLatestRunningState(); err != nil {
+		paused = false
+		logging.Error(err.Error())
+	} else {
+		paused = b
+	}
+
 	return &App{
 		vc:     vaultClient,
 		wp:     wrappedPolicy,

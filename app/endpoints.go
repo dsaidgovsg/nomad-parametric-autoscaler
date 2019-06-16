@@ -74,18 +74,30 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 // PausePolicy is a utility endpoint that pauses the app and skips
 // the checking-scaling step.
 func (ep *endpoints) PausePolicy(c *gin.Context) {
-	*ep.paused = true
-	c.JSON(200, gin.H{
-		"message": "Nomad AutoScaler paused",
-	})
+	if err := ep.store.SaveRunningState(true); err == nil {
+		*ep.paused = true
+		c.JSON(200, gin.H{
+			"message": "Nomad AutoScaler resumed",
+		})
+	} else {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+	}
 }
 
 // ResumePolicy is a utility endpoint that resumes the app's checking-scaling cycle
 func (ep *endpoints) ResumePolicy(c *gin.Context) {
-	*ep.paused = false
-	c.JSON(200, gin.H{
-		"message": "Nomad AutoScaler resumed",
-	})
+	if err := ep.store.SaveRunningState(false); err == nil {
+		*ep.paused = false
+		c.JSON(200, gin.H{
+			"message": "Nomad AutoScaler resumed",
+		})
+	} else {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+	}
 }
 
 // GetState returns running state of server
