@@ -14,7 +14,7 @@ type endpoints struct {
 	wp     *WrappedPolicy
 	vc     *resources.VaultClient
 	store  *Store
-	paused *bool
+	isRunning *bool
 }
 
 // GetPolicy returns JSON version of current policy
@@ -74,8 +74,8 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 // PausePolicy is a utility endpoint that pauses the app and skips
 // the checking-scaling step.
 func (ep *endpoints) PausePolicy(c *gin.Context) {
-	if err := ep.store.SaveRunningState(true); err == nil {
-		*ep.paused = true
+	if err := ep.store.SaveRunningState(false); err == nil {
+		*ep.isRunning = false
 		c.JSON(200, gin.H{
 			"message": "Nomad AutoScaler resumed",
 		})
@@ -88,8 +88,8 @@ func (ep *endpoints) PausePolicy(c *gin.Context) {
 
 // ResumePolicy is a utility endpoint that resumes the app's checking-scaling cycle
 func (ep *endpoints) ResumePolicy(c *gin.Context) {
-	if err := ep.store.SaveRunningState(false); err == nil {
-		*ep.paused = false
+	if err := ep.store.SaveRunningState(true); err == nil {
+		*ep.isRunning = true
 		c.JSON(200, gin.H{
 			"message": "Nomad AutoScaler resumed",
 		})
@@ -102,5 +102,5 @@ func (ep *endpoints) ResumePolicy(c *gin.Context) {
 
 // GetState returns running state of server
 func (ep *endpoints) GetState(c *gin.Context) {
-	c.JSON(200, !*ep.paused)
+	c.JSON(200, *ep.isRunning)
 }

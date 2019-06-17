@@ -104,10 +104,7 @@ func (st *Store) Init() error {
 		}
 	}
 
-	// check if table exist else create it
-	if err := st.createTables(); err != nil {
-		logging.Warning(err.Error())
-	}
+	st.createTables()
 
 	return nil
 }
@@ -171,9 +168,14 @@ func (st Store) read(statement string) (string, error) {
 	return state[0], nil
 }
 
-func (st *Store) createTables() error {
+func (st *Store) createTables() {
 	logging.Info("create table if does not exist")
-	st.db.Exec(createRunningStateTablesSQL) // TODO how ah?
-	_, err := st.db.Exec(createTablesSQL)
-	return err
+
+	if _, err := st.db.Exec(createRunningStateTablesSQL); err != nil {
+		logging.Warning(err.Error())
+	}
+
+	if _, err := st.db.Exec(createTablesSQL); err != nil {
+		logging.Warning(err.Error())
+	}
 }

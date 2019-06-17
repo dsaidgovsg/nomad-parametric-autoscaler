@@ -16,7 +16,7 @@ type App struct {
 	wp     *WrappedPolicy
 	vc     *resources.VaultClient
 	router *gin.Engine
-	paused *bool
+	isRunning *bool
 }
 
 // WrappedPolicy has a lock to prevent race
@@ -57,24 +57,24 @@ func NewApp() (*App, error) {
 
 	wrappedPolicy := newWrappedPolicy(existingPolicy)
 
-	var paused bool
+	var isRunning bool
 	if b, err := store.GetLatestRunningState(); err != nil {
-		paused = false
+		isRunning = true
 		logging.Error(err.Error())
 	} else {
-		paused = b
+		isRunning = b
 	}
 
 	return &App{
 		vc:     vaultClient,
 		wp:     wrappedPolicy,
-		paused: &paused,
+		isRunning: &isRunning,
 		router: NewRouter(
 			&endpoints{
 				wp:     wrappedPolicy,
 				vc:     vaultClient,
 				store:  store,
-				paused: &paused,
+				isRunning: &isRunning,
 			}),
 	}, nil
 }
@@ -106,7 +106,7 @@ func (app *App) Run() {
 			case <-ticker.C:
 				app.wp.lock.Lock()
 
-				if *app.paused != true {
+				if *app.isRunning != true {
 					app.wp.policy.Scale(app.vc)
 				}
 
