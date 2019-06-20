@@ -17,20 +17,21 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.sendUpdate = this.sendUpdate.bind(this);
-    this.refreshState = this.refreshState.bind(this);
+    this.refreshPolicy = this.refreshPolicy.bind(this);
   }
 
   componentDidMount() {
-    this.refreshState();
+    this.refreshPolicy();
   }
 
-  async refreshState() {
+  async refreshPolicy() {
     const predefinedUrl = new URL(
       "/predefined",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
-    const stateUrl = new URL(
-      "/state",
+
+    const policyUrl = new URL(
+      "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
 
@@ -41,7 +42,7 @@ class App extends Component {
     }
 
     this.props.updatePossibleDefaultsList(firstResponse.data);
-    let secondResponse = await axios.get(stateUrl);
+    let secondResponse = await axios.get(policyUrl);
     if (secondResponse.err) {
       alert(secondResponse.err);
     } else {
@@ -53,7 +54,7 @@ class App extends Component {
   sendUpdate() {
     const out = uiToServerConversion(this.props.state);
     const reqUrl = new URL(
-      "/update",
+      "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
     out && axios.post(reqUrl, out);
