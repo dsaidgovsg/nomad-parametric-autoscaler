@@ -10,13 +10,14 @@ import (
 	"github.com/datagovsg/nomad-parametric-autoscaler/policy"
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/atomic"
 )
 
 type App struct {
-	wp     *WrappedPolicy
-	vc     *resources.VaultClient
-	router *gin.Engine
-	isRunning *bool
+	wp        *WrappedPolicy
+	vc        *resources.VaultClient
+	router    *gin.Engine
+	isRunning *atomic.Bool
 }
 
 // WrappedPolicy has a lock to prevent race
@@ -57,24 +58,24 @@ func NewApp() (*App, error) {
 
 	wrappedPolicy := newWrappedPolicy(existingPolicy)
 
-	var isRunning bool
+	var isRunning *atomic.Bool
 	if b, err := store.GetLatestRunningState(); err != nil {
-		isRunning = true
+		isRunning = atomic.NewBool(true)
 		logging.Error(err.Error())
 	} else {
-		isRunning = b
+		isRunning = atomic.NewBool(b)
 	}
 
 	return &App{
-		vc:     vaultClient,
-		wp:     wrappedPolicy,
-		isRunning: &isRunning,
+		vc:        vaultClient,
+		wp:        wrappedPolicy,
+		isRunning: isRunning,
 		router: NewRouter(
 			&endpoints{
-				wp:     wrappedPolicy,
-				vc:     vaultClient,
-				store:  store,
-				isRunning: &isRunning,
+				wp:        wrappedPolicy,
+				vc:        vaultClient,
+				store:     store,
+				isRunning: isRunning,
 			}),
 	}, nil
 }
@@ -106,7 +107,7 @@ func (app *App) Run() {
 			case <-ticker.C:
 				app.wp.lock.Lock()
 
-				if *app.isRunning != true {
+				if app.isRunning.Load() {
 					app.wp.policy.Scale(app.vc)
 				}
 

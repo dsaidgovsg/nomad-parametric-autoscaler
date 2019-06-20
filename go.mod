@@ -97,6 +97,7 @@ require (
 	github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	go.opencensus.io v0.19.1 // indirect
+	go.uber.org/atomic v1.4.0
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
 	golang.org/x/tools v0.0.0-20190619215442-4adf7a708c2d // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect

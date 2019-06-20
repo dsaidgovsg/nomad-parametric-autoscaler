@@ -8,13 +8,14 @@ import (
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
 	"github.com/datagovsg/nomad-parametric-autoscaler/types"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/atomic"
 )
 
 type endpoints struct {
-	wp     *WrappedPolicy
-	vc     *resources.VaultClient
-	store  *Store
-	isRunning *bool
+	wp        *WrappedPolicy
+	vc        *resources.VaultClient
+	store     *Store
+	isRunning *atomic.Bool
 }
 
 // GetPolicy returns JSON version of current policy
@@ -75,7 +76,7 @@ func (ep *endpoints) UpdatePolicy(c *gin.Context) {
 // the checking-scaling step.
 func (ep *endpoints) PausePolicy(c *gin.Context) {
 	if err := ep.store.SaveRunningState(false); err == nil {
-		*ep.isRunning = false
+		ep.isRunning.Store(false)
 		c.JSON(200, gin.H{
 			"message": "Nomad AutoScaler resumed",
 		})
@@ -89,7 +90,7 @@ func (ep *endpoints) PausePolicy(c *gin.Context) {
 // ResumePolicy is a utility endpoint that resumes the app's checking-scaling cycle
 func (ep *endpoints) ResumePolicy(c *gin.Context) {
 	if err := ep.store.SaveRunningState(true); err == nil {
-		*ep.isRunning = true
+		ep.isRunning.Store(true)
 		c.JSON(200, gin.H{
 			"message": "Nomad AutoScaler resumed",
 		})
@@ -102,5 +103,5 @@ func (ep *endpoints) ResumePolicy(c *gin.Context) {
 
 // GetState returns running state of server
 func (ep *endpoints) GetState(c *gin.Context) {
-	c.JSON(200, *ep.isRunning)
+	c.JSON(200, ep.isRunning.Load())
 }

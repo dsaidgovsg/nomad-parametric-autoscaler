@@ -24,6 +24,7 @@ CREATE TABLE autoscaler (
     state text
 );
 `
+
 // createTablesSQL contains statement for table if doesnt exist
 const createRunningStateTablesSQL = `
 CREATE TABLE autoscaler_running_state (
@@ -112,10 +113,8 @@ func (st *Store) Init() error {
 // SaveState stores the state in compacted string form to the psql db
 func (st Store) SaveState(state string) error {
 	submitTime := time.Now()
-	if _, err := st.db.Exec("INSERT INTO autoscaler(timestamp, state) VALUES ($1, $2)", submitTime, state); err != nil {
-		return err
-	}
-	return nil
+	_, err := st.db.Exec("INSERT INTO autoscaler(timestamp, state) VALUES ($1, $2)", submitTime, state)
+	return err
 }
 
 // GetLatestState reads the state column of the row with latest timestamp
@@ -133,10 +132,8 @@ func (st Store) GetLatestState() (string, error) {
 // SaveState stores the state in compacted string form to the psql db
 func (st Store) SaveRunningState(state bool) error {
 	submitTime := time.Now()
-	if _, err := st.db.Exec("INSERT INTO autoscaler_running_state(timestamp, state) VALUES ($1, $2)", submitTime, state); err != nil {
-		return err
-	}
-	return nil
+	_, err := st.db.Exec("INSERT INTO autoscaler_running_state(timestamp, state) VALUES ($1, $2)", submitTime, state)
+	return err
 }
 
 // GetLatestState reads the state column of the row with latest timestamp
