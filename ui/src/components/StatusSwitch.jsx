@@ -19,24 +19,25 @@ const StatusSwitch = () => {
     })
   }, []);
 
-  const handleChange = (event) => {
-    if (event.target.checked) {
-      const resumeUrl = new URL(
-        "/state/resume",
-        window.config.env.REACT_APP_NOPAS_ENDPOINT
-      );
-      axios.put(resumeUrl)
-      .then(rsp => setIsRunning(true))
-      .catch(err => {console.log(err)})
-
-    } else {
-      const pauseUrl = new URL(
-        "/state/pause",
-        window.config.env.REACT_APP_NOPAS_ENDPOINT
-      );
-      axios.put(pauseUrl)
-      .then(rsp => setIsRunning(false))
-      .catch(err => {console.log(err)})
+  const handleChange = async (event) => {
+    try {
+      if (event.target.checked) {
+        const resumeUrl = new URL(
+          "/state/resume",
+          window.config.env.REACT_APP_NOPAS_ENDPOINT
+        );
+        await axios.put(resumeUrl)
+        setIsRunning(true)
+      } else {
+        const pauseUrl = new URL(
+          "/state/pause",
+          window.config.env.REACT_APP_NOPAS_ENDPOINT
+        );
+        await axios.put(pauseUrl)
+        setIsRunning(false)
+      }
+    } catch(err) {
+      console.log(err)
     }
   }
 
