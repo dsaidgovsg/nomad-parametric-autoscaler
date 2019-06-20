@@ -72,17 +72,18 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		return err
 	}
 
-	if count < desiredNomadCount {
-		return res.scaleOut(desiredNomadCount, vc)
-	} else if count > desiredNomadCount {
-		return res.scaleIn(desiredNomadCount, vc)
-	}
-
 	// limit violation requires correction
 	if count < res.NomadClient.MinCount {
 		return res.scaleOut(res.NomadClient.MinCount, vc)
 	} else if count > res.NomadClient.MaxCount {
 		return res.scaleIn(res.NomadClient.MaxCount, vc)
+	}
+
+	// scale accordingly
+	if count < desiredNomadCount {
+		return res.scaleOut(desiredNomadCount, vc)
+	} else if count > desiredNomadCount {
+		return res.scaleIn(desiredNomadCount, vc)
 	} else {
 		return nil
 	}
