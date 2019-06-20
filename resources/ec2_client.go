@@ -21,8 +21,8 @@ type EC2AutoScalingGroup struct {
 	Region           string `json:"Region"`
 
 	awsScalingProvider *autoscaling.AutoScaling
-	maxscale           int
-	minscale           int
+	MaxCount           int
+	MinCount           int
 }
 
 type EC2AutoScalingGroupPlan struct {
@@ -38,13 +38,13 @@ func (asgp EC2AutoScalingGroupPlan) ApplyPlan() *EC2AutoScalingGroup {
 }
 
 // NewEC2AutoScalingGroup factory function
-func NewEC2AutoScalingGroup(region string, gpName string, maxscale int, minscale int) *EC2AutoScalingGroup {
+func NewEC2AutoScalingGroup(region string, gpName string, maxCount int, minCount int) *EC2AutoScalingGroup {
 	return &EC2AutoScalingGroup{
 		awsScalingProvider: newAwsAsgService(region),
 		ScalingGroupName:   gpName,
 		Region:             region,
-		maxscale:           maxscale,
-		minscale:           minscale,
+		MaxCount:           maxCount,
+		MinCount:           minCount,
 	}
 }
 
@@ -138,16 +138,16 @@ func (easg EC2AutoScalingGroup) RecreatePlan() EC2AutoScalingGroupPlan {
 	return EC2AutoScalingGroupPlan{
 		ScalingGroupName: easg.ScalingGroupName,
 		Region:           easg.Region,
-		MaxCount:         easg.maxscale,
-		MinCount:         easg.minscale,
+		MaxCount:         easg.MaxCount,
+		MinCount:         easg.MinCount,
 	}
 }
 
 func (easg EC2AutoScalingGroup) getValidScaleCount(newCount int) int {
-	if newCount > easg.maxscale {
-		newCount = easg.maxscale
-	} else if newCount < easg.minscale {
-		newCount = easg.minscale
+	if newCount > easg.MaxCount {
+		newCount = easg.MaxCount
+	} else if newCount < easg.MinCount {
+		newCount = easg.MinCount
 	}
 	return newCount
 }
