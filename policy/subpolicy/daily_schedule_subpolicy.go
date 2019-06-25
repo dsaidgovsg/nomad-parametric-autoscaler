@@ -40,9 +40,6 @@ func NewDailyScheduleSubPolicy(name string, mr []resources.Resource, meta interf
 		return nil, err
 	}
 
-	fmt.Println(meta)
-	fmt.Println(decoded.Schedule[0].Count)
-
 	return &DailyScheduleSubPolicy{
 		Name:             name,
 		managedResources: mr,
