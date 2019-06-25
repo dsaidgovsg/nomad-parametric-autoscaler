@@ -42,6 +42,12 @@ func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (Sub
 			return nil, err
 		}
 		return sp, nil
+	case types.DailySchedule:
+		sp, err := NewDailyScheduleSubPolicy(gsp.Name, mr, gsp.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		return sp, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid subpolicy", gsp.Name)
 	}
