@@ -23,9 +23,9 @@ func TestDecodingDailyScheduleSP(t *testing.T) {
 
 func TestWindowChecking(t *testing.T) {
 	sw := ScalingWindow{
-		begin: 0000,
-		end:   0200,
-		count: 10,
+		Begin: 0000,
+		Ed:    0200,
+		Count: 10,
 	}
 
 	if !sw.IsInWindow(0000) {
