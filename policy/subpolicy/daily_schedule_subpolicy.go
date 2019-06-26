@@ -8,7 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// OfficeHourSubPolicy is a subpolicy that extends the `SubPolicy` interface
+// DailyScheduleSubPolicy is a subpolicy that extends the `SubPolicy` interface
 // and takes in the GenericSubpolicy struct
 type DailyScheduleSubPolicy struct {
 	Name             string
@@ -26,7 +26,8 @@ func (sw ScalingWindow) IsInWindow(time int) bool {
 	return sw.Begin <= time && time < sw.End
 }
 
-// OfficeHourSubPolicyMetadata represents metadata unique to OfficeHourSubPolicy
+// DailyScheduleSubPolicyMetadata represents metadata unique to DailyScheduleSubPolicy
+// define windows of scaling through the day and a fallback default
 type DailyScheduleSubPolicyMetadata struct {
 	Default  *int            `json:"Default"`
 	Schedule []ScalingWindow `json:"Schedule"`
@@ -68,10 +69,11 @@ func (dssp *DailyScheduleSubPolicy) RecommendCount() map[resources.Resource]int 
 
 	output := make(map[resources.Resource]int)
 
-	// if within office hour, scale-up, else scale-down
 	for _, resc := range dssp.managedResources {
 		var recommendation int
 		windowExist := false
+
+		// uses count of the first window that current time falls into
 		for _, sw := range dssp.metadata.Schedule {
 			if sw.IsInWindow(currentTime) {
 				recommendation = sw.Count
