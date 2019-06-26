@@ -2,9 +2,9 @@ package subpolicy
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
+	"github.com/datagovsg/nomad-parametric-autoscaler/utils"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -63,7 +63,7 @@ func (ohsp OfficeHourSubPolicy) GetManagedResources() []resources.Resource {
 }
 
 func (ohsp *OfficeHourSubPolicy) RecommendCount() map[resources.Resource]int {
-	currentHour := time.Now().UTC().Hour() + 8
+	currentHour := utils.GetCurrentTime().Hour()
 
 	output := make(map[resources.Resource]int)
 
