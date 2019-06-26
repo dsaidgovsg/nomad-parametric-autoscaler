@@ -15,16 +15,20 @@ func TestDecodingDailyScheduleSP(t *testing.T) {
 		},
 	}
 	emptyList := make([]resources.Resource, 0)
-	_, err := NewDailyScheduleSubPolicy("a", emptyList, input)
-	if err == nil {
-		t.Errorf("Expected typo for `UpThreshold` to be caught")
+	dssp, err := NewDailyScheduleSubPolicy("a", emptyList, input)
+	if err != nil {
+		t.Errorf("Expected to have no errors")
+	}
+
+	if *dssp.metadata.Default != 9 {
+		t.Errorf("Expected floats to be truncated")
 	}
 }
 
 func TestWindowChecking(t *testing.T) {
 	sw := ScalingWindow{
 		Begin: 0000,
-		Ed:    0200,
+		End:   0200,
 		Count: 10,
 	}
 
