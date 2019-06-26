@@ -2,6 +2,7 @@ package subpolicy
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/datagovsg/nomad-parametric-autoscaler/resources"
@@ -67,8 +68,9 @@ func (dssp DailyScheduleSubPolicy) GetManagedResources() []resources.Resource {
 }
 
 func (dssp *DailyScheduleSubPolicy) RecommendCount() map[resources.Resource]int {
-	now := time.Now().UTC()
-	currentTime := (now.Hour()+8)*100 + now.Minute()
+	loc, _ := time.LoadLocation(getenv("TZ", "Asia/Singapore"))
+	now := time.Now().In(loc)
+	currentTime := (now.Hour())*100 + now.Minute()
 
 	output := make(map[resources.Resource]int)
 
@@ -106,4 +108,12 @@ func (dssp *DailyScheduleSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
 		ManagedResources: resourceNameList,
 		Metadata:         dssp.metadata,
 	}
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }
