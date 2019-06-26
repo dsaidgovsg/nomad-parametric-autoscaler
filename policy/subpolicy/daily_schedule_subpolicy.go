@@ -65,8 +65,14 @@ func (dssp DailyScheduleSubPolicy) GetManagedResources() []resources.Resource {
 }
 
 func (dssp *DailyScheduleSubPolicy) RecommendCount() map[resources.Resource]int {
-	loc, _ := time.LoadLocation(getenv("TZ", "Asia/Singapore"))
-	now := time.Now().In(loc)
+	loc, err := time.LoadLocation(getenv("TZ", "Asia/Singapore"))
+	var now time.Time
+	if err != nil {
+		now = time.Now().UTC().Add(8 * time.Hour)
+	} else {
+		now = time.Now().In(loc)
+	}
+
 	currentTime := (now.Hour())*100 + now.Minute()
 
 	output := make(map[resources.Resource]int)
@@ -108,9 +114,8 @@ func (dssp *DailyScheduleSubPolicy) DeriveGenericSubpolicy() GenericSubPolicy {
 }
 
 func getenv(key, fallback string) string {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return fallback
+	if value, ok := os.LookupEnv(key); ok {
+		return value
 	}
-	return value
+	return fallback
 }
