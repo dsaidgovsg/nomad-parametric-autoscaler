@@ -12,6 +12,7 @@ func main() {
 		// does not run scaler without a valid vault token
 		logging.Error(err.Error())
 	} else {
+		panic("because i want it to")
 		a.Run()
 	}
 }
