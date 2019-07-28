@@ -11,7 +11,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     refreshState: event => {
-      dispatch({ type: "UPDATE_STATE", change: event });
+      dispatch({ type: "UPDATE_STATE", state: event });
     },
     updatePossibleDefaultsList: event => {
       dispatch(updatePossibleDefaultsList(event));

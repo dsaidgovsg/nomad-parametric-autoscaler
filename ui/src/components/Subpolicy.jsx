@@ -19,7 +19,7 @@ const Subpolicy = props => {
   };
 
   const renameSubpolicy = event => {
-    props.updateSubpolicyName({ id: id, newName: event.target.value });
+    props.updateSubpolicyName({ id: id, value: event.target.value });
   };
 
   const jsonify = () => {

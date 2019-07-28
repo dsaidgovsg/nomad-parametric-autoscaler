@@ -82,7 +82,7 @@ describe("Actions", () => {
 
     expect(deleteSubpolicy({ val: "name" })).toEqual({
       type: DELETE_SUBPOLICY,
-      change: { val: "name" }
+      id: { val: "name" }
     });
 
     expect(updateMeta({ val: "name" })).toEqual({
@@ -118,7 +118,7 @@ describe("Actions", () => {
 
     expect(deleteResource({ val: "name" })).toEqual({
       type: DELETE_RESOURCE,
-      change: { val: "name" }
+      id: { val: "name" }
     });
   });
 });

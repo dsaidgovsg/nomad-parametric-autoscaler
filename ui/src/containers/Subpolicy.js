@@ -3,9 +3,7 @@ import Subpolicy from "../components/Subpolicy";
 import { updateSubpolicyName, deleteSubpolicy, updateMeta } from "../actions";
 
 const mapStateToProps = (state, ownProps) => {
-  const thisSP = state.policy.Subpolicies.filter(
-    sp => sp.Id === ownProps.id
-  );
+  const thisSP = state.policy.Subpolicies.filter(sp => sp.Id === ownProps.id);
   const sp = thisSP && thisSP[0];
 
   return {

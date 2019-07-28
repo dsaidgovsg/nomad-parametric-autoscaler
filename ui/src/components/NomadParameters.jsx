@@ -11,7 +11,7 @@ const NomadParameters = props => {
   const { name } = props;
   const updateField = field => event => {
     props.updateNomadParameters({
-      name: name,
+      id: name,
       value: event.target.value,
       field: field
     });
@@ -19,7 +19,7 @@ const NomadParameters = props => {
 
   const updateNumericField = field => event => {
     props.updateNumericNomadParameters({
-      name: name,
+      id: name,
       value: event.target.value,
       field: field
     });

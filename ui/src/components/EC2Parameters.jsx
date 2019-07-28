@@ -11,7 +11,7 @@ const EC2Parameters = props => {
   const { name } = props;
   const updateField = (name, field) => event => {
     props.updateEC2Parameter({
-      name: name,
+      id: name,
       value: event.target.value,
       field: field
     });
@@ -19,7 +19,7 @@ const EC2Parameters = props => {
 
   const updateNumericField = (name, field) => event => {
     props.updateNumericEC2Parameter({
-      name: name,
+      id: name,
       value: event.target.value,
       field: field
     });

@@ -35,7 +35,7 @@ const Resource = props => {
   };
 
   const renameResource = event => {
-    props.updateResourceName({ id: id, newName: event.target.value });
+    props.updateResourceName({ id: id, value: event.target.value });
   };
 
   // resource will contain details for ratio, cooldown,

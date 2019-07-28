@@ -15,7 +15,7 @@ const ManagedResources = props => {
 
     props.updateSubpolicyResource({
       id: id,
-      newManagedResources: newResource
+      value: newResource
     });
   };
 
@@ -27,7 +27,7 @@ const ManagedResources = props => {
       newResource[idx] = event.target.value;
       props.updateSubpolicyResource({
         id: id,
-        newManagedResources: newResource
+        value: newResource
       });
     } else {
       alert("Resource already selected");
@@ -39,7 +39,7 @@ const ManagedResources = props => {
     newResource.push("");
     props.updateSubpolicyResource({
       id: id,
-      newManagedResources: newResource
+      value: newResource
     });
   };
 
