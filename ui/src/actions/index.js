@@ -1,6 +1,6 @@
 // @flow
 
-import type { Action, PossibleDefaults, SimpleChangeType } from "../types";
+import type { Action, PossibleDefaults, SimpleChangeType, FieldChangeType } from "../types";
 
 /*
  * action types
@@ -40,27 +40,27 @@ export const updateCheckingFrequency: (s: string) => Action = value => ({
   change: value
 });
 
-export const updateEC2Parameter: (s: SimpleChangeType) => Action = change => ({
+export const updateEC2Parameter: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_EC2_PARAM,
   change: change
 });
 
 export const updateNumericEC2Parameter: (
-  s: SimpleChangeType
+  s: FieldChangeType
 ) => Action = change => ({
   type: UPDATE_EC2_NUMERIC_PARAM,
   change: change
 });
 
 export const updateNomadParameters: (
-  s: SimpleChangeType
+  s: FieldChangeType
 ) => Action = change => ({
   type: UPDATE_NOMAD_PARAM,
   change: change
 });
 
 export const updateNumericNomadParameters: (
-  s: SimpleChangeType
+  s: FieldChangeType
 ) => Action = change => ({
   type: UPDATE_NOMAD_NUMERIC_PARAM,
   change: change
@@ -88,12 +88,12 @@ export const updateResourceName: (s: SimpleChangeType) => Action = change => ({
   change: change
 });
 
-export const updateResourceField: (s: SimpleChangeType) => Action = change => ({
+export const updateResourceField: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_RESOURCE_FIELD,
   change: change
 });
 
-export const updateNumericResourceField: (s: SimpleChangeType) => Action = change => ({
+export const updateNumericResourceField: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_RESOURCE_NUMERIC_FIELD,
   change: change
 });
@@ -113,7 +113,7 @@ export const deleteSubpolicy: (s: string) => Action = change => ({
   id: change
 });
 
-export const updateMeta: (s: SimpleChangeType) => Action = change => ({
+export const updateMeta: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_SP_META,
   change: change
 });

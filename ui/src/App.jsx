@@ -47,7 +47,7 @@ class App extends Component {
       alert(secondResponse.err);
     } else {
       const newState = serverToUIConversion(secondResponse.data);
-      this.props.refreshState(newState);
+      newState && this.props.refreshState(newState);
     }
   }
 

@@ -6,7 +6,15 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ResourceGroup from "../containers/ResourceGroup";
 import SubpolicyGroup from "../containers/SubpolicyGroup";
 
-const PolicySummary = props => {
+type Props = {
+  frequency: string,
+  ensembler: string,
+  possibleEnsemblerList: Array<string>,
+  updateCheckingFrequency: SyntheticInputEvent<HTMLInputElement> => Function,
+  updateEnsembler: SyntheticInputEvent<HTMLInputElement> => Function
+}
+
+const PolicySummary = (props: Props) => {
   return (
     <div>
       <Paper>

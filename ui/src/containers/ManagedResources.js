@@ -1,8 +1,12 @@
+// @flow
+
 import { connect } from "react-redux";
 import ManagedResources from "../components/ManagedResources";
 import { updateSubpolicyResource } from "../actions";
 
-const mapStateToProps = state => {
+import type { Dispatch, State } from "../types";
+
+const mapStateToProps = (state: State) => {
   let possibleResources = [];
   for (let key in state.policy.Resources) {
     if (state.policy.Resources.hasOwnProperty(key)) {
@@ -15,9 +19,10 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateSubpolicyResource: input => dispatch(updateSubpolicyResource(input))
+    updateSubpolicyResource: (input: { id: string, value: Array<string> }) =>
+      dispatch(updateSubpolicyResource(input))
   };
 };
 

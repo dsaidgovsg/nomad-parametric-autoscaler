@@ -1,3 +1,5 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
@@ -5,7 +7,12 @@ import AddIcon from "@material-ui/icons/Add";
 import { Paper } from "../../node_modules/@material-ui/core";
 import Subpolicy from "../containers/Subpolicy";
 
-const SubpolicyGroup = props => {
+type Props = {
+  subpolicies: Array<string>,
+  createSubpolicy: (s: string) => Function
+}
+
+const SubpolicyGroup = (props: Props) => {
   const { subpolicies } = props;
 
   return (

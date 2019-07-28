@@ -1,6 +1,12 @@
+// @flow
+
 import { uniqueIdGen } from "./uniqueIdGenerator";
 
-export const serverToUIConversion = input => {
+import type { State } from "../types";
+
+export const serverToUIConversion: (
+  st: Object
+) => State | typeof undefined = input => {
   try {
     // subpolicy stringify + give Id
     for (const sp of input.Subpolicies) {
@@ -27,7 +33,7 @@ export const serverToUIConversion = input => {
   }
 };
 
-export const uiToServerConversion = input => {
+export const uiToServerConversion: (st: State) => Object = input => {
   try {
     const state = JSON.parse(JSON.stringify(input));
     const resource = {};

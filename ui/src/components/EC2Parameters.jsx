@@ -1,3 +1,5 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
@@ -7,9 +9,27 @@ import {
   CardHeader
 } from "../../node_modules/@material-ui/core";
 
-const EC2Parameters = props => {
+import type { FieldChangeType, SimpleChangeType } from "../types";
+
+export type OwnProps = {|
+  name: string
+|};
+
+type Props = {
+  ...OwnProps,
+  autoScalingGroupName: string,
+  region: string,
+  maxCount: string,
+  minCount: string,
+  updateEC2Parameter: FieldChangeType => Function,
+  updateNumericEC2Parameter: FieldChangeType => Function
+};
+
+const EC2Parameters = (props: Props) => {
   const { name } = props;
-  const updateField = (name, field) => event => {
+  const updateField = (name: string, field: string) => (
+    event: SyntheticInputEvent<HTMLInputElement>
+  ) => {
     props.updateEC2Parameter({
       id: name,
       value: event.target.value,
@@ -17,7 +37,9 @@ const EC2Parameters = props => {
     });
   };
 
-  const updateNumericField = (name, field) => event => {
+  const updateNumericField = (name: string, field: string) => (
+    event: SyntheticInputEvent<HTMLInputElement>
+  ) => {
     props.updateNumericEC2Parameter({
       id: name,
       value: event.target.value,

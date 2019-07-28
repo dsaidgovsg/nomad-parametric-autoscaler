@@ -1,8 +1,12 @@
+// @flow
+
 import { connect } from "react-redux";
 import PolicySummary from "../components/PolicySummary";
 import { updateCheckingFrequency, updateEnsembler } from "../actions";
 
-const mapStateToProps = state => {
+import type { Dispatch, State } from "../types";
+
+const mapStateToProps = (state: State) => {
   return {
     frequency: state.policy.CheckingFreq,
     ensembler: state.policy.Ensembler,
@@ -10,10 +14,11 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateEnsembler: event => dispatch(updateEnsembler(event.target.value)),
-    updateCheckingFrequency: event =>
+    updateEnsembler: (event: SyntheticInputEvent<HTMLInputElement>) =>
+      dispatch(updateEnsembler(event.target.value)),
+    updateCheckingFrequency: (event: SyntheticInputEvent<HTMLInputElement>) =>
       dispatch(updateCheckingFrequency(event.target.value))
   };
 };

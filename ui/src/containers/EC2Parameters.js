@@ -1,9 +1,14 @@
+// @flow
+
 import { connect } from "react-redux";
 import EC2Parameters from "../components/EC2Parameters";
 
 import { updateEC2Parameter, updateNumericEC2Parameter } from "../actions";
 
-const mapStateToProps = (state, ownProps) => {
+import type { Dispatch, State, FieldChangeType } from "../types";
+import type { OwnProps } from "../components/EC2Parameters";
+
+const mapStateToProps = (state: State, ownProps: OwnProps) => {
   return {
     autoScalingGroupName:
       state.policy.Resources[ownProps.name].EC2.ScalingGroupName,
@@ -13,10 +18,11 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateEC2Parameter: input => dispatch(updateEC2Parameter(input)),
-    updateNumericEC2Parameter: input =>
+    updateEC2Parameter: (input: FieldChangeType) =>
+      dispatch(updateEC2Parameter(input)),
+    updateNumericEC2Parameter: (input: FieldChangeType) =>
       dispatch(updateNumericEC2Parameter(input))
   };
 };

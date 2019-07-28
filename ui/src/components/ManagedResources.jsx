@@ -1,3 +1,5 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
@@ -7,10 +9,19 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import MenuItem from "@material-ui/core/MenuItem";
 
-const ManagedResources = props => {
+import type { SimpleChangeType } from "../types";
+
+export type Props = {
+  id: string,
+  resources: Array<string>,
+  possibleResources: Array<string>,
+  updateSubpolicyResource: ({ id: string, value: Array<string> }) => Function
+};
+
+const ManagedResources = (props: Props) => {
   const { id, resources, possibleResources } = props;
 
-  const deleteSubpolicyResource = resourceName => () => {
+  const deleteSubpolicyResource = (resourceName: string) => () => {
     let newResource = resources.slice().filter(r => r !== resourceName);
 
     props.updateSubpolicyResource({
@@ -19,7 +30,9 @@ const ManagedResources = props => {
     });
   };
 
-  const updateResource = resourceName => event => {
+  const updateResource = (resourceName: string) => (
+    event: SyntheticInputEvent<HTMLInputElement>
+  ) => {
     let newResource = resources.slice();
     const idx = newResource.findIndex(val => val === resourceName);
 

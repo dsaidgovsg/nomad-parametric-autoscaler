@@ -26,14 +26,14 @@ import {
   UPDATE_POSSIBLE_DEFAULTS_LIST
 } from "../actions";
 
-import type { State, Action, PossibleDefaults } from "../types";
+import type { NopasState, Action, PossibleDefaults } from "../types";
 
 export const possibleDefaults = {
   subpolicies: ["CoreRatio"],
   ensemblers: ["Conservative"]
 };
 
-export const initialState: State = {
+export const initialState: NopasState = {
   CheckingFreq: "1m",
   Ensembler: "Conservative",
   Resources: {
@@ -98,7 +98,7 @@ export const initialState: State = {
   ]
 };
 
-export const policy: (state: State, action: Action) => State = (
+export const policy: (state: NopasState, action: Action) => NopasState = (
   state = initialState,
   action
 ) => {

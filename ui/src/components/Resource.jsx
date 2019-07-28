@@ -1,3 +1,5 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
@@ -11,10 +13,28 @@ import {
 import NomadParameters from "../containers/NomadParameters";
 import EC2Parameters from "../containers/EC2Parameters";
 
-const Resource = props => {
+import type { FieldChangeType, SimpleChangeType } from "../types"; 
+
+export type OwnProps = {|
+  id: string
+|}
+
+type Props = {
+  ...OwnProps,
+  resourceName: string,
+  scaleInCooldown: string,
+  scaleOutCooldown: string,
+  ratio: number,
+  updateResourceField: FieldChangeType => Function,
+  updateNumericResourceField: FieldChangeType => Function,
+  deleteResource: ({id: string}) => Function,
+  updateResourceName: SimpleChangeType => Function
+}
+
+const Resource = (props: Props) => {
   const { id } = props;
 
-  const updateField = field => event => {
+  const updateField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateResourceField({
       id: id,
       value: event.target.value,
@@ -22,7 +42,7 @@ const Resource = props => {
     });
   };
 
-  const updateNumericField = field => event => {
+  const updateNumericField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateNumericResourceField({
       id: id,
       value: event.target.value,
@@ -34,7 +54,7 @@ const Resource = props => {
     props.deleteResource({ id: id });
   };
 
-  const renameResource = event => {
+  const renameResource = (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateResourceName({ id: id, value: event.target.value });
   };
 

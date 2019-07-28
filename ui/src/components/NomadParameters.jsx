@@ -1,3 +1,5 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
@@ -7,9 +9,26 @@ import {
   CardHeader
 } from "../../node_modules/@material-ui/core";
 
-const NomadParameters = props => {
+import type { FieldChangeType, SimpleChangeType } from "../types"; 
+
+export type OwnProps = {|
+  name: string
+|}
+
+type Props = {
+  ...OwnProps,
+  address: string,
+  jobName: string,
+  nomadPath: string,
+  maxCount: string,
+  minCount: string,
+  updateNomadParameters: FieldChangeType => Function,
+  updateNumericNomadParameters: FieldChangeType => Function
+}
+
+const NomadParameters = (props: Props) => {
   const { name } = props;
-  const updateField = field => event => {
+  const updateField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateNomadParameters({
       id: name,
       value: event.target.value,
@@ -17,7 +36,7 @@ const NomadParameters = props => {
     });
   };
 
-  const updateNumericField = field => event => {
+  const updateNumericField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateNumericNomadParameters({
       id: name,
       value: event.target.value,
