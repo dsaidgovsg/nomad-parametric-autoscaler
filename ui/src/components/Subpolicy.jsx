@@ -8,6 +8,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import ManagedResources from "../containers/ManagedResources";
+import DeleteButtonWithWarning from "./DeleteButtonWithWarning";
 
 import type { SimpleChangeType } from "../types";
 
@@ -84,14 +85,7 @@ const Subpolicy = (props: Props) => {
         <Button variant="contained" onClick={jsonify}>
           JSON-it!
         </Button>
-        <Fab
-          size="small"
-          color="primary"
-          aria-label="Delete"
-          onClick={deleteSubpolicy}
-        >
-          <DeleteIcon />
-        </Fab>
+        <DeleteButtonWithWarning fn={deleteSubpolicy} />
       </CardContent>
     </Card>
   );
