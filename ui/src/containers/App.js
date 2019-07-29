@@ -1,19 +1,23 @@
+// @flow
+
 import { connect } from "react-redux";
 import App from "../App";
 import { updatePossibleDefaultsList } from "../actions";
 
-const mapStateToProps = state => {
+import type { Dispatch, State, NopasState, PossibleDefaults } from "../types";
+
+const mapStateToProps = (state: State) => {
   return {
     state: state.policy
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    refreshState: event => {
+    refreshState: (event: NopasState) => {
       dispatch({ type: "UPDATE_STATE", state: event });
     },
-    updatePossibleDefaultsList: event => {
+    updatePossibleDefaultsList: (event: PossibleDefaults) => {
       dispatch(updatePossibleDefaultsList(event));
     }
   };

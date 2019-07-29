@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import "./App.css";
@@ -13,11 +15,19 @@ import {
   serverToUIConversion
 } from "./utils/stateConversion";
 
-class App extends Component {
-  constructor(props) {
+import type { NopasState, PossibleDefaults } from "./types";
+
+type Props = {
+  state: NopasState,
+  refreshState: NopasState => Function,
+  updatePossibleDefaultsList: PossibleDefaults => Function
+}
+
+class App extends Component<Props> {
+  constructor(props: Props) {
     super(props);
-    this.sendUpdate = this.sendUpdate.bind(this);
-    this.refreshPolicy = this.refreshPolicy.bind(this);
+    (this: any).sendUpdate = this.sendUpdate.bind(this);
+    (this: any).refreshPolicy = this.refreshPolicy.bind(this);
   }
 
   componentDidMount() {
@@ -68,7 +78,7 @@ class App extends Component {
           <Button
             variant="contained"
             color="primary"
-            onClick={this.refreshState}
+            onClick={this.refreshPolicy}
           >
             Refresh
             <RefreshIcon />

@@ -1,3 +1,5 @@
+// @flow
+
 import React, { useState, useEffect } from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
