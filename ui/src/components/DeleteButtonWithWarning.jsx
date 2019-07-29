@@ -26,27 +26,19 @@ const DeleteButtonWithWarning = (props: Props) => {
       props.fn();
   }
 
-  function handleClickOpen() {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    setOpen(false);
-  }
-
   return (
     <div>
       <Fab
         size="small"
         color="primary"
         aria-label="Delete"
-        onClick={handleClickOpen}
+        onClick={() => setOpen(true)}
       >
         <DeleteIcon />
       </Fab>
       <Dialog
         open={open}
-        onClose={handleClose}
+        onClose={() => setOpen(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -62,7 +54,7 @@ const DeleteButtonWithWarning = (props: Props) => {
           <Button onClick={triggerFn} color="primary">
             Delete
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
             Cancel
           </Button>
         </DialogActions>
