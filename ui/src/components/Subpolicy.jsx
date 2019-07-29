@@ -23,7 +23,7 @@ export type Props = {
   metadata: string,
   possibleSubpolicyList: Array<string>,
   updateSubpolicyName: SimpleChangeType => Function,
-  deleteSubpolicy: ({ id: string }) => Function,
+  deleteSubpolicy: string => Function,
   updateMeta: SimpleChangeType => Function
 };
 
@@ -34,7 +34,7 @@ const Subpolicy = (props: Props) => {
   };
 
   const deleteSubpolicy = () => {
-    props.deleteSubpolicy({ id: id });
+    props.deleteSubpolicy(id);
   };
 
   const renameSubpolicy = (event: SyntheticInputEvent<HTMLInputElement>) => {

@@ -27,7 +27,7 @@ type Props = {
   ratio: number,
   updateResourceField: FieldChangeType => Function,
   updateNumericResourceField: FieldChangeType => Function,
-  deleteResource: ({id: string}) => Function,
+  deleteResource: string => Function,
   updateResourceName: SimpleChangeType => Function
 }
 
@@ -51,7 +51,7 @@ const Resource = (props: Props) => {
   };
 
   const deleteResource = () => {
-    props.deleteResource({ id: id });
+    props.deleteResource(id);
   };
 
   const renameResource = (event: SyntheticInputEvent<HTMLInputElement>) => {
