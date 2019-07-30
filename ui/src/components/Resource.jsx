@@ -9,8 +9,10 @@ import {
   CardContent,
   CardHeader
 } from "../../node_modules/@material-ui/core";
+import Button from "@material-ui/core/Button";
 import NomadParameters from "../containers/NomadParameters";
 import EC2Parameters from "../containers/EC2Parameters";
+import DeleteButtonWithWarning from "./DeleteButtonWithWarning";
 
 import type { FieldChangeType, SimpleChangeType } from "../types";
 
@@ -99,14 +101,7 @@ const Resource = (props: Props) => {
           onChange={updateNumericField("N2CRatio")}
           margin="normal"
         />
-        <Fab
-          size="small"
-          color="primary"
-          aria-label="Delete"
-          onClick={deleteResource}
-        >
-          <DeleteIcon />
-        </Fab>
+        <DeleteButtonWithWarning fn={deleteResource} />
       </CardContent>
       <NomadParameters name={id} />
       <EC2Parameters name={id} />

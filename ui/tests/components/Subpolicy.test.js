@@ -5,6 +5,7 @@ import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
 import Subpolicy from "../../src/components/Subpolicy";
 import ManagedResources from "../../src/containers/ManagedResources";
+import DeleteButtonWithWarning from "../../src/components/DeleteButtonWithWarning";
 
 function shallowSetup() {
   // Sample props to pass to our shallow render
@@ -12,6 +13,7 @@ function shallowSetup() {
     id: "id",
     name: "test",
     resources: ["1", "2"],
+    possibleSubpolicyList: [],
     metadata: "meta",
     updateMeta: jest.fn(),
     deleteSubpolicy: jest.fn(),
@@ -41,11 +43,9 @@ describe("Subpolicy", () => {
   });
 
   describe("clicks", () => {
-    it("clicking delete should trigger deleteSubpolicy", () => {
+    it("clicking delete should NOT immediately trigger deleteSubpolicy", () => {
       const { enzymeWrapper, props } = shallowSetup();
-      const button = enzymeWrapper.find(Fab).first();
-      button.simulate("click");
-      expect(props.deleteSubpolicy.mock.calls.length).toBe(1);
+      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(true);
     });
   });
 });

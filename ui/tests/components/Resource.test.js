@@ -1,11 +1,11 @@
 import React from "react";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
-import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
 import Resource from "../../src/components/Resource";
 import EC2Parameters from "../../src/containers/EC2Parameters";
 import NomadParameters from "../../src/containers/NomadParameters";
+import DeleteButtonWithWarning from "../../src/components/DeleteButtonWithWarning";
 
 function shallowSetup() {
   const props = {
@@ -47,11 +47,9 @@ describe("Resource", () => {
   });
 
   describe("clicks", () => {
-    it("clicking delete should trigger deleteResource", () => {
+    it("clicking delete should not immediately trigger deleteResource", () => {
       const { enzymeWrapper, props } = shallowSetup();
-      const button = enzymeWrapper.find(Fab).first();
-      button.simulate("click");
-      expect(props.deleteResource.mock.calls.length).toBe(1);
+      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(true);
     });
   });
 });
