@@ -1,7 +1,6 @@
 // @flow
 
 import React from "react";
-import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 import {
   Card,
@@ -9,7 +8,7 @@ import {
   CardHeader
 } from "../../node_modules/@material-ui/core";
 
-import type { FieldChangeType, SimpleChangeType } from "../types";
+import type { FieldChangeType } from "../types";
 
 export type OwnProps = {|
   name: string
@@ -90,16 +89,6 @@ const EC2Parameters = (props: Props) => {
       </Card>
     </div>
   );
-};
-
-EC2Parameters.propTypes = {
-  name: PropTypes.string.isRequired,
-  autoScalingGroupName: PropTypes.string.isRequired,
-  region: PropTypes.string.isRequired,
-  maxCount: PropTypes.number.isRequired,
-  minCount: PropTypes.number.isRequired,
-  updateEC2Parameter: PropTypes.func.isRequired,
-  updateNumericEC2Parameter: PropTypes.func.isRequired
 };
 
 export default EC2Parameters;

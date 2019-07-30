@@ -3,7 +3,7 @@
 export type State = {
   policy: NopasState,
   defaultsList: PossibleDefaults
-}
+};
 
 // rename to server
 export type PossibleDefaults = {

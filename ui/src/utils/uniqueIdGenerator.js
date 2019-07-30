@@ -1,6 +1,7 @@
 // @flow
+
 // from https://gist.github.com/gordonbrander/2230317
-export const uniqueIdGen: (() => string) = () => {
+const uniqueIdGen: () => string = () => {
   // Math.random should be unique because of its seeding algorithm.
   // Convert it to base 36 (numbers + letters), and grab the first 9 characters
   // after the decimal.
@@ -11,3 +12,5 @@ export const uniqueIdGen: (() => string) = () => {
       .substr(2, 9)
   );
 };
+
+export { uniqueIdGen as default };

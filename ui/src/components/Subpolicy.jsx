@@ -1,7 +1,6 @@
 // @flow
 
 import React from "react";
-import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
@@ -66,7 +65,7 @@ const Subpolicy = (props: Props) => {
         >
           {possibleSubpolicyList &&
             possibleSubpolicyList.map(ps => (
-              <MenuItem value={ps}>
+              <MenuItem key={ps} value={ps}>
                 {ps}
               </MenuItem>
             ))}
@@ -96,17 +95,6 @@ const Subpolicy = (props: Props) => {
       </CardContent>
     </Card>
   );
-};
-
-Subpolicy.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  resources: PropTypes.arrayOf(PropTypes.string).isRequired,
-  metadata: PropTypes.string.isRequired,
-  possibleSubpolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  updateMeta: PropTypes.func.isRequired,
-  deleteSubpolicy: PropTypes.func.isRequired,
-  updateSubpolicyName: PropTypes.func.isRequired
 };
 
 export default Subpolicy;

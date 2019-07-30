@@ -35,6 +35,8 @@
   ],
 
   "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "react/destructuring-assignment": 0,
     "react/prefer-stateless-function": 0,

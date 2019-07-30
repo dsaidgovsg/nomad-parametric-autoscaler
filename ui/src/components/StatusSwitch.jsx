@@ -14,43 +14,42 @@ const StatusSwitch = () => {
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
 
-    axios.get(stateUrl)
-    .then(rsp => setIsRunning(rsp.data))
-    .catch(function (error) {
-      console.log(error);
-    })
+    axios
+      .get(stateUrl)
+      .then(rsp => setIsRunning(rsp.data))
+      .catch(function(error) {
+        console.warn(error);
+      });
   }, []);
 
-  const handleChange = async (event) => {
+  const handleChange = async event => {
     try {
       if (event.target.checked) {
         const resumeUrl = new URL(
           "/state/resume",
           window.config.env.REACT_APP_NOPAS_ENDPOINT
         );
-        await axios.put(resumeUrl)
-        setIsRunning(true)
+        await axios.put(resumeUrl);
+        setIsRunning(true);
       } else {
         const pauseUrl = new URL(
           "/state/pause",
           window.config.env.REACT_APP_NOPAS_ENDPOINT
         );
-        await axios.put(pauseUrl)
-        setIsRunning(false)
+        await axios.put(pauseUrl);
+        setIsRunning(false);
       }
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.warn(err);
     }
-  }
+  };
 
   return (
     <FormControlLabel
-      control={
-        <Switch checked={isRunning} onChange={handleChange} />
-      }
+      control={<Switch checked={isRunning} onChange={handleChange} />}
       label={isRunning ? "Running" : "Paused"}
     />
   );
-}
+};
 
 export default StatusSwitch;

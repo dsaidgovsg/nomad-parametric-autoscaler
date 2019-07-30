@@ -1,6 +1,6 @@
 // @flow
 
-import { uniqueIdGen } from "./uniqueIdGenerator";
+import uniqueIdGen from "./uniqueIdGenerator";
 
 import type { NopasState } from "../types";
 

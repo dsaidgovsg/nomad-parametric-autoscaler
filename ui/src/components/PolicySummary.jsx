@@ -1,8 +1,9 @@
+// @flow
+
 import React from "react";
-import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
-import { Paper, Card, CardContent } from "../../node_modules/@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
+import { Paper, Card, CardContent } from "../../node_modules/@material-ui/core";
 import ResourceGroup from "../containers/ResourceGroup";
 import SubpolicyGroup from "../containers/SubpolicyGroup";
 
@@ -10,9 +11,9 @@ type Props = {
   frequency: string,
   ensembler: string,
   possibleEnsemblerList: Array<string>,
-  updateCheckingFrequency: SyntheticInputEvent<HTMLInputElement> => Function,
-  updateEnsembler: SyntheticInputEvent<HTMLInputElement> => Function
-}
+  updateCheckingFrequency: (SyntheticInputEvent<HTMLInputElement>) => Function,
+  updateEnsembler: (SyntheticInputEvent<HTMLInputElement>) => Function
+};
 
 const PolicySummary = (props: Props) => {
   return (
@@ -43,7 +44,9 @@ const PolicySummary = (props: Props) => {
             >
               {props.possibleEnsemblerList &&
                 props.possibleEnsemblerList.map(pe => (
-                  <MenuItem value={pe}>{pe}</MenuItem>
+                  <MenuItem key={pe} value={pe}>
+                    {pe}
+                  </MenuItem>
                 ))}
             </TextField>
           </CardContent>
@@ -53,14 +56,6 @@ const PolicySummary = (props: Props) => {
       <SubpolicyGroup />
     </div>
   );
-};
-
-PolicySummary.propTypes = {
-  frequency: PropTypes.string.isRequired,
-  possibleEnsemblerList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  updateCheckingFrequency: PropTypes.func.isRequired,
-  ensembler: PropTypes.string.isRequired,
-  updateEnsembler: PropTypes.func.isRequired
 };
 
 export default PolicySummary;

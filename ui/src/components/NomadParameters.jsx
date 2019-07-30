@@ -1,7 +1,6 @@
 // @flow
 
 import React from "react";
-import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 import {
   Card,
@@ -9,11 +8,11 @@ import {
   CardHeader
 } from "../../node_modules/@material-ui/core";
 
-import type { FieldChangeType, SimpleChangeType } from "../types"; 
+import type { FieldChangeType } from "../types";
 
 export type OwnProps = {|
   name: string
-|}
+|};
 
 type Props = {
   ...OwnProps,
@@ -24,11 +23,13 @@ type Props = {
   minCount: string,
   updateNomadParameters: FieldChangeType => Function,
   updateNumericNomadParameters: FieldChangeType => Function
-}
+};
 
 const NomadParameters = (props: Props) => {
   const { name } = props;
-  const updateField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
+  const updateField = (field: string) => (
+    event: SyntheticInputEvent<HTMLInputElement>
+  ) => {
     props.updateNomadParameters({
       id: name,
       value: event.target.value,
@@ -36,7 +37,9 @@ const NomadParameters = (props: Props) => {
     });
   };
 
-  const updateNumericField = (field: string) => (event: SyntheticInputEvent<HTMLInputElement>) => {
+  const updateNumericField = (field: string) => (
+    event: SyntheticInputEvent<HTMLInputElement>
+  ) => {
     props.updateNumericNomadParameters({
       id: name,
       value: event.target.value,
@@ -95,17 +98,6 @@ const NomadParameters = (props: Props) => {
       </Card>
     </div>
   );
-};
-
-NomadParameters.propTypes = {
-  name: PropTypes.string.isRequired,
-  updateNomadParameters: PropTypes.func.isRequired,
-  updateNumericNomadParameters: PropTypes.func.isRequired,
-  address: PropTypes.string.isRequired,
-  jobName: PropTypes.string.isRequired,
-  nomadPath: PropTypes.string.isRequired,
-  maxCount: PropTypes.number.isRequired,
-  minCount: PropTypes.number.isRequired
 };
 
 export default NomadParameters;

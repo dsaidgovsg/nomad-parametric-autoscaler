@@ -2,7 +2,7 @@
 
 import remove from "lodash/remove";
 import { combineReducers } from "redux";
-import { uniqueIdGen } from "../utils/uniqueIdGenerator";
+import uniqueIdGen from "../utils/uniqueIdGenerator";
 
 import {
   UPDATE_STATE,
@@ -174,7 +174,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
       };
 
     // action.change is {id: string, value: string, field: string}
-    case UPDATE_RESOURCE_NUMERIC_FIELD:
+    case UPDATE_RESOURCE_NUMERIC_FIELD: {
       let resourceNumericField = parseInt(action.change.value, 10);
       if (resourceNumericField) {
         updatedResource[action.change.id][
@@ -187,6 +187,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
       } else {
         return state;
       }
+    }
 
     case UPDATE_NOMAD_PARAM:
       updatedResource[action.change.id].Nomad[action.change.field] =
@@ -196,7 +197,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
         Resources: updatedResource
       };
 
-    case UPDATE_NOMAD_NUMERIC_PARAM:
+    case UPDATE_NOMAD_NUMERIC_PARAM: {
       let nomadNumericParam = parseInt(action.change.value, 10);
       if (nomadNumericParam) {
         updatedResource[action.change.id].Nomad[
@@ -209,6 +210,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
       } else {
         return state;
       }
+    }
 
     case UPDATE_EC2_PARAM:
       updatedResource[action.change.id].EC2[action.change.field] =
@@ -218,7 +220,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
         Resources: updatedResource
       };
 
-    case UPDATE_EC2_NUMERIC_PARAM:
+    case UPDATE_EC2_NUMERIC_PARAM: {
       let ec2NumericParam = parseInt(action.change.value, 10);
       if (ec2NumericParam) {
         updatedResource[action.change.id].EC2[
@@ -231,6 +233,7 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
       } else {
         return state;
       }
+    }
 
     case CREATE_SUBPOLICY:
       sp.push({

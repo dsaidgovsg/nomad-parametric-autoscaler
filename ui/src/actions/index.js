@@ -1,6 +1,11 @@
 // @flow
 
-import type { Action, PossibleDefaults, SimpleChangeType, FieldChangeType } from "../types";
+import type {
+  Action,
+  PossibleDefaults,
+  SimpleChangeType,
+  FieldChangeType
+} from "../types";
 
 /*
  * action types
@@ -93,7 +98,9 @@ export const updateResourceField: (s: FieldChangeType) => Action = change => ({
   change: change
 });
 
-export const updateNumericResourceField: (s: FieldChangeType) => Action = change => ({
+export const updateNumericResourceField: (
+  s: FieldChangeType
+) => Action = change => ({
   type: UPDATE_RESOURCE_NUMERIC_FIELD,
   change: change
 });

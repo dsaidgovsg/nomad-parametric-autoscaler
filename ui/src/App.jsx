@@ -1,7 +1,6 @@
 // @flow
 
-import React, { Component, useEffect } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import "./App.css";
 import SendIcon from "@material-ui/icons/Send";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -80,11 +79,6 @@ const App = (props: Props) => {
       <PolicySummary />
     </div>
   );
-};
-
-App.propTypes = {
-  refreshState: PropTypes.func.isRequired,
-  state: PropTypes.object.isRequired
 };
 
 export default App;
