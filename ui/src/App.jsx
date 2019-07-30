@@ -1,5 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+// @flow
+
+import React, { useEffect } from "react";
 import "./App.css";
 import SendIcon from "@material-ui/icons/Send";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -13,18 +14,20 @@ import {
   serverToUIConversion
 } from "./utils/stateConversion";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.sendUpdate = this.sendUpdate.bind(this);
-    this.refreshPolicy = this.refreshPolicy.bind(this);
-  }
+import type { NopasState, PossibleDefaults } from "./types";
 
-  componentDidMount() {
-    this.refreshPolicy();
-  }
+type Props = {
+  state: NopasState,
+  refreshState: NopasState => Function,
+  updatePossibleDefaultsList: PossibleDefaults => Function
+};
 
-  async refreshPolicy() {
+const App = (props: Props) => {
+  useEffect(() => {
+    refreshPolicy();
+  }, []);
+
+  const refreshPolicy = async () => {
     const predefinedUrl = new URL(
       "/predefined",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
@@ -41,52 +44,41 @@ class App extends Component {
       return;
     }
 
-    this.props.updatePossibleDefaultsList(firstResponse.data);
+    props.updatePossibleDefaultsList(firstResponse.data);
     let secondResponse = await axios.get(policyUrl);
     if (secondResponse.err) {
       alert(secondResponse.err);
     } else {
       const newState = serverToUIConversion(secondResponse.data);
-      this.props.refreshState(newState);
+      newState && props.refreshState(newState);
     }
-  }
+  };
 
-  sendUpdate() {
-    const out = uiToServerConversion(this.props.state);
+  const sendUpdate = () => {
+    const out = uiToServerConversion(props.state);
     const reqUrl = new URL(
       "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT
     );
     out && axios.post(reqUrl, out);
-  }
+  };
 
-  render() {
-    return (
-      <div className="App">
-        <Topbar>
-          <StatusSwitch />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.refreshState}
-          >
-            Refresh
-            <RefreshIcon />
-          </Button>
-          <Button variant="contained" color="primary" onClick={this.sendUpdate}>
-            Update
-            <SendIcon />
-          </Button>
-        </Topbar>
-        <PolicySummary />
-      </div>
-    );
-  }
-}
-
-App.propTypes = {
-  refreshState: PropTypes.func.isRequired,
-  state: PropTypes.object.isRequired
+  return (
+    <div className="App">
+      <Topbar>
+        <StatusSwitch />
+        <Button variant="contained" color="primary" onClick={refreshPolicy}>
+          Refresh
+          <RefreshIcon />
+        </Button>
+        <Button variant="contained" color="primary" onClick={sendUpdate}>
+          Update
+          <SendIcon />
+        </Button>
+      </Topbar>
+      <PolicySummary />
+    </div>
+  );
 };
 
 export default App;

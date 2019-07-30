@@ -1,3 +1,5 @@
+// @flow
+
 import { connect } from "react-redux";
 import Resource from "../components/Resource";
 import {
@@ -7,7 +9,15 @@ import {
   updateNumericResourceField
 } from "../actions";
 
-const mapStateToProps = (state, ownProps) => {
+import type {
+  Dispatch,
+  FieldChangeType,
+  State,
+  SimpleChangeType
+} from "../types";
+import type { OwnProps } from "../components/Resource";
+
+const mapStateToProps = (state: State, ownProps: OwnProps) => {
   return {
     resourceName: state.policy.Resources[ownProps.id].Name,
     scaleInCooldown: state.policy.Resources[ownProps.id].ScaleInCooldown,
@@ -16,13 +26,15 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateResourceName: event => dispatch(updateResourceName(event)),
-    updateNumericResourceField: event =>
+    updateResourceName: (event: SimpleChangeType) =>
+      dispatch(updateResourceName(event)),
+    updateNumericResourceField: (event: FieldChangeType) =>
       dispatch(updateNumericResourceField(event)),
-    updateResourceField: event => dispatch(updateResourceField(event)),
-    deleteResource: event => dispatch(deleteResource(event))
+    updateResourceField: (event: FieldChangeType) =>
+      dispatch(updateResourceField(event)),
+    deleteResource: (event: string) => dispatch(deleteResource(event))
   };
 };
 

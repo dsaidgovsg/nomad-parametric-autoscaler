@@ -1,9 +1,13 @@
+// @flow
+
 import { connect } from "react-redux";
 
 import SubpolicyGroup from "../components/SubpolicyGroup";
 import { createSubpolicy } from "../actions";
 
-const mapStateToProps = state => {
+import type { State } from "../types";
+
+const mapStateToProps = (state: State) => {
   return {
     subpolicies: state.policy.Subpolicies.map(sp => sp.Id)
   };

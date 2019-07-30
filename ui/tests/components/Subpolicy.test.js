@@ -1,19 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
-import configureStore from "redux-mock-store"; //ES6 modules
-import { Provider } from "react-redux";
 import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
 import Subpolicy from "../../src/components/Subpolicy";
 import ManagedResources from "../../src/containers/ManagedResources";
-
-const middlewares = [];
-const mockStore = configureStore(middlewares);
-
-const initialState = {};
-const store = mockStore(initialState);
 
 function shallowSetup() {
   // Sample props to pass to our shallow render

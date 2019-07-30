@@ -1,3 +1,5 @@
+// @flow
+
 import { connect } from "react-redux";
 import NomadParameters from "../components/NomadParameters";
 import {
@@ -5,7 +7,10 @@ import {
   updateNumericNomadParameters
 } from "../actions";
 
-const mapStateToProps = (state, ownProps) => {
+import type { Dispatch, State, FieldChangeType } from "../types";
+import type { OwnProps } from "../components/NomadParameters";
+
+const mapStateToProps = (state: State, ownProps: OwnProps) => {
   return {
     address: state.policy.Resources[ownProps.name].Nomad.Address,
     jobName: state.policy.Resources[ownProps.name].Nomad.JobName,
@@ -15,10 +20,11 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    updateNomadParameters: input => dispatch(updateNomadParameters(input)),
-    updateNumericNomadParameters: input =>
+    updateNomadParameters: (input: FieldChangeType) =>
+      dispatch(updateNomadParameters(input)),
+    updateNumericNomadParameters: (input: FieldChangeType) =>
       dispatch(updateNumericNomadParameters(input))
   };
 };

@@ -1,6 +1,12 @@
-import { uniqueIdGen } from "./uniqueIdGenerator";
+// @flow
 
-export const serverToUIConversion = input => {
+import uniqueIdGen from "./uniqueIdGenerator";
+
+import type { NopasState } from "../types";
+
+export const serverToUIConversion: (
+  st: Object
+) => NopasState | typeof undefined = input => {
   try {
     // subpolicy stringify + give Id
     for (const sp of input.Subpolicies) {
@@ -27,7 +33,7 @@ export const serverToUIConversion = input => {
   }
 };
 
-export const uiToServerConversion = input => {
+export const uiToServerConversion: (st: NopasState) => Object = input => {
   try {
     const state = JSON.parse(JSON.stringify(input));
     const resource = {};

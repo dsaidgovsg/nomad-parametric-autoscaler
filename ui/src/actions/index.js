@@ -1,3 +1,12 @@
+// @flow
+
+import type {
+  Action,
+  PossibleDefaults,
+  SimpleChangeType,
+  FieldChangeType
+} from "../types";
+
 /*
  * action types
  */
@@ -26,85 +35,99 @@ export const UPDATE_POSSIBLE_DEFAULTS_LIST = "UPDATE_POSSIBLE_DEFAULTS_LIST";
 /*
  * action creators
  */
-export const updateEnsembler = value => ({
+export const updateEnsembler: (s: string) => Action = value => ({
   type: UPDATE_ENSEMBLER,
   change: value
 });
 
-export const updateCheckingFrequency = value => ({
+export const updateCheckingFrequency: (s: string) => Action = value => ({
   type: UPDATE_FREQUENCY,
   change: value
 });
 
-export const updateEC2Parameter = change => ({
+export const updateEC2Parameter: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_EC2_PARAM,
   change: change
 });
 
-export const updateNumericEC2Parameter = change => ({
+export const updateNumericEC2Parameter: (
+  s: FieldChangeType
+) => Action = change => ({
   type: UPDATE_EC2_NUMERIC_PARAM,
   change: change
 });
 
-export const updateNomadParameters = change => ({
+export const updateNomadParameters: (
+  s: FieldChangeType
+) => Action = change => ({
   type: UPDATE_NOMAD_PARAM,
   change: change
 });
 
-export const updateNumericNomadParameters = change => ({
+export const updateNumericNomadParameters: (
+  s: FieldChangeType
+) => Action = change => ({
   type: UPDATE_NOMAD_NUMERIC_PARAM,
   change: change
 });
 
-export const updateSubpolicyResource = change => ({
+// change should be object containing resource
+export const updateSubpolicyResource: (s: {
+  id: string,
+  value: Array<string>
+}) => Action = change => ({
   type: UPDATE_SUBPOLICY_RESOURCE,
   change: change
 });
 
-export const createSubpolicy = () => ({
+export const createSubpolicy: () => Action = () => ({
   type: CREATE_SUBPOLICY
 });
 
-export const createResource = () => ({
+export const createResource: () => Action = () => ({
   type: CREATE_RESOURCE
 });
 
-export const updateResourceName = change => ({
+export const updateResourceName: (s: SimpleChangeType) => Action = change => ({
   type: UPDATE_RESOURCE_NAME,
   change: change
 });
 
-export const updateResourceField = change => ({
+export const updateResourceField: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_RESOURCE_FIELD,
   change: change
 });
 
-export const updateNumericResourceField = change => ({
+export const updateNumericResourceField: (
+  s: FieldChangeType
+) => Action = change => ({
   type: UPDATE_RESOURCE_NUMERIC_FIELD,
   change: change
 });
 
-export const deleteResource = change => ({
+export const deleteResource: (s: string) => Action = id => ({
   type: DELETE_RESOURCE,
-  change: change
+  id: id
 });
 
-export const updateSubpolicyName = change => ({
+export const updateSubpolicyName: (s: SimpleChangeType) => Action = change => ({
   type: UPDATE_SUBPOLICY_NAME,
   change: change
 });
 
-export const deleteSubpolicy = change => ({
+export const deleteSubpolicy: (s: string) => Action = change => ({
   type: DELETE_SUBPOLICY,
-  change: change
+  id: change
 });
 
-export const updateMeta = change => ({
+export const updateMeta: (s: FieldChangeType) => Action = change => ({
   type: UPDATE_SP_META,
   change: change
 });
 
-export const updatePossibleDefaultsList = change => ({
+export const updatePossibleDefaultsList: (
+  s: PossibleDefaults
+) => Action = change => ({
   type: UPDATE_POSSIBLE_DEFAULTS_LIST,
   change: change
 });

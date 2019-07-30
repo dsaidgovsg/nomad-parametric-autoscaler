@@ -1,11 +1,19 @@
+// @flow
+
 import { connect } from "react-redux";
 import Subpolicy from "../components/Subpolicy";
 import { updateSubpolicyName, deleteSubpolicy, updateMeta } from "../actions";
 
-const mapStateToProps = (state, ownProps) => {
-  const thisSP = state.policy.Subpolicies.filter(
-    sp => sp.Id === ownProps.id
-  );
+import type { OwnProps } from "../components/Subpolicy";
+import type {
+  Dispatch,
+  FieldChangeType,
+  State,
+  SimpleChangeType
+} from "../types";
+
+const mapStateToProps = (state: State, ownProps: OwnProps) => {
+  const thisSP = state.policy.Subpolicies.filter(sp => sp.Id === ownProps.id);
   const sp = thisSP && thisSP[0];
 
   return {
@@ -16,12 +24,13 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     // dispatching plain actions
-    updateSubpolicyName: event => dispatch(updateSubpolicyName(event)),
-    deleteSubpolicy: event => dispatch(deleteSubpolicy(event)),
-    updateMeta: event => dispatch(updateMeta(event))
+    updateSubpolicyName: (event: SimpleChangeType) =>
+      dispatch(updateSubpolicyName(event)),
+    deleteSubpolicy: (event: string) => dispatch(deleteSubpolicy(event)),
+    updateMeta: (event: FieldChangeType) => dispatch(updateMeta(event))
   };
 };
 

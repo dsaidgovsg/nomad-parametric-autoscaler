@@ -19,7 +19,8 @@
     "react",
     "react-redux",
     "prettier",
-    "jsx-a11y"
+    "jsx-a11y",
+    "flowtype"
   ],
 
   "extends": [
@@ -34,10 +35,14 @@
   ],
 
   "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "react/destructuring-assignment": 0,
     "react/prefer-stateless-function": 0,
     "jsx-a11y/click-events-have-key-events": 0,
-    "jsx-a11y/mouse-events-have-key-events": 0
+    "jsx-a11y/mouse-events-have-key-events": 0,
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1
   }
 }

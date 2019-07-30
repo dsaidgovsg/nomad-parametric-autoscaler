@@ -1,25 +1,43 @@
+// @flow
+
 import React from "react";
-import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MenuItem from "@material-ui/core/MenuItem";
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 import ManagedResources from "../containers/ManagedResources";
 
-const Subpolicy = props => {
+import type { SimpleChangeType } from "../types";
+
+export type OwnProps = {|
+  id: string
+|};
+
+export type Props = {
+  ...OwnProps,
+  name: string,
+  resources: Array<string>,
+  metadata: string,
+  possibleSubpolicyList: Array<string>,
+  updateSubpolicyName: SimpleChangeType => Function,
+  deleteSubpolicy: string => Function,
+  updateMeta: SimpleChangeType => Function
+};
+
+const Subpolicy = (props: Props) => {
   const { id, name, resources, metadata, possibleSubpolicyList } = props;
-  const updateField = event => {
+  const updateField = (event: SyntheticInputEvent<HTMLInputElement>) => {
     props.updateMeta({ id: id, value: event.target.value });
   };
 
   const deleteSubpolicy = () => {
-    props.deleteSubpolicy({ id: id });
+    props.deleteSubpolicy(id);
   };
 
-  const renameSubpolicy = event => {
-    props.updateSubpolicyName({ id: id, newName: event.target.value });
+  const renameSubpolicy = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    props.updateSubpolicyName({ id: id, value: event.target.value });
   };
 
   const jsonify = () => {
@@ -47,7 +65,9 @@ const Subpolicy = props => {
         >
           {possibleSubpolicyList &&
             possibleSubpolicyList.map(ps => (
-              <MenuItem value={ps}>{ps}</MenuItem>
+              <MenuItem key={ps} value={ps}>
+                {ps}
+              </MenuItem>
             ))}
         </TextField>
         <ManagedResources id={id} resources={resources} />
@@ -62,7 +82,7 @@ const Subpolicy = props => {
           margin="normal"
         />
         <Button variant="contained" onClick={jsonify}>
-        JSON-it!
+          JSON-it!
         </Button>
         <Fab
           size="small"
@@ -75,17 +95,6 @@ const Subpolicy = props => {
       </CardContent>
     </Card>
   );
-};
-
-Subpolicy.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  resources: PropTypes.arrayOf(PropTypes.string).isRequired,
-  metadata: PropTypes.string.isRequired,
-  possibleSubpolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  updateMeta: PropTypes.func.isRequired,
-  deleteSubpolicy: PropTypes.func.isRequired,
-  updateSubpolicyName: PropTypes.func.isRequired
 };
 
 export default Subpolicy;

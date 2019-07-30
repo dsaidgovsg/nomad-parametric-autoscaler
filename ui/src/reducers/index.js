@@ -1,6 +1,8 @@
+// @flow
+
 import remove from "lodash/remove";
 import { combineReducers } from "redux";
-import { uniqueIdGen } from "../utils/uniqueIdGenerator";
+import uniqueIdGen from "../utils/uniqueIdGenerator";
 
 import {
   UPDATE_STATE,
@@ -24,12 +26,14 @@ import {
   UPDATE_POSSIBLE_DEFAULTS_LIST
 } from "../actions";
 
+import type { NopasState, Action, PossibleDefaults } from "../types";
+
 export const possibleDefaults = {
   subpolicies: ["CoreRatio"],
   ensemblers: ["Conservative"]
-}
+};
 
-export const initialState = {
+export const initialState: NopasState = {
   CheckingFreq: "1m",
   Ensembler: "Conservative",
   Resources: {
@@ -94,14 +98,18 @@ export const initialState = {
   ]
 };
 
-export const policy = (state = initialState, action) => {
+export const policy: (state: NopasState, action: Action) => NopasState = (
+  state = initialState,
+  action
+) => {
   const updatedResource = JSON.parse(JSON.stringify(state.Resources));
   let sp = state.Subpolicies.slice();
 
   switch (action.type) {
     case UPDATE_STATE:
-      return action.change;
+      return action.state;
 
+    // action.change is string
     case UPDATE_FREQUENCY:
       return {
         ...state,
@@ -140,20 +148,23 @@ export const policy = (state = initialState, action) => {
         Resources: updatedResource
       };
 
+    // action.change is {id: string}
     case DELETE_RESOURCE:
-      delete updatedResource[action.change.id];
+      delete updatedResource[action.id];
       return {
         ...state,
         Resources: updatedResource
       };
 
+    // action.change is {id: string, value: string}
     case UPDATE_RESOURCE_NAME:
-      updatedResource[action.change.id].Name = action.change.newName;
+      updatedResource[action.change.id].Name = action.change.value;
       return {
         ...state,
         Resources: updatedResource
       };
 
+    // action.change is {id: string, value: string, field: string}
     case UPDATE_RESOURCE_FIELD:
       updatedResource[action.change.id][action.change.field] =
         action.change.value;
@@ -162,7 +173,8 @@ export const policy = (state = initialState, action) => {
         Resources: updatedResource
       };
 
-    case UPDATE_RESOURCE_NUMERIC_FIELD:
+    // action.change is {id: string, value: string, field: string}
+    case UPDATE_RESOURCE_NUMERIC_FIELD: {
       let resourceNumericField = parseInt(action.change.value, 10);
       if (resourceNumericField) {
         updatedResource[action.change.id][
@@ -175,19 +187,20 @@ export const policy = (state = initialState, action) => {
       } else {
         return state;
       }
+    }
 
     case UPDATE_NOMAD_PARAM:
-      updatedResource[action.change.name].Nomad[action.change.field] =
+      updatedResource[action.change.id].Nomad[action.change.field] =
         action.change.value;
       return {
         ...state,
         Resources: updatedResource
       };
 
-    case UPDATE_NOMAD_NUMERIC_PARAM:
+    case UPDATE_NOMAD_NUMERIC_PARAM: {
       let nomadNumericParam = parseInt(action.change.value, 10);
       if (nomadNumericParam) {
-        updatedResource[action.change.name].Nomad[
+        updatedResource[action.change.id].Nomad[
           action.change.field
         ] = nomadNumericParam;
         return {
@@ -197,19 +210,20 @@ export const policy = (state = initialState, action) => {
       } else {
         return state;
       }
+    }
 
     case UPDATE_EC2_PARAM:
-      updatedResource[action.change.name].EC2[action.change.field] =
+      updatedResource[action.change.id].EC2[action.change.field] =
         action.change.value;
       return {
         ...state,
         Resources: updatedResource
       };
 
-    case UPDATE_EC2_NUMERIC_PARAM:
+    case UPDATE_EC2_NUMERIC_PARAM: {
       let ec2NumericParam = parseInt(action.change.value, 10);
       if (ec2NumericParam) {
-        updatedResource[action.change.name].EC2[
+        updatedResource[action.change.id].EC2[
           action.change.field
         ] = ec2NumericParam;
         return {
@@ -219,6 +233,7 @@ export const policy = (state = initialState, action) => {
       } else {
         return state;
       }
+    }
 
     case CREATE_SUBPOLICY:
       sp.push({
@@ -237,7 +252,7 @@ export const policy = (state = initialState, action) => {
       // make sure no current SP have that name
       for (let i = 0; i < sp.length; i++) {
         if (sp[i].Id === action.change.id) {
-          sp[i].Name = action.change.newName;
+          sp[i].Name = action.change.value;
           break;
         }
       }
@@ -263,7 +278,7 @@ export const policy = (state = initialState, action) => {
     case UPDATE_SUBPOLICY_RESOURCE:
       for (let i = 0; i < sp.length; i++) {
         if (sp[i].Id === action.change.id) {
-          sp[i].ManagedResources = action.change.newManagedResources;
+          sp[i].ManagedResources = action.change.value;
           break;
         }
       }
@@ -287,7 +302,7 @@ export const policy = (state = initialState, action) => {
 
     case DELETE_SUBPOLICY: {
       const newSP = remove(sp, elem => {
-        return elem.Id !== action.change.id;
+        return elem.Id !== action.id;
       });
 
       return {
@@ -301,7 +316,10 @@ export const policy = (state = initialState, action) => {
   }
 };
 
-export const defaultsList = (state = possibleDefaults, action) => {
+export const defaultsList: (
+  pd: PossibleDefaults,
+  a: Action
+) => PossibleDefaults = (state = possibleDefaults, action) => {
   switch (action.type) {
     case UPDATE_POSSIBLE_DEFAULTS_LIST:
       return action.change;
@@ -309,6 +327,5 @@ export const defaultsList = (state = possibleDefaults, action) => {
       return state;
   }
 };
-
 
 export const rootReducer = combineReducers({ policy, defaultsList });

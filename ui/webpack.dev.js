@@ -7,7 +7,7 @@ module.exports = merge(common, {
   mode: "development",
   plugins: [
     new InterpolateHtmlPlugin({
-        'PUBLIC_URL': ''
+      PUBLIC_URL: ""
     })
   ],
   devtool: "cheap-module-eval-source-map",

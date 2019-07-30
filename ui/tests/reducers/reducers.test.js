@@ -49,13 +49,13 @@ describe("Actions", () => {
     expect(Object.keys(initialState.Resources).length).toEqual(2);
     const out = policy(initialState, {
       type: DELETE_RESOURCE,
-      change: { id: "uuid1" }
+      id: "uuid1"
     });
 
     expect(Object.keys(out.Resources).length).toEqual(1);
     const out2 = policy(out, {
       type: DELETE_RESOURCE,
-      change: { id: "uuid2" }
+      id: "uuid2"
     });
     expect(Object.keys(out.Resources).length).toEqual(1);
     expect(Object.keys(out2.Resources).length).toEqual(0);
@@ -65,7 +65,7 @@ describe("Actions", () => {
     expect(Object.keys(initialState.Resources).length).toEqual(2);
     const out = policy(initialState, {
       type: DELETE_RESOURCE,
-      change: { id: "uuid3" }
+      id: "uuid3"
     });
     expect(Object.keys(out.Resources).length).toEqual(2);
   });
@@ -99,60 +99,58 @@ describe("Actions", () => {
   });
 
   it("should change resource's nomad param correctly", () => {
-    const change = { name: "uuid2", field: "Address", value: "13" };
+    const change = { id: "uuid2", field: "Address", value: "13" };
     const out = policy(initialState, {
       type: UPDATE_NOMAD_PARAM,
       change: change
     });
 
-    expect(out.Resources[change.name].Nomad.Address).toEqual(change.value);
+    expect(out.Resources[change.id].Nomad.Address).toEqual(change.value);
   });
 
   it("should change resource nomad numeric field correctly", () => {
-    const change = { name: "uuid2", field: "MaxCount", value: 12 };
+    const change = { id: "uuid2", field: "MaxCount", value: 12 };
     const out = policy(initialState, {
       type: UPDATE_NOMAD_NUMERIC_PARAM,
       change: change
     });
-    expect(out.Resources[change.name].Nomad.MaxCount).toEqual(change.value);
+    expect(out.Resources[change.id].Nomad.MaxCount).toEqual(change.value);
 
-    const incorrect = { name: "uuid2", field: "MaxCount", value: "hi" };
+    const incorrect = { id: "uuid2", field: "MaxCount", value: "hi" };
     const out2 = policy(initialState, {
       type: UPDATE_NOMAD_NUMERIC_PARAM,
       change: incorrect
     });
-    expect(out2.Resources[change.name].Nomad.MaxCount).toEqual(
-      initialState.Resources[change.name].Nomad.MaxCount
+    expect(out2.Resources[change.id].Nomad.MaxCount).toEqual(
+      initialState.Resources[change.id].Nomad.MaxCount
     );
   });
 
   it("should change resource's EC2 param correctly", () => {
-    const change = { name: "uuid2", field: "ScalingGroupName", value: "13" };
+    const change = { id: "uuid2", field: "ScalingGroupName", value: "13" };
     const out = policy(initialState, {
       type: UPDATE_EC2_PARAM,
       change: change
     });
 
-    expect(out.Resources[change.name].EC2.ScalingGroupName).toEqual(
-      change.value
-    );
+    expect(out.Resources[change.id].EC2.ScalingGroupName).toEqual(change.value);
   });
 
   it("should change resource EC2 numeric field correctly", () => {
-    const change = { name: "uuid2", field: "MaxCount", value: 12 };
+    const change = { id: "uuid2", field: "MaxCount", value: 12 };
     const out = policy(initialState, {
       type: UPDATE_EC2_NUMERIC_PARAM,
       change: change
     });
-    expect(out.Resources[change.name].EC2.MaxCount).toEqual(change.value);
+    expect(out.Resources[change.id].EC2.MaxCount).toEqual(change.value);
 
-    const incorrect = { name: "uuid2", field: "MaxCount", value: "hi" };
+    const incorrect = { id: "uuid2", field: "MaxCount", value: "hi" };
     const out2 = policy(initialState, {
       type: UPDATE_EC2_NUMERIC_PARAM,
       change: incorrect
     });
-    expect(out2.Resources[change.name].EC2.MaxCount).toEqual(
-      initialState.Resources[change.name].EC2.MaxCount
+    expect(out2.Resources[change.id].EC2.MaxCount).toEqual(
+      initialState.Resources[change.id].EC2.MaxCount
     );
   });
 
