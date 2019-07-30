@@ -45,7 +45,7 @@ const DeleteButtonWithWarning = (props: Props) => {
         <DialogTitle id="alert-dialog-title">{"Delete Resource?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Doing this will delete the resource and you cant undo it. Unless you
+            Doing this will delete the resource and you cannot undo it. Unless you
             click refresh to fetch the persisted state which might undo any
             other changes you currently have.
           </DialogContentText>
