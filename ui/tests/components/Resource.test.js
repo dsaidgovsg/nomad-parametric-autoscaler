@@ -48,8 +48,10 @@ describe("Resource", () => {
 
   describe("clicks", () => {
     it("clicking delete should not immediately trigger deleteResource", () => {
-      const { enzymeWrapper, props } = shallowSetup();
-      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(true);
+      const { enzymeWrapper } = shallowSetup();
+      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(
+        true
+      );
     });
   });
 });

@@ -1,12 +1,8 @@
 // @flow
 
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import TextField from "@material-ui/core/TextField";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -22,8 +18,8 @@ const DeleteButtonWithWarning = (props: Props) => {
   const [open, setOpen] = useState(false);
 
   function triggerFn() {
-      setOpen(false);
-      props.fn();
+    setOpen(false);
+    props.fn();
   }
 
   return (
@@ -42,11 +38,11 @@ const DeleteButtonWithWarning = (props: Props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Delete Resource?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Delete Resource?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Doing this will delete the resource and you cannot undo it. Unless you
-            click refresh to fetch the persisted state which might undo any
+            Doing this will delete the resource and you cannot undo it. Unless
+            you click refresh to fetch the persisted state which might undo any
             other changes you currently have.
           </DialogContentText>
         </DialogContent>

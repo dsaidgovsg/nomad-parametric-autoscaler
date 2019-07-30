@@ -6,12 +6,12 @@ import Fab from "@material-ui/core/Fab";
 import DeleteButtonWithWarning from "../../src/components/DeleteButtonWithWarning";
 
 function shallowSetup() {
-    const props = {
+  const props = {
     fn: jest.fn()
   };
   const enzymeWrapper = shallow(<DeleteButtonWithWarning {...props} />);
   return {
-      props,
+    props,
     enzymeWrapper
   };
 }
@@ -37,5 +37,4 @@ describe("DeleteButtonWithWarning", () => {
       expect(props.fn.mock.calls.length).toBe(1);
     });
   });
-
 });

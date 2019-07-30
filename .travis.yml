@@ -26,7 +26,7 @@ matrix:
         - cd ui/
         - npm install
       script:
-        - npm test
+        - npm run lint && npm test
       before_deploy:
         - docker login ${DOCKER_REGISTRY} -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
         - docker build . -t ${UI_IMAGE_NAME}:${TRAVIS_TAG}

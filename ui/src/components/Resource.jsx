@@ -2,14 +2,11 @@
 
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-import Fab from "@material-ui/core/Fab";
-import DeleteIcon from "@material-ui/icons/Delete";
 import {
   Card,
   CardContent,
   CardHeader
 } from "../../node_modules/@material-ui/core";
-import Button from "@material-ui/core/Button";
 import NomadParameters from "../containers/NomadParameters";
 import EC2Parameters from "../containers/EC2Parameters";
 import DeleteButtonWithWarning from "./DeleteButtonWithWarning";
