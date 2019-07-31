@@ -3,8 +3,6 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import { Card, CardContent, CardHeader } from "@material-ui/core";
-import Fab from "@material-ui/core/Fab";
-import DeleteIcon from "@material-ui/icons/Delete";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import ManagedResources from "../containers/ManagedResources";

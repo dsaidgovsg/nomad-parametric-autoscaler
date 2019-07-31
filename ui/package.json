@@ -16,8 +16,9 @@
     "webpack-dev-server": "^3.2.1"
   },
   "scripts": {
-    "flow": "flow",
+    "flow": "flow check --show-all-errors",
     "start": "npm run dev",
+    "lint": "npm run flow && npm run eslint",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack-dev-server --display-error-details --progress --colors --config webpack.dev.js",
     "eslint": "eslint --ext .js --ext .jsx src/ tests/",

@@ -1,7 +1,6 @@
 import React from "react";
 import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
-import Fab from "@material-ui/core/Fab";
 import TextField from "@material-ui/core/TextField";
 import Subpolicy from "../../src/components/Subpolicy";
 import ManagedResources from "../../src/containers/ManagedResources";
@@ -44,8 +43,10 @@ describe("Subpolicy", () => {
 
   describe("clicks", () => {
     it("clicking delete should NOT immediately trigger deleteSubpolicy", () => {
-      const { enzymeWrapper, props } = shallowSetup();
-      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(true);
+      const { enzymeWrapper } = shallowSetup();
+      expect(enzymeWrapper.find(DeleteButtonWithWarning).exists()).toEqual(
+        true
+      );
     });
   });
 });
