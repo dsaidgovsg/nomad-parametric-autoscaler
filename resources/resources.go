@@ -3,6 +3,8 @@ package resources
 import (
 	"fmt"
 	"time"
+
+	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 )
 
 // Resource. each resource needs to control its scaling
@@ -71,6 +73,8 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 	if err != nil {
 		return err
 	}
+
+	logging.Info("[scaling log] resource_name=%s resource_count=%d", res.Name, count)
 
 	// limit violation requires correction
 	if count < res.NomadClient.MinCount {
