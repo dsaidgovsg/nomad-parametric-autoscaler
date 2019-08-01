@@ -90,6 +90,15 @@ func describeScalingGroup(asgName string,
 	return resp, err
 }
 
+func (easg EC2AutoScalingGroup) GetAsgCount() (int64, error) {
+	asg, err := describeScalingGroup(easg.ScalingGroupName, easg.awsScalingProvider)
+	if err != nil {
+		return 0, err
+	}
+
+	return *asg.AutoScalingGroups[0].DesiredCapacity, nil
+}
+
 // Scale takes in the final count as prescribed by Resource and scales the ASG
 func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 	newCount = easg.getValidScaleCount(newCount)
