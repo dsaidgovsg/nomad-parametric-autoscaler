@@ -69,12 +69,16 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 	// check if its a scale out or scale in
 
 	count, err := res.NomadClient.GetTaskGroupCount()
-
 	if err != nil {
 		return err
 	}
 
-	logging.Info("[scaling log] resource_name=%s resource_count=%d", res.Name, count)
+	asgCount, err := res.EC2AutoScalingGroup.GetAsgCount()
+	if err != nil {
+		return err
+	}
+
+	logging.Info("[scaling log] resource_name=%s nomad_resource_count=%d ec2_resource_count=%d", res.Name, count, asgCount)
 
 	// limit violation requires correction
 	if count < res.NomadClient.MinCount {
