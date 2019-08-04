@@ -1,21 +1,28 @@
 // @flow
 
-import React from "react";
+import React, { useContext } from "react";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Paper, Card, CardContent } from "../../node_modules/@material-ui/core";
 import ResourceGroup from "../containers/ResourceGroup";
 import SubpolicyGroup from "../containers/SubpolicyGroup";
+import { updateCheckingFrequency, updateEnsembler } from "../actions";
 
-type Props = {
-  frequency: string,
-  ensembler: string,
-  possibleEnsemblerList: Array<string>,
-  updateCheckingFrequency: (SyntheticInputEvent<HTMLInputElement>) => Function,
-  updateEnsembler: (SyntheticInputEvent<HTMLInputElement>) => Function
-};
+import { DefaultOptionsContext, StateContext } from "../App";
 
-const PolicySummary = (props: Props) => {
+const PolicySummary = () => {
+  const { defaultsState } = useContext(DefaultOptionsContext);
+  const { nopasState, nopasDispatch } = useContext(StateContext);
+  const { ensemblers } = defaultsState;
+
+  const updateFreq = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    nopasDispatch(updateCheckingFrequency(event.target.value));
+  };
+
+  const updateEnsem = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    nopasDispatch(updateEnsembler(event.target.value));
+  };
+
   return (
     <div>
       <Paper>
@@ -25,8 +32,8 @@ const PolicySummary = (props: Props) => {
               required
               id="standard-required"
               label="Checking Frequency"
-              value={props.frequency}
-              onChange={props.updateCheckingFrequency}
+              value={nopasState.CheckingFreq}
+              onChange={updateFreq}
               margin="normal"
             />
           </CardContent>
@@ -38,12 +45,12 @@ const PolicySummary = (props: Props) => {
               select
               id="standard-required"
               label="Ensembler"
-              value={props.ensembler}
-              onChange={props.updateEnsembler}
+              value={ensemblers}
+              onChange={updateEnsem}
               margin="normal"
             >
-              {props.possibleEnsemblerList &&
-                props.possibleEnsemblerList.map(pe => (
+              {ensemblers &&
+                ensemblers.map(pe => (
                   <MenuItem key={pe} value={pe}>
                     {pe}
                   </MenuItem>

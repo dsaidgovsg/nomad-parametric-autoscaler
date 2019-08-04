@@ -8,23 +8,27 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import MenuItem from "@material-ui/core/MenuItem";
 
+import { updateSubpolicyResource } from "../actions";
+
 export type Props = {
   id: string,
   resources: Array<string>,
   possibleResources: Array<string>,
-  updateSubpolicyResource: ({ id: string, value: Array<string> }) => Function
+  dispatch: Function
 };
 
 const ManagedResources = (props: Props) => {
-  const { id, resources, possibleResources } = props;
+  const { id, resources, possibleResources, dispatch } = props;
 
   const deleteSubpolicyResource = (resourceName: string) => () => {
     let newResource = resources.slice().filter(r => r !== resourceName);
 
-    props.updateSubpolicyResource({
-      id: id,
-      value: newResource
-    });
+    dispatch(
+      updateSubpolicyResource({
+        id: id,
+        value: newResource
+      })
+    );
   };
 
   const updateResource = (resourceName: string) => (
@@ -35,10 +39,12 @@ const ManagedResources = (props: Props) => {
 
     if (!newResource.includes(event.target.value)) {
       newResource[idx] = event.target.value;
-      props.updateSubpolicyResource({
-        id: id,
-        value: newResource
-      });
+      dispatch(
+        updateSubpolicyResource({
+          id: id,
+          value: newResource
+        })
+      );
     } else {
       alert("Resource already selected");
     }
@@ -47,10 +53,12 @@ const ManagedResources = (props: Props) => {
   const addSPResource = () => {
     let newResource = resources.slice();
     newResource.push("");
-    props.updateSubpolicyResource({
-      id: id,
-      value: newResource
-    });
+    dispatch(
+      updateSubpolicyResource({
+        id: id,
+        value: newResource
+      })
+    );
   };
 
   return (

@@ -7,43 +7,39 @@ import {
   CardContent,
   CardHeader
 } from "../../node_modules/@material-ui/core";
-
-import type { FieldChangeType } from "../types";
-
-export type OwnProps = {|
-  name: string
-|};
+import { updateEC2Parameter, updateNumericEC2Parameter } from "../actions";
+import type { EC2 } from "../types";
 
 type Props = {
-  ...OwnProps,
-  autoScalingGroupName: string,
-  region: string,
-  maxCount: string,
-  minCount: string,
-  updateEC2Parameter: FieldChangeType => Function,
-  updateNumericEC2Parameter: FieldChangeType => Function
+  name: string,
+  params: EC2,
+  dispatch: Function
 };
 
 const EC2Parameters = (props: Props) => {
-  const { name } = props;
+  const { name, params, dispatch } = props;
   const updateField = (name: string, field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateEC2Parameter({
-      id: name,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateEC2Parameter({
+        id: name,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
   const updateNumericField = (name: string, field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateNumericEC2Parameter({
-      id: name,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateNumericEC2Parameter({
+        id: name,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
   return (
@@ -55,7 +51,7 @@ const EC2Parameters = (props: Props) => {
             required
             id="standard-required"
             label="Auto-Scaling grp name"
-            value={props.autoScalingGroupName}
+            value={params.ScalingGroupName}
             onChange={updateField(name, "ScalingGroupName")}
             margin="normal"
           />
@@ -63,7 +59,7 @@ const EC2Parameters = (props: Props) => {
             required
             id="standard-required"
             label="AWS region"
-            value={props.region}
+            value={params.Region}
             onChange={updateField(name, "Region")}
             margin="normal"
           />
@@ -72,7 +68,7 @@ const EC2Parameters = (props: Props) => {
             id="standard-required"
             label="MaxCount"
             type="number"
-            value={props.maxCount}
+            value={params.MaxCount}
             onChange={updateNumericField(name, "MaxCount")}
             margin="normal"
           />
@@ -81,7 +77,7 @@ const EC2Parameters = (props: Props) => {
             id="standard-required"
             label="MinCount"
             type="number"
-            value={props.minCount}
+            value={params.MinCount}
             onChange={updateNumericField(name, "MinCount")}
             margin="normal"
           />

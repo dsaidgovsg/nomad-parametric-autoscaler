@@ -33,7 +33,7 @@ export type Nomad = {
   MinCount: number
 };
 
-export type Resource = {
+export type ResourceType = {
   Name: string,
   EC2: EC2,
   Nomad: Nomad,
@@ -45,7 +45,7 @@ export type Resource = {
 export type NopasState = {
   CheckingFreq: string,
   Ensembler: string,
-  Resources: { [key: string]: Resource },
+  Resources: { [key: string]: ResourceType },
   Subpolicies: Array<Subpolicy>
 };
 

@@ -9,7 +9,6 @@ import type { Dispatch, State } from "../types";
 const mapStateToProps = (state: State) => {
   return {
     frequency: state.policy.CheckingFreq,
-    ensembler: state.policy.Ensembler,
     possibleEnsemblerList: state.defaultsList.ensemblers
   };
 };

@@ -120,7 +120,7 @@ export const deleteSubpolicy: (s: string) => Action = change => ({
   id: change
 });
 
-export const updateMeta: (s: FieldChangeType) => Action = change => ({
+export const updateMeta: (s: SimpleChangeType) => Action = change => ({
   type: UPDATE_SP_META,
   change: change
 });

@@ -1,27 +1,35 @@
 // @flow
 
-import React from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import { Paper } from "../../node_modules/@material-ui/core";
-import Resource from "../containers/Resource";
+import Resource from "./Resource";
+import { createResource } from "../actions";
+import { StateContext } from "../App";
 
-type Props = {
-  resources: Array<string>,
-  createResource: Function
-};
+const ResourceGroup = () => {
+  const { nopasState, nopasDispatch } = useContext(StateContext);
 
-const ResourceGroup = (props: Props) => {
-  const { resources } = props;
+  const addNew = () => {
+    nopasDispatch(createResource());
+  };
 
   return (
     <div>
       <Paper elevation={1}>
-        {resources.map(r => (
-          <Resource key={r} id={r} />
-        ))}
+        {Object.keys(nopasState.Resources).map(function(key, _) {
+          return (
+            <Resource
+              key={key}
+              id={key}
+              resource={nopasState.Resources[key]}
+              dispatch={nopasDispatch}
+            />
+          );
+        })}
       </Paper>
-      <Button size="small" color="primary" onClick={props.createResource}>
+      <Button size="small" color="primary" onClick={addNew}>
         Add New Resource
         <AddIcon />
       </Button>

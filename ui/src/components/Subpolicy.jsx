@@ -1,48 +1,47 @@
 // @flow
 
-import React from "react";
+import React, { useContext } from "react";
 import TextField from "@material-ui/core/TextField";
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
-import ManagedResources from "../containers/ManagedResources";
+import ManagedResources from "./ManagedResources";
 import DeleteButtonWithWarning from "./DeleteButtonWithWarning";
 
-import type { SimpleChangeType } from "../types";
-
-export type OwnProps = {|
-  id: string
-|};
+import { updateSubpolicyName, deleteSubpolicy, updateMeta } from "../actions";
+import { DefaultOptionsContext } from "../App";
 
 export type Props = {
-  ...OwnProps,
+  id: string,
   name: string,
   resources: Array<string>,
   metadata: string,
-  possibleSubpolicyList: Array<string>,
-  updateSubpolicyName: SimpleChangeType => Function,
-  deleteSubpolicy: string => Function,
-  updateMeta: SimpleChangeType => Function
+  dispatch: Function,
+  possibleResources: Array<string>
 };
 
 const Subpolicy = (props: Props) => {
-  const { id, name, resources, metadata, possibleSubpolicyList } = props;
+  const { id, name, resources, metadata, dispatch, possibleResources } = props;
+
+  const { defaultsState } = useContext(DefaultOptionsContext);
+  const { subpolicies } = defaultsState;
+
   const updateField = (event: SyntheticInputEvent<HTMLInputElement>) => {
-    props.updateMeta({ id: id, value: event.target.value });
+    dispatch(updateMeta({ id: id, value: event.target.value }));
   };
 
-  const deleteSubpolicy = () => {
-    props.deleteSubpolicy(id);
+  const delSubpolicy = () => {
+    dispatch(deleteSubpolicy(id));
   };
 
   const renameSubpolicy = (event: SyntheticInputEvent<HTMLInputElement>) => {
-    props.updateSubpolicyName({ id: id, value: event.target.value });
+    dispatch(updateSubpolicyName({ id: id, value: event.target.value }));
   };
 
   const jsonify = () => {
     try {
       const jsonified = JSON.stringify(JSON.parse(metadata), null, 2);
-      props.updateMeta({ id: id, value: jsonified });
+      dispatch(updateMeta({ id: id, value: jsonified }));
     } catch (error) {
       alert(error);
     }
@@ -62,14 +61,19 @@ const Subpolicy = (props: Props) => {
           onChange={renameSubpolicy}
           margin="normal"
         >
-          {possibleSubpolicyList &&
-            possibleSubpolicyList.map(ps => (
+          {subpolicies &&
+            subpolicies.map(ps => (
               <MenuItem key={ps} value={ps}>
                 {ps}
               </MenuItem>
             ))}
         </TextField>
-        <ManagedResources id={id} resources={resources} />
+        <ManagedResources
+          id={id}
+          resources={resources}
+          possibleResources={possibleResources}
+          dispatch={dispatch}
+        />
         <TextField
           required
           multiline
@@ -83,7 +87,7 @@ const Subpolicy = (props: Props) => {
         <Button variant="contained" onClick={jsonify}>
           JSON-it!
         </Button>
-        <DeleteButtonWithWarning fn={deleteSubpolicy} />
+        <DeleteButtonWithWarning fn={delSubpolicy} />
       </CardContent>
     </Card>
   );

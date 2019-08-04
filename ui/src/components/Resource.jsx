@@ -7,57 +7,56 @@ import {
   CardContent,
   CardHeader
 } from "../../node_modules/@material-ui/core";
-import NomadParameters from "../containers/NomadParameters";
-import EC2Parameters from "../containers/EC2Parameters";
+import NomadParameters from "./NomadParameters";
+import EC2Parameters from "./EC2Parameters";
 import DeleteButtonWithWarning from "./DeleteButtonWithWarning";
-
-import type { FieldChangeType, SimpleChangeType } from "../types";
-
-export type OwnProps = {|
-  id: string
-|};
+import {
+  updateResourceName,
+  updateResourceField,
+  deleteResource,
+  updateNumericResourceField
+} from "../actions";
+import type { ResourceType } from "../types";
 
 type Props = {
-  ...OwnProps,
-  resourceName: string,
-  scaleInCooldown: string,
-  scaleOutCooldown: string,
-  ratio: number,
-  updateResourceField: FieldChangeType => Function,
-  updateNumericResourceField: FieldChangeType => Function,
-  deleteResource: string => Function,
-  updateResourceName: SimpleChangeType => Function
+  id: string,
+  resource: ResourceType,
+  dispatch: Function
 };
 
 const Resource = (props: Props) => {
-  const { id } = props;
+  const { id, resource, dispatch } = props;
 
   const updateField = (field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateResourceField({
-      id: id,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateResourceField({
+        id: id,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
   const updateNumericField = (field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateNumericResourceField({
-      id: id,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateNumericResourceField({
+        id: id,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
-  const deleteResource = () => {
-    props.deleteResource(id);
+  const delResource = () => {
+    dispatch(deleteResource(id));
   };
 
   const renameResource = (event: SyntheticInputEvent<HTMLInputElement>) => {
-    props.updateResourceName({ id: id, value: event.target.value });
+    dispatch(updateResourceName({ id: id, value: event.target.value }));
   };
 
   // resource will contain details for ratio, cooldown,
@@ -69,7 +68,7 @@ const Resource = (props: Props) => {
           required
           id="standard-required"
           label="Resource Name"
-          value={props.resourceName}
+          value={resource.Name}
           onChange={renameResource}
           margin="normal"
         />
@@ -77,7 +76,7 @@ const Resource = (props: Props) => {
           required
           id="standard-required"
           label="Scale-In Cooldown"
-          value={props.scaleInCooldown}
+          value={resource.ScaleInCooldown}
           onChange={updateField("ScaleInCooldown")}
           margin="normal"
         />
@@ -85,7 +84,7 @@ const Resource = (props: Props) => {
           required
           id="standard-required"
           label="Scale-Out Cooldown"
-          value={props.scaleOutCooldown}
+          value={resource.ScaleOutCooldown}
           onChange={updateField("ScaleOutCooldown")}
           margin="normal"
         />
@@ -94,14 +93,14 @@ const Resource = (props: Props) => {
           id="standard-required"
           label="Nomad-EC2 Ratio"
           type="number"
-          value={props.ratio}
+          value={resource.N2CRatio}
           onChange={updateNumericField("N2CRatio")}
           margin="normal"
         />
-        <DeleteButtonWithWarning fn={deleteResource} />
+        <DeleteButtonWithWarning fn={delResource} />
       </CardContent>
-      <NomadParameters name={id} />
-      <EC2Parameters name={id} />
+      <NomadParameters name={id} params={resource.Nomad} dispatch={dispatch} />
+      <EC2Parameters name={id} params={resource.EC2} dispatch={dispatch} />
     </Card>
   );
 };

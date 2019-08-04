@@ -7,44 +7,44 @@ import {
   CardContent,
   CardHeader
 } from "../../node_modules/@material-ui/core";
+import {
+  updateNomadParameters,
+  updateNumericNomadParameters
+} from "../actions";
 
-import type { FieldChangeType } from "../types";
-
-export type OwnProps = {|
-  name: string
-|};
+import type { Nomad } from "../types";
 
 type Props = {
-  ...OwnProps,
-  address: string,
-  jobName: string,
-  nomadPath: string,
-  maxCount: string,
-  minCount: string,
-  updateNomadParameters: FieldChangeType => Function,
-  updateNumericNomadParameters: FieldChangeType => Function
+  name: string,
+  params: Nomad,
+  dispatch: Function
 };
 
 const NomadParameters = (props: Props) => {
-  const { name } = props;
+  const { name, params, dispatch } = props;
+
   const updateField = (field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateNomadParameters({
-      id: name,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateNomadParameters({
+        id: name,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
   const updateNumericField = (field: string) => (
     event: SyntheticInputEvent<HTMLInputElement>
   ) => {
-    props.updateNumericNomadParameters({
-      id: name,
-      value: event.target.value,
-      field: field
-    });
+    dispatch(
+      updateNumericNomadParameters({
+        id: name,
+        value: event.target.value,
+        field: field
+      })
+    );
   };
 
   return (
@@ -56,7 +56,7 @@ const NomadParameters = (props: Props) => {
             required
             id="standard-required"
             label="Address"
-            value={props.address}
+            value={params.Address}
             onChange={updateField("Address")}
             margin="normal"
           />
@@ -64,7 +64,7 @@ const NomadParameters = (props: Props) => {
             required
             id="standard-required"
             label="JobName"
-            value={props.jobName}
+            value={params.JobName}
             onChange={updateField("JobName")}
             margin="normal"
           />
@@ -72,7 +72,7 @@ const NomadParameters = (props: Props) => {
             required
             id="standard-required"
             label="NomadPath"
-            value={props.nomadPath}
+            value={params.NomadPath}
             onChange={updateField("NomadPath")}
             margin="normal"
           />
@@ -81,7 +81,7 @@ const NomadParameters = (props: Props) => {
             id="standard-required"
             label="MaxCount"
             type="number"
-            value={props.maxCount}
+            value={params.MaxCount}
             onChange={updateNumericField("MaxCount")}
             margin="normal"
           />
@@ -90,7 +90,7 @@ const NomadParameters = (props: Props) => {
             id="standard-required"
             label="MinCount"
             type="number"
-            value={props.minCount}
+            value={params.MinCount}
             onChange={updateNumericField("MinCount")}
             margin="normal"
           />
