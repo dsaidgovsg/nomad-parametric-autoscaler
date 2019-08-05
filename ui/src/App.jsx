@@ -23,10 +23,6 @@ type Props = {
 };
 
 const App = (props: Props) => {
-  useEffect(() => {
-    refreshPolicy();
-  }, []);
-
   const refreshPolicy = async () => {
     const predefinedUrl = new URL(
       "/predefined",
@@ -62,6 +58,11 @@ const App = (props: Props) => {
     );
     out && axios.post(reqUrl, out);
   };
+
+  useEffect(() => {
+    refreshPolicy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="App">
