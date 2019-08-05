@@ -7,12 +7,13 @@ import EC2Parameters from "../../src/components/EC2Parameters";
 function shallowSetup() {
   const props = {
     name: "test",
-    updateEC2Parameter: jest.fn(),
-    updateNumericEC2Parameter: jest.fn(),
-    autoScalingGroupName: "grpname",
-    region: "region",
-    maxCount: 2,
-    minCount: 1
+    params: {
+      ScalingGroupName: "grpname",
+      Region: "region",
+      MaxCount: 2,
+      MinCount: 1
+    },
+    dispatch: jest.fn()
   };
 
   const enzymeWrapper = shallow(<EC2Parameters {...props} />);
@@ -37,11 +38,11 @@ describe("EC2Parameters", () => {
       enzymeWrapper
         .find({ label: "MinCount" })
         .simulate("change", { target: { value: 3 } });
-      expect(props.updateNumericEC2Parameter.mock.calls.length).toBe(1);
+      expect(props.dispatch.mock.calls.length).toBe(1);
       enzymeWrapper
         .find({ label: "MaxCount" })
         .simulate("change", { target: { value: 20 } });
-      expect(props.updateNumericEC2Parameter.mock.calls.length).toBe(2);
+      expect(props.dispatch.mock.calls.length).toBe(2);
     });
 
     it("updateEC2Parameters is called when text fields are updated", () => {
@@ -49,17 +50,17 @@ describe("EC2Parameters", () => {
       enzymeWrapper
         .find({ label: "AWS region" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateEC2Parameter.mock.calls.length).toBe(1);
+      expect(props.dispatch.mock.calls.length).toBe(1);
 
       enzymeWrapper
         .find({ label: "Auto-Scaling grp name" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateEC2Parameter.mock.calls.length).toBe(2);
+      expect(props.dispatch.mock.calls.length).toBe(2);
 
       enzymeWrapper
         .find({ label: "Auto-Scaling grp name" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateEC2Parameter.mock.calls.length).toBe(3);
+      expect(props.dispatch.mock.calls.length).toBe(3);
     });
   });
 });

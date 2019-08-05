@@ -7,7 +7,7 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import axios from "axios";
 import Topbar from "./components/Topbar";
 import StatusSwitch from "./components/StatusSwitch";
-import PolicySummary from "./containers/PolicySummary";
+import PolicySummary from "./components/PolicySummary";
 import { Button } from "../node_modules/@material-ui/core";
 import {
   uiToServerConversion,
@@ -20,17 +20,33 @@ import {
   policy
 } from "./reducers";
 import { updatePossibleDefaultsList } from "./actions";
-import type { NopasState, PossibleDefaults } from "./types";
+import type { Action, NopasState, PossibleDefaults, Dispatch } from "./types";
 
-type Props = {
-  state: NopasState,
-  refreshState: NopasState => Function,
+const DefaultOptionsState = {
+  defaultsState: possibleDefaults,
+  defaultsDispatch: (a: Action) => {
+    a;
+  }
 };
 
-export const DefaultOptionsContext = React.createContext<PossibleDefaults>();
-export const StateContext = React.createContext<NopasState>();
+export const DefaultOptionsContext = React.createContext<{
+  defaultsState: PossibleDefaults,
+  defaultsDispatch: Dispatch
+}>(DefaultOptionsState);
 
-const App = (props: Props) => {
+const DefaultNopasState = {
+  nopasState: initialState,
+  nopasDispatch: (a: Action) => {
+    a;
+  }
+};
+
+export const StateContext = React.createContext<{
+  nopasState: NopasState,
+  nopasDispatch: Dispatch
+}>(DefaultNopasState);
+
+const App = () => {
   const [defaultsState, defaultsDispatch] = useReducer(
     defaultsList,
     possibleDefaults
@@ -66,12 +82,12 @@ const App = (props: Props) => {
       alert(secondResponse.err);
     } else {
       const newState = serverToUIConversion(secondResponse.data);
-      newState && props.refreshState(newState);
+      newState && nopasDispatch({ type: "UPDATE_STATE", state: newState });
     }
   };
 
   const sendUpdate = () => {
-    const out = uiToServerConversion(props.state);
+    const out = uiToServerConversion(nopasState);
     const reqUrl = new URL(
       "/policy",
       window.config.env.REACT_APP_NOPAS_ENDPOINT

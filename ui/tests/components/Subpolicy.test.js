@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import TextField from "@material-ui/core/TextField";
 import Subpolicy from "../../src/components/Subpolicy";
-import ManagedResources from "../../src/containers/ManagedResources";
+import ManagedResources from "../../src/components/ManagedResources";
 import DeleteButtonWithWarning from "../../src/components/DeleteButtonWithWarning";
 
 function shallowSetup() {

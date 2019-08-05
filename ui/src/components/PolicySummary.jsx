@@ -4,8 +4,8 @@ import React, { useContext } from "react";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Paper, Card, CardContent } from "../../node_modules/@material-ui/core";
-import ResourceGroup from "../containers/ResourceGroup";
-import SubpolicyGroup from "../containers/SubpolicyGroup";
+import ResourceGroup from "./ResourceGroup";
+import SubpolicyGroup from "./SubpolicyGroup";
 import { updateCheckingFrequency, updateEnsembler } from "../actions";
 
 import { DefaultOptionsContext, StateContext } from "../App";
@@ -45,7 +45,7 @@ const PolicySummary = () => {
               select
               id="standard-required"
               label="Ensembler"
-              value={ensemblers}
+              value={nopasState.Ensembler}
               onChange={updateEnsem}
               margin="normal"
             >

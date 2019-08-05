@@ -10,7 +10,7 @@ function shallowSetup() {
     id: "test",
     resources: ["a", "b", "c"],
     possibleResources: ["a", "b", "c", "d"],
-    updateSubpolicyResource: jest.fn()
+    dispatch: jest.fn()
   };
 
   const enzymeWrapper = shallow(<ManagedResources {...props} />);
@@ -50,11 +50,11 @@ describe("ManagedResources", () => {
       const { enzymeWrapper, props } = shallowSetup();
       const addButton = enzymeWrapper.find(Fab).last(); // first n-1 buttons are for deleting resources
       addButton.simulate("click");
-      expect(props.updateSubpolicyResource.mock.calls.length).toBe(1);
+      expect(props.dispatch.mock.calls.length).toBe(1);
 
       const button = enzymeWrapper.find(Fab).first();
       button.simulate("click");
-      expect(props.updateSubpolicyResource.mock.calls.length).toBe(2);
+      expect(props.dispatch.mock.calls.length).toBe(2);
     });
   });
 });

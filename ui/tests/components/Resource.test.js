@@ -3,21 +3,20 @@ import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import TextField from "@material-ui/core/TextField";
 import Resource from "../../src/components/Resource";
-import EC2Parameters from "../../src/containers/EC2Parameters";
-import NomadParameters from "../../src/containers/NomadParameters";
+import EC2Parameters from "../../src/components/EC2Parameters";
+import NomadParameters from "../../src/components/NomadParameters";
 import DeleteButtonWithWarning from "../../src/components/DeleteButtonWithWarning";
 
 function shallowSetup() {
   const props = {
     id: "id",
-    resourceName: "test",
-    scaleInCooldown: "1m",
-    scaleOutCooldown: "1m30s",
-    ratio: 3,
-    updateResourceField: jest.fn(),
-    updateNumericResourceField: jest.fn(),
-    deleteResource: jest.fn(),
-    updateResourceName: jest.fn()
+    resource: {
+      Name: "test",
+      ScaleInCooldown: "1m",
+      ScaleOutCooldown: "1m30s",
+      N2CRatio: 3,
+    },
+    dispatch: jest.fn()
   };
 
   const enzymeWrapper = shallow(<Resource {...props} />);

@@ -7,13 +7,14 @@ import NomadParameters from "../../src/components/NomadParameters";
 function shallowSetup() {
   const props = {
     name: "test",
-    updateNomadParameters: jest.fn(),
-    updateNumericNomadParameters: jest.fn(),
-    address: "addresss",
-    jobName: "job",
-    nomadPath: "path",
-    maxCount: 2,
-    minCount: 1
+    params: {
+      Address: "addresss",
+      JobName: "job",
+      NomadPath: "path",
+      MaxCount: 2,
+      MinCount: 1
+    },
+    dispatch: jest.fn()
   };
 
   const enzymeWrapper = shallow(<NomadParameters {...props} />);
@@ -38,11 +39,11 @@ describe("NomadParameters", () => {
       enzymeWrapper
         .find({ label: "MinCount" })
         .simulate("change", { target: { value: 3 } });
-      expect(props.updateNumericNomadParameters.mock.calls.length).toBe(1);
+      expect(props.dispatch.mock.calls.length).toBe(1);
       enzymeWrapper
         .find({ label: "MaxCount" })
         .simulate("change", { target: { value: 20 } });
-      expect(props.updateNumericNomadParameters.mock.calls.length).toBe(2);
+      expect(props.dispatch.mock.calls.length).toBe(2);
     });
 
     it("updateNomadParameters is called when text fields are updated", () => {
@@ -50,17 +51,17 @@ describe("NomadParameters", () => {
       enzymeWrapper
         .find({ label: "NomadPath" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateNomadParameters.mock.calls.length).toBe(1);
+      expect(props.dispatch.mock.calls.length).toBe(1);
 
       enzymeWrapper
         .find({ label: "JobName" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateNomadParameters.mock.calls.length).toBe(2);
+      expect(props.dispatch.mock.calls.length).toBe(2);
 
       enzymeWrapper
         .find({ label: "JobName" })
         .simulate("change", { target: { value: "My new value" } });
-      expect(props.updateNomadParameters.mock.calls.length).toBe(3);
+      expect(props.dispatch.mock.calls.length).toBe(3);
     });
   });
 });

@@ -3,17 +3,12 @@ import Adapter from "enzyme-adapter-react-16";
 import { shallow, configure } from "enzyme";
 import Button from "@material-ui/core/Button";
 import ResourceGroup from "../../src/components/ResourceGroup";
-import Resource from "../../src/containers/Resource";
+import Resource from "../../src/components/Resource";
+import sinon from "sinon";
 
 function shallowSetup() {
-  const props = {
-    resources: ["a", "b"],
-    createResource: jest.fn()
-  };
-
-  const enzymeWrapper = shallow(<ResourceGroup {...props} />);
+  const enzymeWrapper = shallow(<ResourceGroup />);
   return {
-    props,
     enzymeWrapper
   };
 }
@@ -29,10 +24,11 @@ describe("ResourceGroup", () => {
 
   describe("clicks", () => {
     it("clicking delete should trigger createResource", () => {
-      const { enzymeWrapper, props } = shallowSetup();
+      const { enzymeWrapper } = shallowSetup();
+      expect(enzymeWrapper.find(Resource).length).toEqual(2);
       const button = enzymeWrapper.find(Button).first();
       button.simulate("click");
-      expect(props.createResource.mock.calls.length).toBe(1);
+      expect(enzymeWrapper.find(Resource).length).toEqual(3);
     });
   });
 });
