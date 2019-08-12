@@ -20,17 +20,48 @@ docker-compose up
 ```
 
 ## API Endpoints
-**Core**
-* GET `/state` gets current policy `struct` in JSON format
-* GET `/status` gets current resource count in JSON format
-* POST `/update` updates current policy with a new policy
 
-**Utility**
-* PUT `/resume` is a utility end point that resumes the scaling service
-* PUT `/pause` is a utility end point that pauses the scaling service but does not bring it down
+**Policy**
+```
+GET /policy
+POST /policy
+```
+
+
+
+**State**
+```
+GET /state
+PUT /state/pause
+PUT /state/resume
+```
+
+`GET /state` expectes a `200` and a `boolean` on whether NOPAS is running.
+
+**Resouce Count**
+```
+GET /resource
+```
+
+//# todo fill in expected return
+
+**Predefined**
+```
+GET /predefined
+```
+
+Returns an object with 2 fields each providing a list of predefined subpolicy and ensembler names.
+
+```json
+{
+    "subpolicies": ["policy1", "policy2"],
+    "ensemblers": ["conservative", "average"],
+}
+```
 
 **Health**
-* GET `/ping` expects a status code of `200` and a `pong`
+
+GET `/ping` expects a status code of `200` and a `pong`
 
 ### Policy
 A policy will govern how the scaling service manage the resources assigned to it. Each checking-scaliing cycle is performed by the policy in the following manner:
