@@ -6,10 +6,13 @@ NOPAS is a template for a Go service that scales nomad tasks
 * Scaler: scales nomad tasks + EC2 instances
 
 **Purpose**
-
 Existing nomad metrics based autoscalers use CPU and Memory which is not sufficient for all use cases. At GovTech, our data scientists use Spark to crunch data on a daily basis. On one hand, it is costly to keep a large amount of compute resources ready at all times while on the other hand, using off-the-shelf cpu/memory-based autoscaling services may be too unresponsive.
 
-NOPAS was built to enable users to easily add subpolicies based on more business-related needs such as pre-emptively scaling up resources in anticipation of user needs and scaling down outside of specific time periods to save cost.
+NOPAS was built to enable users to easily add subpolicies based on more business-related needs such as pre-emptively scaling up resources in anticipation of user needs and scaling down outside of specific time periods to save cost. It comes with a simple UI for non-technical users.
+
+## UI example
+
+![UI](/images/ui.png)
 
 ## Running
 Declare other env vars such as ASG_ID, ASG_SECRET, VAULT_ADDR and REACT_APP_NOPAS_ENDPOINT in docker-compose.yml. 
@@ -36,14 +39,19 @@ PUT /state/pause
 PUT /state/resume
 ```
 
-`GET /state` expectes a `200` and a `boolean` on whether NOPAS is running.
+`GET /state` expects a `200` and a `boolean` on whether NOPAS is running.
 
 **Resouce Count**
 ```
 GET /resource
 ```
-
-//# todo fill in expected return
+Returns an object with keys representing resource and value representing current count of resource.
+```json
+{
+    "Resource1":3,
+    "Resource2":50
+}
+```
 
 **Predefined**
 ```
