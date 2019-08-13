@@ -30,7 +30,7 @@ GET /policy
 POST /policy
 ```
 
-
+`POST` would require a policy in the form of an `application/json` as described below.
 
 **State**
 ```
@@ -45,6 +45,7 @@ PUT /state/resume
 ```
 GET /resource
 ```
+
 Returns an object with keys representing resource and value representing current count of resource.
 ```json
 {
