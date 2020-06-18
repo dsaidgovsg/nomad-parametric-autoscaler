@@ -11,8 +11,8 @@ function shallowSetup() {
   const props = {
     id: "id",
     resourceName: "test",
-    scaleInCooldown: "1m",
-    scaleOutCooldown: "1m30s",
+    scaleDownCooldown: "1m",
+    scaleUpCooldown: "1m30s",
     ratio: 3,
     updateResourceField: jest.fn(),
     updateNumericResourceField: jest.fn(),

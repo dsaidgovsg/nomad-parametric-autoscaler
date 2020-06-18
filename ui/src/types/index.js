@@ -37,8 +37,8 @@ export type Resource = {
   Name: string,
   EC2: EC2,
   Nomad: Nomad,
-  ScaleOutCooldown: string,
-  ScaleInCooldown: string,
+  ScaleUpCooldown: string,
+  ScaleDownCooldown: string,
   N2CRatio: number
 };
 

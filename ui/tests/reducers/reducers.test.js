@@ -71,13 +71,13 @@ describe("Actions", () => {
   });
 
   it("should change resource field correctly", () => {
-    const change = { id: "uuid2", field: "ScaleOutCooldown", value: "13" };
+    const change = { id: "uuid2", field: "ScaleUpCooldown", value: "13" };
     const out = policy(initialState, {
       type: UPDATE_RESOURCE_FIELD,
       change: change
     });
 
-    expect(out.Resources[change.id].ScaleOutCooldown).toEqual(change.value);
+    expect(out.Resources[change.id].ScaleUpCooldown).toEqual(change.value);
   });
 
   it("should change resource numeric field correctly", () => {

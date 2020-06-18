@@ -20,8 +20,8 @@ import type { OwnProps } from "../components/Resource";
 const mapStateToProps = (state: State, ownProps: OwnProps) => {
   return {
     resourceName: state.policy.Resources[ownProps.id].Name,
-    scaleInCooldown: state.policy.Resources[ownProps.id].ScaleInCooldown,
-    scaleOutCooldown: state.policy.Resources[ownProps.id].ScaleOutCooldown,
+    scaleDownCooldown: state.policy.Resources[ownProps.id].ScaleDownCooldown,
+    scaleUpCooldown: state.policy.Resources[ownProps.id].ScaleUpCooldown,
     ratio: state.policy.Resources[ownProps.id].N2CRatio
   };
 };

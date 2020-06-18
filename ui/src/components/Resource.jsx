@@ -20,8 +20,8 @@ export type OwnProps = {|
 type Props = {
   ...OwnProps,
   resourceName: string,
-  scaleInCooldown: string,
-  scaleOutCooldown: string,
+  scaleDownCooldown: string,
+  scaleUpCooldown: string,
   ratio: number,
   updateResourceField: FieldChangeType => Function,
   updateNumericResourceField: FieldChangeType => Function,
@@ -76,17 +76,17 @@ const Resource = (props: Props) => {
         <TextField
           required
           id="standard-required"
-          label="Scale-In Cooldown"
-          value={props.scaleInCooldown}
-          onChange={updateField("ScaleInCooldown")}
+          label="Scale-Down Cooldown"
+          value={props.scaleDownCooldown}
+          onChange={updateField("ScaleDownCooldown")}
           margin="normal"
         />
         <TextField
           required
           id="standard-required"
-          label="Scale-Out Cooldown"
-          value={props.scaleOutCooldown}
-          onChange={updateField("ScaleOutCooldown")}
+          label="Scale-Up Cooldown"
+          value={props.scaleUpCooldown}
+          onChange={updateField("ScaleUpCooldown")}
           margin="normal"
         />
         <TextField

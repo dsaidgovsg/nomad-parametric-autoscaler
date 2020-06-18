@@ -52,8 +52,8 @@ export const initialState: NopasState = {
         MaxCount: 10,
         MinCount: 1
       },
-      ScaleOutCooldown: "2m",
-      ScaleInCooldown: "2m",
+      ScaleUpCooldown: "2m",
+      ScaleDownCooldown: "2m",
       N2CRatio: 0
     },
     uuid2: {
@@ -71,8 +71,8 @@ export const initialState: NopasState = {
         MaxCount: 10,
         MinCount: 1
       },
-      ScaleOutCooldown: "2m",
-      ScaleInCooldown: "2m",
+      ScaleUpCooldown: "2m",
+      ScaleDownCooldown: "2m",
       N2CRatio: 0
     }
   },
@@ -85,11 +85,11 @@ export const initialState: NopasState = {
         MetricSource: "https://some.source/json",
         UpThreshold: 0.5,
         DownThreshold: 0.25,
-        ScaleOut: {
+        ScaleUp: {
           Changetype: "multiply",
           ChangeValue: 2
         },
-        ScaleIn: {
+        ScaleDown: {
           Changetype: "multiply",
           ChangeValue: 0.5
         }
@@ -139,8 +139,8 @@ export const policy: (state: NopasState, action: Action) => NopasState = (
           MaxCount: 10,
           MinCount: 1
         },
-        ScaleOutCooldown: "1m",
-        ScaleInCooldown: "2m",
+        ScaleUpCooldown: "1m",
+        ScaleDownCooldown: "2m",
         N2CRatio: 0
       };
       return {

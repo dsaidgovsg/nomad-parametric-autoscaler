@@ -84,8 +84,6 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 	*tg.Count = newCount
 	*job.VaultToken = vc.GetVaultToken()
 
-	logging.Info("Old nomad: %d. Desired nomad: %d", oldCount, newCount)
-
 	_, _, err = nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
 	if err != nil {
 		logging.Error(err.Error())
@@ -93,7 +91,8 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 	}
 
 	count, _ := nc.GetTaskGroupCount()
-	logging.Info("Old nomad: %d. New nomad: %d", oldCount, count)
+	logging.Info("[scaling log] Nomad job: %s. Old: %d. New: %d", nc.JobName, oldCount, count)
+
 	return nil
 }
 

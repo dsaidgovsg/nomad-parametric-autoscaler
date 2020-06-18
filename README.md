@@ -226,11 +226,11 @@ Various ensembling methods can be considered for each resource
             "MetricSource": "https://some-endpoint",
             "UpThreshold": 0.5,
             "DownThreshold": 0.25,
-            "ScaleOut": {
+            "ScaleUp": {
                 "Changetype": "multiply",
                 "ChangeValue": 2
             },
-            "ScaleIn": {
+            "ScaleDown": {
                 "Changetype": "multiply",
                 "ChangeValue": 0.5
             }

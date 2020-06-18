@@ -21,8 +21,8 @@ type EC2NomadResource struct {
 	EC2AutoScalingGroup
 	NomadClient
 
-	ScaleOutCooldown    time.Duration
-	ScaleInCooldown     time.Duration
+	ScaleUpCooldown    time.Duration
+	ScaleDownCooldown     time.Duration
 	NomadToComputeRatio int
 	Name                string
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
@@ -31,8 +31,8 @@ type EC2NomadResource struct {
 type ResourcePlan struct {
 	EC2AutoScalingGroupPlan `json:"EC2"`
 	NomadClientPlan         `json:"Nomad"`
-	ScaleInCooldown         string `json:"ScaleInCooldown"`
-	ScaleOutCooldown        string `json:"ScaleOutCooldown"`
+	ScaleDownCooldown       string `json:"ScaleDownCooldown"`
+	ScaleUpCooldown         string `json:"ScaleUpCooldown"`
 	NomadToComputeRatio     int    `json:"N2CRatio"`
 }
 
@@ -44,12 +44,12 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 
 	easg := rp.EC2AutoScalingGroupPlan.ApplyPlan()
 
-	dcd, err := time.ParseDuration(rp.ScaleInCooldown)
+	dcd, err := time.ParseDuration(rp.ScaleDownCooldown)
 	if err != nil {
 		dcd = 300 * time.Second //  default 5 minute cooldown for scaling down
 	}
 
-	ucd, err := time.ParseDuration(rp.ScaleOutCooldown)
+	ucd, err := time.ParseDuration(rp.ScaleUpCooldown)
 	if err != nil {
 		ucd = 5 * time.Second //  default 5 seconds cooldown for scaling up
 	}
@@ -57,8 +57,8 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 	return &EC2NomadResource{
 		NomadClient:         *nc,
 		EC2AutoScalingGroup: *easg,
-		ScaleInCooldown:     dcd,
-		ScaleOutCooldown:    ucd,
+		ScaleDownCooldown:     dcd,
+		ScaleUpCooldown:    ucd,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
 		Name:                name,
 	}, nil
@@ -66,7 +66,7 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
-	// check if its a scale out or scale in
+	// check if its a scale up or scale down
 
 	count, err := res.NomadClient.GetTaskGroupCount()
 	if err != nil {
@@ -78,29 +78,37 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		return err
 	}
 
-	logging.Info("[scaling log] resource_name=%s nomad_resource_count=%d ec2_resource_count=%d", res.Name, count, asgCount)
+	// do this so that when scaling down, we always scale down to min - 1
+	// later on the autoscaler will scale it back up to min
+	// having new executors entering the spark cluster meets the spark master's criteria to allocate jobs
+	if desiredNomadCount == res.NomadClient.MinCount {
+		desiredNomadCount--
+		logging.Info("[scaling log] applying hack: min_count=%d, scaling down to %d", res.NomadClient.MinCount, desiredNomadCount)
+	}
+
+	logging.Info("[scaling log] resource_name=%s nomad_count=%d ec2_count=%d, desired=%d", res.Name, count, asgCount, desiredNomadCount)
 
 	// limit violation requires correction
 	if count < res.NomadClient.MinCount {
-		return res.scaleOut(res.NomadClient.MinCount, vc)
+		return res.scaleUp(res.NomadClient.MinCount, vc)
 	} else if count > res.NomadClient.MaxCount {
-		return res.scaleIn(res.NomadClient.MaxCount, vc)
+		return res.scaleDown(res.NomadClient.MaxCount, vc)
 	}
 
 	// scale accordingly
 	if count < desiredNomadCount {
-		return res.scaleOut(desiredNomadCount, vc)
+		return res.scaleUp(desiredNomadCount, vc)
 	} else if count > desiredNomadCount {
-		return res.scaleIn(desiredNomadCount, vc)
+		return res.scaleDown(desiredNomadCount, vc)
 	} else {
 		return nil
 	}
 }
 
-// scaleOut - scale out - ec2 then nomad
-func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) error {
+// scaleUp - scale up - ec2 then nomad
+func (res *EC2NomadResource) scaleUp(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleOutCooldown {
+	if time.Since(res.lastScaledTime) < res.ScaleUpCooldown {
 		return fmt.Errorf("Too soon to scale again")
 	}
 
@@ -120,10 +128,10 @@ func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) er
 	return nil
 }
 
-// scaleIn - scale in - nomad then ec2
-func (res *EC2NomadResource) scaleIn(desiredNomadCount int, vc *VaultClient) error {
+// scaleDown - scale down - nomad then ec2
+func (res *EC2NomadResource) scaleDown(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleInCooldown {
+	if time.Since(res.lastScaledTime) < res.ScaleDownCooldown {
 		return fmt.Errorf("Too soon to scale again")
 	}
 
@@ -160,8 +168,8 @@ func (res EC2NomadResource) RecreateResourcePlan() ResourcePlan {
 	return ResourcePlan{
 		NomadClientPlan:         res.NomadClient.RecreatePlan(),
 		EC2AutoScalingGroupPlan: res.EC2AutoScalingGroup.RecreatePlan(),
-		ScaleOutCooldown:        res.ScaleOutCooldown.String(),
-		ScaleInCooldown:         res.ScaleInCooldown.String(),
+		ScaleUpCooldown:        res.ScaleUpCooldown.String(),
+		ScaleDownCooldown:         res.ScaleDownCooldown.String(),
 		NomadToComputeRatio:     res.NomadToComputeRatio,
 	}
 }
