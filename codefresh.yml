@@ -1,0 +1,67 @@
+version: '1.0'
+mode: parallel
+stages:
+- setup
+- test
+- docker-release
+
+steps:
+  main_clone:
+    title: Cloning main repository...
+    type: git-clone
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: '${{CF_REVISION}}'
+
+  build_builder:
+    type: build
+    stage: setup
+    title: Build builder image
+    dockerfile: Dockerfile-golang
+    image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}-builder
+    tag: latest
+    when:
+      steps:
+      - name: main_clone
+        on:
+        - success
+
+  test:
+    title: Run tests
+    stage: test
+    image: ${{build_builder}}
+    working_directory: ${{main_clone}}
+    environment:
+    - GOPATH=/codefresh/volume/.go
+    commands:
+    - ./test.sh
+    when:
+      steps:
+      - name: build_builder
+        on:
+        - success
+
+  build_docker_frontend_release:
+    type: build
+    stage: docker-release
+    title: Build Docker image for frontend
+    image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}-ui
+    working_directory: ./ui
+    tag: ${{CF_BRANCH}}
+    when:
+      steps:
+      - name: test
+        on:
+        - success
+
+  build_docker_backend_release:
+    type: build
+    stage: docker-release
+    title: Build Docker image for backend containing binary
+    image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}
+    tag: ${{CF_BRANCH}}
+    target: release
+    when:
+      steps:
+      - name: test
+        on:
+        - success
