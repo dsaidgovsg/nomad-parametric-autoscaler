@@ -78,14 +78,6 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		return err
 	}
 
-	// do this so that when scaling down, we always scale down to min - 1
-	// later on the autoscaler will scale it back up to min
-	// having new executors entering the spark cluster meets the spark master's criteria to allocate jobs
-	if desiredNomadCount == res.NomadClient.MinCount {
-		desiredNomadCount--
-		logging.Info("[scaling log] applying hack: min_count=%d, scaling down to %d", res.NomadClient.MinCount, desiredNomadCount)
-	}
-
 	logging.Info("[scaling log] resource_name=%s nomad_count=%d ec2_count=%d, desired=%d", res.Name, count, asgCount, desiredNomadCount)
 
 	// limit violation requires correction
@@ -109,7 +101,7 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 func (res *EC2NomadResource) scaleUp(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
 	if time.Since(res.lastScaledTime) < res.ScaleUpCooldown {
-		return fmt.Errorf("Too soon to scale again")
+		return fmt.Errorf("Too soon to scale (up) again")
 	}
 
 	res.lastScaledTime = now
@@ -132,7 +124,7 @@ func (res *EC2NomadResource) scaleUp(desiredNomadCount int, vc *VaultClient) err
 func (res *EC2NomadResource) scaleDown(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
 	if time.Since(res.lastScaledTime) < res.ScaleDownCooldown {
-		return fmt.Errorf("Too soon to scale again")
+		return fmt.Errorf("Too soon to scale (down) again")
 	}
 
 	res.lastScaledTime = now
