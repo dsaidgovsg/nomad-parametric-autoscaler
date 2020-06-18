@@ -21,8 +21,8 @@ type EC2NomadResource struct {
 	EC2AutoScalingGroup
 	NomadClient
 
-	ScaleUpCooldown    time.Duration
-	ScaleDownCooldown     time.Duration
+	ScaleUpCooldown     time.Duration
+	ScaleDownCooldown   time.Duration
 	NomadToComputeRatio int
 	Name                string
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
@@ -57,8 +57,8 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 	return &EC2NomadResource{
 		NomadClient:         *nc,
 		EC2AutoScalingGroup: *easg,
-		ScaleDownCooldown:     dcd,
-		ScaleUpCooldown:    ucd,
+		ScaleDownCooldown:   dcd,
+		ScaleUpCooldown:     ucd,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
 		Name:                name,
 	}, nil
@@ -168,8 +168,8 @@ func (res EC2NomadResource) RecreateResourcePlan() ResourcePlan {
 	return ResourcePlan{
 		NomadClientPlan:         res.NomadClient.RecreatePlan(),
 		EC2AutoScalingGroupPlan: res.EC2AutoScalingGroup.RecreatePlan(),
-		ScaleUpCooldown:        res.ScaleUpCooldown.String(),
-		ScaleDownCooldown:         res.ScaleDownCooldown.String(),
+		ScaleUpCooldown:         res.ScaleUpCooldown.String(),
+		ScaleDownCooldown:       res.ScaleDownCooldown.String(),
 		NomadToComputeRatio:     res.NomadToComputeRatio,
 	}
 }
