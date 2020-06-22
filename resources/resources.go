@@ -65,22 +65,28 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 	}, nil
 }
 
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Minute)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	return fmt.Sprintf("%02d:%02d", h, m)
+}
+
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
 	now := time.Now()
+	maxTime := time.Unix(1<<63-62135596801, 999999999)
+
 	if now.After(res.nextResetTime) {
 		if err := res.NomadClient.RestartNomadAlloc(); err != nil {
-			// Wait for at least 2 cycle of scaleOut
-			if res.ScaleOutCooldown > res.ScaleInCooldown {
-				res.nextResetTime = now.Add(2 * res.ScaleOutCooldown)
-			} else {
-				res.nextResetTime = now.Add(2 * res.ScaleInCooldown)
-			}
-			logging.Info("[restart log] trigger stop in next 2 cycles")
+			resetDuration := res.getResetDuration()
+			res.nextResetTime = now.Add(resetDuration)
+			logging.Info("[restart log] cancel allocation failure. starting timer to retry cancel allocation in %v", resetDuration)
 		} else {
-			maxTime := time.Unix(1<<63-62135596801, 999999999)
+
 			res.nextResetTime = maxTime
-			logging.Info("[restart log] set timer to max value")
+			logging.Info("[restart log] cancel allocation success")
 		}
 	}
 
@@ -99,6 +105,11 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		return err
 	}
 
+	// the policy may recommend 0 cores based on 0 usage, but it makes no sense to trigger to condition to call scaleIn
+	// below the specified MinCount.
+	if res.NomadClient.MinCount > desiredNomadCount {
+		desiredNomadCount = res.NomadClient.MinCount
+	}
 	logging.Info("[scaling log] resource_name=%s nomad_count=%d ec2_count=%d, desired=%d", res.Name, count, asgCount, desiredNomadCount)
 
 	// limit violation requires correction
@@ -110,23 +121,41 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 
 	// scale accordingly
 	if count < desiredNomadCount {
+		// If scaling out before the timer to reset an allocation, cancel the timer.
+		if res.nextResetTime.Before(maxTime) {
+			res.nextResetTime = maxTime
+			logging.Info("[restart log] stopping timer to cancel allocation")
+		}
 		return res.scaleOut(desiredNomadCount, vc)
 	} else if count > desiredNomadCount {
 		// When doing the last scaleIn to the minimum count, start the timer to reset any allocation.
 		// This is primarily targeted towards Nomad jobs running Spark workers.
 		if desiredNomadCount == res.NomadClient.MinCount {
-			// Wait for at least 2 cycle of scaleOut
-			if res.ScaleOutCooldown > res.ScaleInCooldown {
-				res.nextResetTime = now.Add(2 * res.ScaleOutCooldown)
-			} else {
-				res.nextResetTime = now.Add(2 * res.ScaleInCooldown)
-			}
-			logging.Info("[restart log] start timer to trigger alloc stop")
+			resetDuration := res.getResetDuration()
+			res.nextResetTime = now.Add(resetDuration)
+			logging.Info("[restart log] starting timer to cancel allocation in %v", resetDuration)
 		}
 		return res.scaleIn(desiredNomadCount, vc)
 	} else {
 		return nil
 	}
+}
+
+// Returns the duration of 2 cycles of ScaleOutCoolDown or 5 minutes
+// (to give a buffer for ASG to terminate EC2 instance completely), whichever is greater
+func (res *EC2NomadResource) getResetDuration() time.Duration {
+	var duration time.Duration
+	// Wait for at least 2 cycle of scaleOut
+	if res.ScaleOutCooldown > res.ScaleInCooldown {
+		duration = 2 * res.ScaleOutCooldown
+	} else {
+		duration = 2 * res.ScaleInCooldown
+	}
+	if duration < 5*time.Minute {
+		duration = 5 * time.Minute
+	}
+
+	return duration
 }
 
 // scaleOut - scale out - ec2 then nomad
