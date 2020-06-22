@@ -15,7 +15,8 @@ NOPAS was built to enable users to easily add subpolicies based on more business
 ![UI](/images/ui.png)
 
 ## Running
-Declare other env vars such as ASG_ID, ASG_SECRET, VAULT_ADDR and REACT_APP_NOPAS_ENDPOINT in docker-compose.yml. 
+Declare other env vars such as `ASG_ID` (AWS_ACCESS_KEY_ID), `ASG_SECRET` (AWS_SECRET_ACCESS_KEY), 
+`VAULT_ADDR` and `VAULT_TOKEN` in an `.env` file.
 
 ```
 export VAULT_TOKEN=$(cat ~/.vault-token)

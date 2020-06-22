@@ -83,7 +83,7 @@ func describeScalingGroup(asgName string,
 	// If we failed to get exactly one ASG, raise an error.
 	if len(resp.AutoScalingGroups) != 1 {
 		err = fmt.Errorf("the attempt to retrieve the current worker pool "+
-			"autoscaling group configuration expected exaclty one result got %v",
+			"autoscaling group configuration expected exactly one result got %v",
 			len(resp.AutoScalingGroups))
 	}
 
@@ -115,7 +115,6 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 		DesiredCapacity:      aws.Int64(int64(newCount)),
 	}
 
-	logging.Info("Old EC2: %d. Desired EC2: %d", desiredCap, newCount)
 	_, err = easg.awsScalingProvider.UpdateAutoScalingGroup(param)
 
 	if err != nil {
@@ -128,7 +127,7 @@ func (easg EC2AutoScalingGroup) Scale(newCount int) error {
 		return err
 	}
 
-	logging.Info("Old EC2: %d. New EC2: %d", desiredCap, *asg2.AutoScalingGroups[0].DesiredCapacity)
+	logging.Info("[scaling log] ASG name: %s Old: %d. New: %d", easg.ScalingGroupName, desiredCap, *asg2.AutoScalingGroups[0].DesiredCapacity)
 
 	if *asg2.AutoScalingGroups[0].DesiredCapacity != int64(newCount) {
 		return fmt.Errorf("Scaling failed to happen for EC2 auto scaling group")

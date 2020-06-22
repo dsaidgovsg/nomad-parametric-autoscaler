@@ -2,9 +2,8 @@ package resources
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
+	"time"
 )
 
 // Resource. each resource needs to control its scaling
@@ -26,6 +25,7 @@ type EC2NomadResource struct {
 	NomadToComputeRatio int
 	Name                string
 	lastScaledTime      time.Time // if now - time < cooldown, reject scaling
+	nextResetTime       time.Time
 }
 
 type ResourcePlan struct {
@@ -61,13 +61,34 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 		ScaleOutCooldown:    ucd,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
 		Name:                name,
+		nextResetTime:       time.Unix(1<<63-62135596801, 999999999),
 	}, nil
 }
 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
 func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error {
-	// check if its a scale out or scale in
+	now := time.Now()
+	if now.After(res.nextResetTime) {
+		if err := res.NomadClient.RestartNomadAlloc(); err != nil {
+			// Wait for at least 2 cycle of scaleOut
+			if res.ScaleOutCooldown > res.ScaleInCooldown {
+				res.nextResetTime = now.Add(2 * res.ScaleOutCooldown)
+			} else {
+				res.nextResetTime = now.Add(2 * res.ScaleInCooldown)
+			}
+			logging.Info("[restart log] trigger stop in next 2 cycles")
+		} else {
+			maxTime := time.Unix(1<<63-62135596801, 999999999)
+			res.nextResetTime = maxTime
+			logging.Info("[restart log] set timer to max value")
+		}
+	}
 
+	if time.Since(res.lastScaledTime) < res.ScaleInCooldown {
+		return fmt.Errorf("Too soon to scale again")
+	}
+
+	// check if its a scale out or scale in
 	count, err := res.NomadClient.GetTaskGroupCount()
 	if err != nil {
 		return err
@@ -78,7 +99,7 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		return err
 	}
 
-	logging.Info("[scaling log] resource_name=%s nomad_resource_count=%d ec2_resource_count=%d", res.Name, count, asgCount)
+	logging.Info("[scaling log] resource_name=%s nomad_count=%d ec2_count=%d, desired=%d", res.Name, count, asgCount, desiredNomadCount)
 
 	// limit violation requires correction
 	if count < res.NomadClient.MinCount {
@@ -91,6 +112,17 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 	if count < desiredNomadCount {
 		return res.scaleOut(desiredNomadCount, vc)
 	} else if count > desiredNomadCount {
+		// When doing the last scaleIn to the minimum count, start the timer to reset any allocation.
+		// This is primarily targeted towards Nomad jobs running Spark workers.
+		if desiredNomadCount == res.NomadClient.MinCount {
+			// Wait for at least 2 cycle of scaleOut
+			if res.ScaleOutCooldown > res.ScaleInCooldown {
+				res.nextResetTime = now.Add(2 * res.ScaleOutCooldown)
+			} else {
+				res.nextResetTime = now.Add(2 * res.ScaleInCooldown)
+			}
+			logging.Info("[restart log] start timer to trigger alloc stop")
+		}
 		return res.scaleIn(desiredNomadCount, vc)
 	} else {
 		return nil
@@ -99,13 +131,6 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 
 // scaleOut - scale out - ec2 then nomad
 func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) error {
-	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleOutCooldown {
-		return fmt.Errorf("Too soon to scale again")
-	}
-
-	res.lastScaledTime = now
-
 	if res.NomadToComputeRatio > 0 { // ignore ec2
 		if err := res.EC2AutoScalingGroup.Scale(desiredNomadCount * res.NomadToComputeRatio); err != nil {
 			return err
@@ -122,13 +147,6 @@ func (res *EC2NomadResource) scaleOut(desiredNomadCount int, vc *VaultClient) er
 
 // scaleIn - scale in - nomad then ec2
 func (res *EC2NomadResource) scaleIn(desiredNomadCount int, vc *VaultClient) error {
-	now := time.Now()
-	if time.Since(res.lastScaledTime) < res.ScaleInCooldown {
-		return fmt.Errorf("Too soon to scale again")
-	}
-
-	res.lastScaledTime = now
-
 	if err := res.NomadClient.Scale(desiredNomadCount, vc); err != nil {
 		return err
 	}

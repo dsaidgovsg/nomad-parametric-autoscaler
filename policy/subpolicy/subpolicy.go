@@ -53,7 +53,7 @@ func CreateSpecificSubpolicy(gsp GenericSubPolicy, mr []resources.Resource) (Sub
 	}
 }
 
-// determineNewDesiredLevel is a utiliy function that resolves the various types
+// determineNewDesiredLevel is a utility function that resolves the various types
 // of scaling methods
 func determineNewDesiredLevel(cur int, sm ScalingMagnitude) int {
 	switch sm.ChangeType {

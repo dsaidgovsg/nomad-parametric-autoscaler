@@ -1,6 +1,8 @@
 package resources
 
 import (
+	"fmt"
+
 	"github.com/datagovsg/nomad-parametric-autoscaler/logging"
 	nomad "github.com/hashicorp/nomad/api"
 )
@@ -84,8 +86,6 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 	*tg.Count = newCount
 	*job.VaultToken = vc.GetVaultToken()
 
-	logging.Info("Old nomad: %d. Desired nomad: %d", oldCount, newCount)
-
 	_, _, err = nc.client.nomad.Jobs().Register(job, &nomad.WriteOptions{})
 	if err != nil {
 		logging.Error(err.Error())
@@ -93,7 +93,40 @@ func (nc NomadClient) Scale(newCount int, vc *VaultClient) error {
 	}
 
 	count, _ := nc.GetTaskGroupCount()
-	logging.Info("Old nomad: %d. New nomad: %d", oldCount, count)
+	logging.Info("[scaling log] Nomad job: %s. Old: %d. New: %d", nc.JobName, oldCount, count)
+
+	return nil
+}
+
+// RestartNomadAlloc - restart any Nomad allocation of the associated job in NomadClient
+func (nc NomadClient) RestartNomadAlloc() error {
+	allocs, _, err := nc.client.nomad.Jobs().Allocations(nc.JobName, true, nil)
+	if err != nil {
+		return err
+	}
+	if len(allocs) > 0 {
+		allocID := ""
+		for i := range allocs {
+			if allocs[i].ClientStatus == "running" {
+				allocID = allocs[i].ID
+				break
+			}
+		}
+		if allocID == "" {
+			return fmt.Errorf("no running allocations to restart")
+		}
+		alloc, _, err := nc.client.nomad.Allocations().Info(allocID, nil)
+		if err != nil {
+			return err
+		}
+		logging.Info("[restart log] stopping %s", alloc.ID)
+		_, err = nc.client.nomad.Allocations().Stop(alloc, nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no allocations to restart")
+	}
 	return nil
 }
 
