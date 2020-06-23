@@ -1,0 +1,6 @@
+FROM golang:1.11-alpine
+
+# Only install hard dependencies
+RUN apk add --no-cache gcc git musl-dev && \
+    go get -v -u golang.org/x/lint/golint && \
+    go get -v -u gotest.tools/gotestsum
