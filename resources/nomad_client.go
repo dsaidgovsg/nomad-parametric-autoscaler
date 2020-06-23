@@ -104,28 +104,29 @@ func (nc NomadClient) RestartNomadAlloc() error {
 	if err != nil {
 		return err
 	}
-	if len(allocs) > 0 {
-		allocID := ""
-		for i := range allocs {
-			if allocs[i].ClientStatus == "running" {
-				allocID = allocs[i].ID
-				break
-			}
-		}
-		if allocID == "" {
-			return fmt.Errorf("No running allocations to restart")
-		}
-		alloc, _, err := nc.client.nomad.Allocations().Info(allocID, nil)
-		if err != nil {
-			return err
-		}
-		logging.Info("[restart log] stopping %s", alloc.ID)
-		_, err = nc.client.nomad.Allocations().Stop(alloc, nil)
-		if err != nil {
-			return err
-		}
-	} else {
+	if len(allocs) <= 0 {
 		return fmt.Errorf("No allocations to restart")
+	}
+	allocID := ""
+	for i := range allocs {
+		if allocs[i].ClientStatus == "running" {
+			allocID = allocs[i].ID
+			break
+		}
+	}
+	if allocID == "" {
+		return fmt.Errorf("No running allocations to restart")
+	}
+	alloc, _, err := nc.client.nomad.Allocations().Info(allocID, nil)
+	if err != nil {
+		return err
+	}
+	logging.Info("[restart log] stopping %s", alloc.ID)
+	// The Nomad server will restore the allocation shortly after if it's stop,
+	// making Stop effectively a restart.
+	_, err = nc.client.nomad.Allocations().Stop(alloc, nil)
+	if err != nil {
+		return err
 	}
 	return nil
 }
