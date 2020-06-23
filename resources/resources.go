@@ -61,16 +61,9 @@ func (rp ResourcePlan) ApplyPlan(name string, vc VaultClient) (Resource, error) 
 		ScaleOutCooldown:    ucd,
 		NomadToComputeRatio: rp.NomadToComputeRatio,
 		Name:                name,
-		nextResetTime:       time.Unix(1<<63-62135596801, 999999999),
+		// magic "max time" constant taken from https://stackoverflow.com/a/25065327/4238044
+		nextResetTime: time.Unix(1<<63-62135596801, 999999999),
 	}, nil
-}
-
-func fmtDuration(d time.Duration) string {
-	d = d.Round(time.Minute)
-	h := d / time.Hour
-	d -= h * time.Hour
-	m := d / time.Minute
-	return fmt.Sprintf("%02d:%02d", h, m)
 }
 
 // Scale receives a desired nomad count and scales both nomad + ec2 accordingly
@@ -141,7 +134,7 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 	}
 }
 
-// Returns the duration of 2 cycles of ScaleOutCoolDown or 5 minutes
+// Returns the duration of 2 cycles of ScaleOutCooldown or 2 minutes
 // (to give a buffer for ASG to terminate EC2 instance completely), whichever is greater
 func (res *EC2NomadResource) getResetDuration() time.Duration {
 	var duration time.Duration
@@ -151,8 +144,8 @@ func (res *EC2NomadResource) getResetDuration() time.Duration {
 	} else {
 		duration = 2 * res.ScaleInCooldown
 	}
-	if duration < 5*time.Minute {
-		duration = 5 * time.Minute
+	if duration < 2*time.Minute {
+		duration = 2 * time.Minute
 	}
 
 	return duration

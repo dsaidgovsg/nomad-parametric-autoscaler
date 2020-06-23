@@ -113,7 +113,7 @@ func (nc NomadClient) RestartNomadAlloc() error {
 			}
 		}
 		if allocID == "" {
-			return fmt.Errorf("no running allocations to restart")
+			return fmt.Errorf("No running allocations to restart")
 		}
 		alloc, _, err := nc.client.nomad.Allocations().Info(allocID, nil)
 		if err != nil {
@@ -125,7 +125,7 @@ func (nc NomadClient) RestartNomadAlloc() error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no allocations to restart")
+		return fmt.Errorf("No allocations to restart")
 	}
 	return nil
 }

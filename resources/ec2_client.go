@@ -82,7 +82,7 @@ func describeScalingGroup(asgName string,
 
 	// If we failed to get exactly one ASG, raise an error.
 	if len(resp.AutoScalingGroups) != 1 {
-		err = fmt.Errorf("the attempt to retrieve the current worker pool "+
+		err = fmt.Errorf("The attempt to retrieve the current worker pool "+
 			"autoscaling group configuration expected exactly one result got %v",
 			len(resp.AutoScalingGroups))
 	}
