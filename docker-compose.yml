@@ -11,16 +11,16 @@ services:
     tmpfs: ['/tmp']
     depends_on: 
       - db
+    env_file:
+      - .env
     environment:
       GIN_MODE: release
-      ASG_ID: ""
-      ASG_SECRET: ""
-      VAULT_ADDR: ""
-      VAULT_TOKEN: ""
+      VAULT_ADDR: ${VAULT_ADDR}
+      VAULT_TOKEN: ${VAULT_TOKEN}
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: docker
-      POSTGRES_HOST: db
+      POSTGRES_HOST: db # use localhost if running the binary in terminal
       POSTGRES_PORT: 5432
 
   ui:
@@ -39,3 +39,5 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: docker
+    ports:
+      - 5432:5432
