@@ -126,6 +126,7 @@ func (nc NomadClient) RestartNomadAlloc() error {
 	// making Stop effectively a restart.
 	_, err = nc.client.nomad.Allocations().Stop(alloc, nil)
 	if err != nil {
+		logging.Error(err.Error())
 		return err
 	}
 	return nil
