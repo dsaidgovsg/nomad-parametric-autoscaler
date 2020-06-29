@@ -1,4 +1,5 @@
 version: '1.0'
+build_version: 'v2'
 mode: parallel
 stages:
 - setup
@@ -18,6 +19,7 @@ steps:
     title: Build builder image
     dockerfile: Dockerfile-golang
     image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}-builder
+    disable_push: true
     tag: latest
     when:
       steps:
@@ -45,6 +47,7 @@ steps:
     stage: docker-release
     title: Build Docker image for frontend
     image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}-ui
+    registry: dockerhub
     working_directory: ./ui
     tag: ${{CF_BRANCH}}
     when:
@@ -58,6 +61,7 @@ steps:
     stage: docker-release
     title: Build Docker image for backend containing binary
     image_name: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}
+    registry: dockerhub
     tag: ${{CF_BRANCH}}
     target: release
     when:
