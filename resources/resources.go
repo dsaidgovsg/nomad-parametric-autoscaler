@@ -75,7 +75,7 @@ func (res *EC2NomadResource) Scale(desiredNomadCount int, vc *VaultClient) error
 		if err := res.NomadClient.RestartNomadAlloc(); err != nil {
 			resetDuration := res.getResetDuration()
 			res.nextResetTime = now.Add(resetDuration)
-			logging.Info("[restart log] cancel allocation failure. starting timer to retry cancel allocation in %v", resetDuration)
+			logging.Info("[restart log] cancel allocation failure %v. starting timer to retry cancel allocation in %v", err, resetDuration)
 		} else {
 
 			res.nextResetTime = maxTime

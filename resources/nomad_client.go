@@ -121,6 +121,7 @@ func (nc NomadClient) RestartNomadAlloc() error {
 	if err != nil {
 		return err
 	}
+	logging.Info("[restart log] allocation: %v", alloc)
 	logging.Info("[restart log] stopping %s", alloc.ID)
 	// The Nomad server will restore the allocation shortly after if it's stop,
 	// making Stop effectively a restart.
