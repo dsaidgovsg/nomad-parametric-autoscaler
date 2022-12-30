@@ -30,8 +30,7 @@ require (
 	github.com/gammazero/workerpool v0.0.0-20181230203049-86a96b5d5d92 // indirect
 	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/gin-contrib/cors v0.0.0-20190301062745-f9e10995c85a
-	github.com/gin-contrib/sse v0.0.0-20190226023149-996076df5b33 // indirect
-	github.com/gin-gonic/gin v1.3.0
+	github.com/gin-gonic/gin v1.7.0
 	github.com/go-errors/errors v1.0.1 // indirect
 	github.com/go-ldap/ldap v3.0.2+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
@@ -39,11 +38,8 @@ require (
 	github.com/gocql/gocql v0.0.0-20190301043612-f6df8288f9b4 // indirect
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
-	github.com/golang/protobuf v1.3.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/googleapis/gax-go v2.0.2+incompatible // indirect
-	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/hashicorp/consul v1.4.2 // indirect
@@ -52,7 +48,6 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.5.2 // indirect
 	github.com/hashicorp/go-version v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
-	github.com/hashicorp/nomad v0.11.3
 	github.com/hashicorp/nomad/api v0.0.0-20200621044352-389252247d5d
 	github.com/hashicorp/serf v0.8.2 // indirect
 	github.com/hashicorp/vault v1.0.3
@@ -78,7 +73,6 @@ require (
 	github.com/lib/pq v1.0.0
 	github.com/mattbaird/elastigo v0.0.0-20170123220020-2fe47fd29e4b // indirect
 	github.com/michaelklishin/rabbit-hole v1.5.0 // indirect
-	github.com/mitchellh/hashstructure v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/mitchellh/pointerstructure v0.0.0-20170205204203-f2329fcfa9e2 // indirect
 	github.com/ory-am/common v0.4.0 // indirect
@@ -93,11 +87,9 @@ require (
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/streadway/amqp v0.0.0-20190225234609-30f8ed68076e // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5 // indirect
-	github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	go.opencensus.io v0.19.1 // indirect
 	go.uber.org/atomic v1.4.0
-	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
